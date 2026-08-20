@@ -27,6 +27,10 @@ function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value);
 }
 
+function isStringArray(value: unknown): value is string[] {
+  return Array.isArray(value) && value.every((item) => typeof item === "string");
+}
+
 function isPeriod(value: unknown): value is { from: string; to: string } {
   return (
     isRecord(value) &&
@@ -41,7 +45,7 @@ function isDecompositionItem(value: unknown): value is DecompositionItem {
     ["traffic", "conversion", "ticket"].includes(String(value.driver)) &&
     isFiniteNumber(value.current) &&
     isFiniteNumber(value.previous) &&
-    (value.changePct === null || isFiniteNumber(value.changePct)) &&
+    isFiniteNumber(value.changePct) &&
     Number.isInteger(value.contributionRial)
   );
 }
@@ -100,11 +104,125 @@ function isEvidence(value: unknown): value is EvidenceRecord {
     typeof value.formulaId === "string" &&
     typeof value.titleFa === "string" &&
     typeof value.explanationFa === "string" &&
-    Array.isArray(value.controls) &&
-    value.controls.every((control) => typeof control === "string") &&
-    Array.isArray(value.limitations) &&
-    value.limitations.every((limitation) => typeof limitation === "string") &&
-    Array.isArray(value.dataQuality)
+    ["attempt", "session", "merchant-period", "merchant-card", "peer-group"].includes(
+      String(value.grain),
+    ) &&
+    isStringArray(value.sourceColumns) &&
+    Array.isArray(value.filters) &&
+    value.filters.every(
+      (filter) =>
+        isRecord(filter) &&
+        typeof filter.field === "string" &&
+        typeof filter.operator === "string" &&
+        (["string", "number", "boolean"].includes(typeof filter.value)) &&
+        (typeof filter.value !== "number" || isFiniteNumber(filter.value)),
+    ) &&
+    isPeriod(value.period) &&
+    (value.comparisonPeriod === undefined || isPeriod(value.comparisonPeriod)) &&
+    (value.numerator === undefined || isEvidenceOperand(value.numerator)) &&
+    (value.denominator === undefined || isEvidenceOperand(value.denominator)) &&
+    typeof value.formulaFa === "string" &&
+    isMetricValue(value.result) &&
+    (value.baseline === undefined || isEvidenceBaseline(value.baseline)) &&
+    isStringArray(value.controls) &&
+    isStringArray(value.assumptions) &&
+    isStringArray(value.limitations) &&
+    Array.isArray(value.dataQuality) &&
+    value.dataQuality.every(
+      (note) =>
+        isRecord(note) &&
+        ["info", "warning"].includes(String(note.severity)) &&
+        typeof note.code === "string" &&
+        typeof note.messageFa === "string",
+    ) &&
+    Array.isArray(value.sampleRows) &&
+    value.sampleRows.every(isEvidenceSampleRow) &&
+    typeof value.datasetFingerprint === "string"
+  );
+}
+
+function isEvidenceOperand(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.labelFa === "string" &&
+    isFiniteNumber(value.value)
+  );
+}
+
+function isEvidenceBaseline(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.type === "string" &&
+    isFiniteNumber(value.value) &&
+    typeof value.sampleSize === "number" &&
+    Number.isInteger(value.sampleSize) &&
+    value.sampleSize >= 0
+  );
+}
+
+function isMetricValue(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    isFiniteNumber(value.value) &&
+    ["rial", "percent", "count", "percentage-point", "seconds"].includes(
+      String(value.unit),
+    ) &&
+    typeof value.labelFa === "string" &&
+    ["actual", "estimate", "benchmark"].includes(String(value.kind)) &&
+    typeof value.displayPrecision === "number" &&
+    Number.isInteger(value.displayPrecision) &&
+    value.displayPrecision >= 0
+  );
+}
+
+function isEvidenceSampleRow(value: unknown): boolean {
+  return (
+    isRecord(value) &&
+    typeof value.sessionKey === "string" &&
+    (value.trySeq === undefined || Number.isInteger(value.trySeq)) &&
+    typeof value.createdAt === "string" &&
+    isFiniteNumber(value.amountRial) &&
+    (value.sessionStatus === undefined || typeof value.sessionStatus === "string") &&
+    (value.tryStatus === undefined || typeof value.tryStatus === "string") &&
+    (value.pspCode === undefined ||
+      value.pspCode === null ||
+      typeof value.pspCode === "string") &&
+    (value.payerCardMasked === undefined ||
+      value.payerCardMasked === null ||
+      typeof value.payerCardMasked === "string")
+  );
+}
+
+function hasCompleteEvidenceReferences(payload: PeerOpportunitiesPayload): boolean {
+  const evidenceIds = new Set<string>();
+  const evidenceScopes = new Set<string>();
+
+  for (const record of payload.evidence) {
+    if (evidenceIds.has(record.id)) {
+      return false;
+    }
+    evidenceIds.add(record.id);
+
+    const scope = record.filters.find(
+      (filter) => filter.field === "evidence_scope",
+    )?.value;
+    if (typeof scope === "string") {
+      if (evidenceScopes.has(scope)) {
+        return false;
+      }
+      evidenceScopes.add(scope);
+    }
+  }
+
+  const requiredScopes = [
+    ...payload.decomposition.map((item) => `growth:${item.driver}`),
+    ...payload.peerBenchmarks.map((item) => `peer:${item.metric}`),
+    ...payload.timeWindows.map((item) => `timing:${item.weekday}:${item.hour}`),
+  ];
+
+  return (
+    payload.insights.every((insight) => evidenceIds.has(insight.evidenceId)) &&
+    requiredScopes.every((scope) => evidenceScopes.has(scope))
   );
 }
 
@@ -126,11 +244,14 @@ function isPayload(value: unknown): value is PeerOpportunitiesPayload {
     Array.isArray(value.insights) &&
     value.insights.every(isInsight) &&
     Array.isArray(value.evidence) &&
-    value.evidence.every(isEvidence)
+    value.evidence.every(isEvidence) &&
+    hasCompleteEvidenceReferences(value as PeerOpportunitiesPayload)
   );
 }
 
-function parseArtifact(value: unknown): PeerOpportunitiesArtifact | null {
+export function parsePeerOpportunitiesArtifact(
+  value: unknown,
+): PeerOpportunitiesArtifact | null {
   if (
     !isRecord(value) ||
     value.schemaVersion !== "1.0" ||
@@ -186,7 +307,7 @@ export async function loadPeerOpportunities(
       },
     };
   }
-  const artifact = parseArtifact(decoded);
+  const artifact = parsePeerOpportunitiesArtifact(decoded);
   if (!artifact) {
     return {
       status: "error",

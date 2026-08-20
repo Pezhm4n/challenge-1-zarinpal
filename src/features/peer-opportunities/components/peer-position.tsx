@@ -1,6 +1,7 @@
 import { CircleAlert, UsersRound } from "lucide-react";
 
 import type { PeerBenchmark } from "../types";
+import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const labels: Record<string, { title: string; unit: "percent" | "rial" }> = {
   verificationRate: { title: "نرخ پرداخت موفق", unit: "percent" },
@@ -34,7 +35,34 @@ function PercentageValue({ value }: { value: number }) {
   return <MetricValue value={value} unit="percent" />;
 }
 
-export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
+export function PeerPosition({
+  benchmarks,
+  evidenceByScope,
+  onEvidenceRequest,
+}: {
+  benchmarks: PeerBenchmark[];
+  evidenceByScope: Record<string, string>;
+  onEvidenceRequest: (evidenceId: string) => void;
+}) {
+  if (benchmarks.length === 0) {
+    return (
+      <section
+        aria-labelledby="peer-title"
+        className="grid gap-3 rounded-xl border bg-card p-4"
+        aria-live="polite"
+      >
+        <CircleAlert aria-hidden="true" className="size-5 text-muted-foreground" />
+        <h2 id="peer-title" className="font-medium">
+          داده کافی برای مقایسه با هم‌صنفان وجود ندارد
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          رتبه فقط زمانی نمایش داده می‌شود که پذیرنده و گروه هم‌صنف حداقل نمونهٔ
+          لازم را داشته باشند.
+        </p>
+      </section>
+    );
+  }
+
   return (
     <section aria-labelledby="peer-title" className="grid gap-4">
       <header className="grid gap-1">
@@ -49,6 +77,7 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
 
       <div className="grid gap-3 lg:grid-cols-3">
         {benchmarks.map((benchmark) => {
+          const evidenceId = evidenceByScope[`peer:${benchmark.metric}`];
           const label = labels[benchmark.metric] ?? {
             title: benchmark.metric,
             unit: "percent" as const,
@@ -86,9 +115,14 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
                 <div className="flex items-end justify-between gap-3">
                   <p className="grid gap-0.5">
                     <span className="text-xs text-muted-foreground">عملکرد شما بهتر از</span>
-                    <span className="text-2xl font-semibold">
+                    <EvidenceMetricButton
+                      evidenceId={evidenceId}
+                      ariaLabel={`مشاهده مدرک جایگاه ${label.title}`}
+                      onEvidenceRequest={onEvidenceRequest}
+                      className="-my-1 text-2xl font-semibold"
+                    >
                       <PercentageValue value={benchmark.percentile} />
-                    </span>
+                    </EvidenceMetricButton>
                   </p>
                   <p className="text-xs text-muted-foreground">
                     <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(benchmark.peerCount)}</bdi>
@@ -130,10 +164,6 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
                     </dd>
                   </div>
                 </dl>
-                <p className="text-xs text-muted-foreground">
-                  بهتر از <PercentageValue value={benchmark.percentile} />
-                  {" "}کسب‌وکار مشابه هستید.
-                </p>
               </div>
             </article>
           );

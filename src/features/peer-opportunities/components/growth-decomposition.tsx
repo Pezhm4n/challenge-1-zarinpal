@@ -1,6 +1,7 @@
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { ArrowDown, ArrowUp, CircleAlert, Minus } from "lucide-react";
 
 import type { DecompositionItem, Driver } from "../types";
+import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const driverLabels: Record<Driver, string> = {
   traffic: "تعداد پرداخت‌های یکتا",
@@ -53,11 +54,7 @@ function RialValue({ value }: { value: number }) {
   );
 }
 
-function ChangeSummary({ value }: { value: number | null }) {
-  if (value === null) {
-    return <span>تغییر نامشخص</span>;
-  }
-
+function ChangeSummary({ value }: { value: number }) {
   if (value === 0) {
     return <span>بدون تغییر</span>;
   }
@@ -95,9 +92,32 @@ function DirectionIcon({ value }: { value: number }) {
 
 export function GrowthDecomposition({
   items,
+  evidenceByScope,
+  onEvidenceRequest,
 }: {
   items: DecompositionItem[];
+  evidenceByScope: Record<string, string>;
+  onEvidenceRequest: (evidenceId: string) => void;
 }) {
+  if (items.length === 0) {
+    return (
+      <section
+        aria-labelledby="decomposition-title"
+        className="grid gap-3 rounded-xl border bg-card p-4"
+        aria-live="polite"
+      >
+        <CircleAlert aria-hidden="true" className="size-5 text-muted-foreground" />
+        <h2 id="decomposition-title" className="font-medium">
+          تفکیک عامل‌های تغییر فروش قابل محاسبه نیست
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          در یکی از دوره‌ها پرداخت موفقی ثبت نشده است؛ برای جلوگیری از نمایش عدد
+          ساختگی، سهم عامل‌ها نمایش داده نمی‌شود.
+        </p>
+      </section>
+    );
+  }
+
   const maximumContribution = Math.max(
     ...items.map((item) => Math.abs(item.contributionRial)),
     1,
@@ -118,6 +138,7 @@ export function GrowthDecomposition({
       <div className="grid gap-3 lg:grid-cols-3">
         {items.map((item) => {
           const isNegative = item.contributionRial < 0;
+          const evidenceId = evidenceByScope[`growth:${item.driver}`];
           const width = `${Math.max(
             8,
             Math.round((Math.abs(item.contributionRial) / maximumContribution) * 100),
@@ -135,18 +156,18 @@ export function GrowthDecomposition({
                     {" "}به <DriverValue item={item} value={item.current} />
                   </p>
                 </div>
-                <span
+                <div
                   className={
                     isNegative
-                      ? "flex items-center gap-1 text-sm font-medium text-destructive"
-                      : "flex items-center gap-1 text-sm font-medium text-foreground"
+                      ? "text-sm font-medium text-destructive"
+                      : "text-sm font-medium text-foreground"
                   }
                 >
                   <span className="inline-flex items-center gap-1">
                     <DirectionIcon value={item.contributionRial} />
                     <ChangeSummary value={item.changePct} />
                   </span>
-                </span>
+                </div>
               </div>
 
               <div className="grid gap-2">
@@ -160,15 +181,20 @@ export function GrowthDecomposition({
                     style={{ width }}
                   />
                 </div>
-                <p
+                <EvidenceMetricButton
+                  evidenceId={evidenceId}
+                  ariaLabel={`مشاهده مدرک اثر ${driverLabels[item.driver]} بر فروش`}
+                  onEvidenceRequest={onEvidenceRequest}
                   className={
                     isNegative
-                      ? "text-sm font-semibold text-destructive"
-                      : "text-sm font-semibold text-foreground"
+                      ? "-my-2 w-fit font-semibold text-destructive"
+                      : "-my-2 w-fit font-semibold text-foreground"
                   }
                 >
-                  <ImpactSummary value={item.contributionRial} />
-                </p>
+                  <span>
+                    <ImpactSummary value={item.contributionRial} />
+                  </span>
+                </EvidenceMetricButton>
               </div>
             </article>
           );

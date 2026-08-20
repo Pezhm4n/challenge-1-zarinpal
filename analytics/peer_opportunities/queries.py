@@ -6,6 +6,20 @@ from typing import Any
 
 import duckdb
 
+from analytics.common.loader import CsvDatasetLoader
+from analytics.common.sessions import normalize_attempts_to_sessions
+
+_PERSIAN_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
+
+
+def _to_persian_digits(value: str) -> str:
+    return value.translate(_PERSIAN_DIGITS)
+
+
+def _format_evidence_datetime(value: Any) -> str:
+    ascii_value = value.strftime("%Y/%m/%d, %H:%M:%S")
+    return _to_persian_digits(ascii_value).replace(",", "،")
+
 
 @dataclass(frozen=True, slots=True)
 class PeriodMetrics:
@@ -17,12 +31,16 @@ class PeriodMetrics:
     verified_volume_rial: int
 
     @property
-    def verification_rate_pct(self) -> float:
-        return round(self.verified_sessions / self.sessions * 100, 4) if self.sessions else 0.0
+    def verification_rate_pct(self) -> float | None:
+        if self.sessions <= 0:
+            return None
+        return round(self.verified_sessions / self.sessions * 100, 4)
 
     @property
-    def average_ticket_rial(self) -> float:
-        return self.verified_volume_rial / self.verified_sessions if self.verified_sessions else 0.0
+    def average_ticket_rial(self) -> float | None:
+        if self.verified_sessions <= 0:
+            return None
+        return self.verified_volume_rial / self.verified_sessions
 
 
 @dataclass(frozen=True, slots=True)
@@ -34,12 +52,49 @@ class TimeWindowAggregate:
     volume_rial: int
 
     @property
-    def verification_rate_pct(self) -> float:
-        return round(self.verified_sessions / self.sessions * 100, 4) if self.sessions else 0.0
+    def verification_rate_pct(self) -> float | None:
+        if self.sessions <= 0:
+            return None
+        return round(self.verified_sessions / self.sessions * 100, 4)
 
 
 def load_normalized_sessions(connection: duckdb.DuckDBPyConnection, source: Path) -> None:
-    """Load Member A's normalized shape and reject attempt-grain duplicates."""
+    """Load a session fixture or normalize the shared attempt-grain dataset."""
+
+    loader = CsvDatasetLoader(source, connection=connection)
+    source_columns = set(loader.read_header())
+    normalized_columns = {
+        "session_key",
+        "merchant_key",
+        "category_id",
+        "category_title",
+        "amount_rial",
+        "created_at",
+        "eventual_verified",
+    }
+
+    if not normalized_columns.issubset(source_columns):
+        loader.register_attempts("peer_raw_attempts")
+        normalize_attempts_to_sessions(
+            connection,
+            attempt_view="peer_raw_attempts",
+            session_view="peer_common_sessions",
+        )
+        connection.execute(
+            """
+            CREATE OR REPLACE TABLE normalized_sessions AS
+            SELECT
+                session_key,
+                merchant_key,
+                category_id,
+                category_title,
+                amount_rial,
+                created_at,
+                eventual_verified
+            FROM peer_common_sessions
+            """
+        )
+        return
 
     connection.execute(
         """
@@ -126,6 +181,7 @@ def fetch_time_windows(
     period_from: str,
     period_to_exclusive: str,
 ) -> tuple[TimeWindowAggregate, ...]:
+    # created_at is confirmed as Iran local time; no UTC shift is applied.
     rows = connection.execute(
         """
         SELECT
@@ -174,6 +230,8 @@ def fetch_dataset_metadata(connection: duckdb.DuckDBPyConnection) -> dict[str, A
 def fetch_sample_rows(
     connection: duckdb.DuckDBPyConnection,
     merchant_key: str,
+    period_from: str,
+    period_to_exclusive: str,
     limit: int = 4,
 ) -> list[dict[str, Any]]:
     rows = connection.execute(
@@ -181,17 +239,60 @@ def fetch_sample_rows(
         SELECT session_key, created_at, amount_rial, eventual_verified
         FROM normalized_sessions
         WHERE merchant_key = ?
+          AND created_at >= CAST(? AS TIMESTAMP)
+          AND created_at < CAST(? AS TIMESTAMP)
         ORDER BY created_at, session_key
         LIMIT ?
         """,
-        [merchant_key, limit],
+        [merchant_key, period_from, period_to_exclusive, limit],
     ).fetchall()
     return [
         {
-            "sessionKey": str(row[0]),
-            "createdAt": row[1].isoformat(),
+            "sessionKey": _to_persian_digits(str(row[0])),
+            "createdAt": _format_evidence_datetime(row[1]),
             "amountRial": int(row[2]),
-            "sessionStatus": "Verified" if row[3] else "NotVerified",
+            "sessionStatus": "موفق" if row[3] else "ناموفق",
+        }
+        for row in rows
+    ]
+
+
+def fetch_time_window_sample_rows(
+    connection: duckdb.DuckDBPyConnection,
+    merchant_key: str,
+    period_from: str,
+    period_to_exclusive: str,
+    weekday: int,
+    hour: int,
+    limit: int = 4,
+) -> list[dict[str, Any]]:
+    rows = connection.execute(
+        """
+        SELECT session_key, created_at, amount_rial, eventual_verified
+        FROM normalized_sessions
+        WHERE merchant_key = ?
+          AND created_at >= CAST(? AS TIMESTAMP)
+          AND created_at < CAST(? AS TIMESTAMP)
+          AND extract(isodow FROM created_at)::INTEGER = ?
+          AND extract(hour FROM created_at)::INTEGER = ?
+        ORDER BY created_at, session_key
+        LIMIT ?
+        """,
+        [
+            merchant_key,
+            period_from,
+            period_to_exclusive,
+            weekday,
+            hour,
+            limit,
+        ],
+    ).fetchall()
+    return [
+        {
+            "sessionKey": _to_persian_digits(str(row[0])),
+            "createdAt": _format_evidence_datetime(row[1]),
+            "amountRial": int(row[2]),
+            "sessionStatus": "موفق" if row[3] else "ناموفق",
         }
         for row in rows
     ]

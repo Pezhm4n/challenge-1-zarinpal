@@ -8,11 +8,12 @@ from typing import Any
 
 import duckdb
 
-from .artifact import build_artifact, source_fingerprint, write_artifact
+from .artifact import build_artifact, select_time_windows, source_fingerprint, write_artifact
 from .queries import (
     fetch_dataset_metadata,
     fetch_period_metrics,
     fetch_sample_rows,
+    fetch_time_window_sample_rows,
     fetch_time_windows,
     load_normalized_sessions,
 )
@@ -66,6 +67,25 @@ def run_pipeline(
             current_period.from_date,
             current_period.to_exclusive,
         )
+        target_current = next(
+            metrics for metrics in current_metrics if metrics.merchant_key == target_key
+        )
+        selected_windows = select_time_windows(
+            windows,
+            target_current.verification_rate_pct,
+        )
+        time_window_sample_rows = {
+            f"timing:{window['weekday']}:{window['hour']}":
+                fetch_time_window_sample_rows(
+                    connection,
+                    target_key,
+                    current_period.from_date,
+                    current_period.to_exclusive,
+                    window["weekday"],
+                    window["hour"],
+                )
+            for window in selected_windows
+        }
         artifact = build_artifact(
             target_key=target_key,
             current_metrics=current_metrics,
@@ -73,9 +93,16 @@ def run_pipeline(
             time_windows=windows,
             dataset_metadata=fetch_dataset_metadata(connection),
             dataset_fingerprint=source_fingerprint(source),
-            sample_rows=fetch_sample_rows(connection, target_key),
+            sample_rows=fetch_sample_rows(
+                connection,
+                target_key,
+                current_period.from_date,
+                current_period.to_exclusive,
+            ),
+            time_window_sample_rows=time_window_sample_rows,
             current_period=current_period.contract_period,
             comparison_period=comparison_period.contract_period,
+            development_fixture=source.name == "peer-opportunities-sessions.csv",
         )
         write_artifact(artifact, destination)
         return artifact

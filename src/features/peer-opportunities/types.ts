@@ -4,7 +4,7 @@ export type DecompositionItem = {
   driver: Driver;
   current: number;
   previous: number;
-  changePct: number | null;
+  changePct: number;
   contributionRial: number;
 };
 
@@ -27,6 +27,11 @@ export type TimeWindow = {
   liftVsBaselinePct: number;
 };
 
+export type EvidenceReference = {
+  id: string;
+  baseline?: number;
+};
+
 export type InsightSummary = {
   id: string;
   feature: "recovery" | "customers" | "peers" | "timing" | "growth";
@@ -41,19 +46,7 @@ export type InsightSummary = {
   destination: string;
 };
 
-export type EvidenceRecord = {
-  id: string;
-  formulaId: string;
-  titleFa: string;
-  explanationFa: string;
-  controls: string[];
-  limitations: string[];
-  dataQuality: Array<{
-    severity: "info" | "warning";
-    code: string;
-    messageFa: string;
-  }>;
-};
+export type EvidenceRecord = SharedEvidenceRecord;
 
 export type PeerOpportunitiesPayload = {
   selection: {
@@ -101,4 +94,4 @@ export type LoadPeerOpportunitiesResult =
       payload: PeerOpportunitiesPayload;
     }
   | { status: "error"; error: ArtifactError };
-
+import type { EvidenceRecord as SharedEvidenceRecord } from "@/contracts";
