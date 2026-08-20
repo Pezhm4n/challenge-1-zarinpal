@@ -13,7 +13,12 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="fa" dir="rtl" className={cn("font-sans", geist.variable)}>
+    <html
+      lang="fa"
+      dir="rtl"
+      className={cn("font-sans", geist.variable)}
+      suppressHydrationWarning
+    >
       <body>
         <AppShell>{children}</AppShell>
       </body>

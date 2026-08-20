@@ -1,0 +1,15 @@
+session_key,try_seq,terminal_key,merchant_key,category_id,category_title,amount,adjusted_fee,session_status,try_status,switch_response_code,psp_code,issuer_bank_code,payer_card_key,verify_type,init_time_ms,verify_time_ms,created_at,try_created_at,verified_at,settled_at,expire_in
+P1,0,T1,MBUILD,C1,Builder Category,1000,10,Failed,NoAttempt,,,,,,,,2026-05-02 09:00:00,2026-05-02 09:00:00,,,1800
+P2,1,T1,MBUILD,C1,Builder Category,2000,20,Verified,Verified,,PSP-A,BANK-01,CARD-BUILD-0002,Automated,10,20,2026-05-03 10:00:00,2026-05-03 10:00:00,2026-05-03 10:01:00,2026-05-03 10:02:00,1800
+P3,1,T1,MBUILD,C1,Builder Category,4000,40,Verified,Verified,,PSP-A,BANK-02,CARD-BUILD-0003,Automated,10,20,2026-05-04 11:00:00,2026-05-04 11:00:00,2026-05-04 11:01:00,2026-05-04 11:02:00,1800
+P4,1,T1,MBUILD,C1,Builder Category,3000,30,Failed,Failed,ERR-01,PSP-B,,,Automated,11,,2026-05-05 12:00:00,2026-05-05 12:00:00,,,1800
+J1,0,T1,MBUILD,C1,Builder Category,1000,10,Failed,NoAttempt,,,,,,,,2026-06-02 09:00:00,2026-06-02 09:00:00,,,1800
+J2,0,T1,MBUILD,C1,Builder Category,2000,20,Failed,NoAttempt,,,,,,,,2026-06-03 09:00:00,2026-06-03 09:00:00,,,1800
+J3,0,T1,MBUILD,C1,Builder Category,3000,30,Failed,NoAttempt,,,,,,,,2026-06-04 09:00:00,2026-06-04 09:00:00,,,1800
+J4,1,T1,MBUILD,C1,Builder Category,4000,40,Verified,Verified,,PSP-A,BANK-01,CARD-BUILD-0004,Automated,10,20,2026-06-05 10:00:00,2026-06-05 10:00:00,2026-06-05 10:01:00,2026-06-05 10:02:00,1800
+J5,1,T1,MBUILD,C1,Builder Category,6000,60,Verified,InBank,,PSP-A,,,Automated,12,,2026-06-06 11:00:00,2026-06-06 11:00:00,,,1800
+J5,2,T1,MBUILD,C1,Builder Category,6000,60,Verified,Verified,,PSP-A,BANK-02,CARD-BUILD-0005,Automated,13,30,2026-06-06 11:00:00,2026-06-06 11:03:00,2026-06-06 11:04:00,2026-06-06 11:05:00,1800
+J6,1,T1,MBUILD,C1,Builder Category,5000,50,Reversed,Reversed,,PSP-B,BANK-03,CARD-BUILD-0006,Automated,14,,2026-06-07 12:00:00,2026-06-07 12:00:00,,,1800
+ZP,0,T2,MZERO,C2,Zero Category,7000,70,Failed,NoAttempt,,,,,,,,2026-05-02 10:00:00,2026-05-02 10:00:00,,,1800
+ZJ1,0,T2,MZERO,C2,Zero Category,8000,80,Failed,NoAttempt,,,,,,,,2026-06-02 10:00:00,2026-06-02 10:00:00,,,1800
+ZJ2,0,T2,MZERO,C2,Zero Category,9000,90,Failed,NoAttempt,,,,,,,,2026-06-03 10:00:00,2026-06-03 10:00:00,,,1800

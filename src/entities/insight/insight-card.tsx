@@ -158,6 +158,7 @@ export function InsightCard({
             variant="outline"
             size="lg"
             className="min-h-11 w-full sm:w-fit"
+            nativeButton={false}
             render={<Link href={insight.destination} />}
           >
             بررسی جزئیات
