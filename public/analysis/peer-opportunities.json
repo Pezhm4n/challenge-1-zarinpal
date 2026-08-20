@@ -1,0 +1,465 @@
+{
+  "dataset": {
+    "fingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
+    "maxCreatedAt": "2026-06-15T10:39:00",
+    "minCreatedAt": "2026-05-01T09:00:00",
+    "rowCount": 1464,
+    "sessionCount": 1464
+  },
+  "feature": "peer-opportunities",
+  "generatedAt": "2026-08-20T00:37:18.455879+00:00",
+  "merchants": {
+    "M275": {
+      "decomposition": [
+        {
+          "changePct": 20.0,
+          "contributionRial": 13840,
+          "current": 144.0,
+          "driver": "traffic",
+          "previous": 120.0
+        },
+        {
+          "changePct": -16.6667,
+          "contributionRial": -13880,
+          "current": 50.0,
+          "driver": "conversion",
+          "previous": 60.0
+        },
+        {
+          "changePct": 10.0,
+          "contributionRial": 7240,
+          "current": 1100.0,
+          "driver": "ticket",
+          "previous": 1000.0
+        }
+      ],
+      "evidence": [
+        {
+          "assumptions": [
+            "eventual_verified از Loader مشترک معتبر دریافت می‌شود"
+          ],
+          "comparisonPeriod": {
+            "from": "2026-05-01",
+            "to": "2026-05-31"
+          },
+          "controls": [
+            "دوره‌های هم‌اندازه",
+            "Session grain",
+            "Shapley interaction allocation"
+          ],
+          "dataQuality": [
+            {
+              "code": "DEVELOPMENT_FIXTURE",
+              "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+              "severity": "info"
+            }
+          ],
+          "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
+          "explanationFa": "میانگین اثر حاشیه‌ای سه Driver در تمام شش ترتیب Shapley محاسبه شده است.",
+          "filters": [
+            {
+              "field": "merchant_key",
+              "operator": "=",
+              "value": "M275"
+            }
+          ],
+          "formulaFa": "حجم موفق = Session × نرخ موفقیت × متوسط مبلغ موفق",
+          "formulaId": "growth.revenue_decomposition.v1",
+          "grain": "merchant-period",
+          "id": "peer-growth-decomposition-m275",
+          "limitations": [
+            "این تفکیک توصیفی است و ادعای علیت ندارد"
+          ],
+          "period": {
+            "from": "2026-06-01",
+            "to": "2026-06-30"
+          },
+          "result": {
+            "displayPrecision": 0,
+            "kind": "actual",
+            "labelFa": "تغییر حجم موفق",
+            "unit": "rial",
+            "value": 7200
+          },
+          "sampleRows": [
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T09:00:00",
+              "sessionKey": "M275-MAY-000",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T12:00:00",
+              "sessionKey": "M275-MAY-001",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T15:00:00",
+              "sessionKey": "M275-MAY-002",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T18:00:00",
+              "sessionKey": "M275-MAY-003",
+              "sessionStatus": "Verified"
+            }
+          ],
+          "sourceColumns": [
+            "session_key",
+            "merchant_key",
+            "category_id",
+            "amount_rial",
+            "created_at",
+            "eventual_verified"
+          ],
+          "titleFa": "تفکیک تغییر حجم موفق"
+        },
+        {
+          "assumptions": [
+            "تعریف دقیق size/ticket cohort در انتظار تأیید Human Lead است"
+          ],
+          "baseline": {
+            "sampleSize": 12,
+            "type": "same-category-peer-median",
+            "value": 57.5
+          },
+          "comparisonPeriod": {
+            "from": "2026-05-01",
+            "to": "2026-05-31"
+          },
+          "controls": [
+            "صنف یکسان: کیف و کفش",
+            "دوره کامل و یکسان",
+            "حداقل ۱۰۰ Session برای هر پذیرنده",
+            "حذف پذیرنده هدف از گروه peer",
+            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+          ],
+          "dataQuality": [
+            {
+              "code": "DEVELOPMENT_FIXTURE",
+              "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+              "severity": "info"
+            }
+          ],
+          "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
+          "explanationFa": "Percentile با mid-rank و median مقاوم در برابر outlier محاسبه شده است.",
+          "filters": [
+            {
+              "field": "category_id",
+              "operator": "=",
+              "value": "C-SHOES"
+            },
+            {
+              "field": "sessions",
+              "operator": ">=",
+              "value": 100
+            }
+          ],
+          "formulaFa": "۱۰۰ × (تعداد کمتر + نصف تعداد مساوی) ÷ تعداد peer",
+          "formulaId": "peer.robust_percentile.v1",
+          "grain": "peer-group",
+          "id": "peer-benchmark-m275",
+          "limitations": [
+            "Volume rank و performance rank معادل نیستند"
+          ],
+          "period": {
+            "from": "2026-06-01",
+            "to": "2026-06-30"
+          },
+          "result": {
+            "displayPrecision": 1,
+            "kind": "benchmark",
+            "labelFa": "صدک نرخ موفقیت",
+            "unit": "percent",
+            "value": 33.3
+          },
+          "sampleRows": [
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T09:00:00",
+              "sessionKey": "M275-MAY-000",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T12:00:00",
+              "sessionKey": "M275-MAY-001",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T15:00:00",
+              "sessionKey": "M275-MAY-002",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T18:00:00",
+              "sessionKey": "M275-MAY-003",
+              "sessionStatus": "Verified"
+            }
+          ],
+          "sourceColumns": [
+            "session_key",
+            "merchant_key",
+            "category_id",
+            "amount_rial",
+            "created_at",
+            "eventual_verified"
+          ],
+          "titleFa": "جایگاه در گروه هم‌صنف"
+        },
+        {
+          "assumptions": [
+            "timestamp بدون تبدیل timezone مصرف شده است"
+          ],
+          "baseline": {
+            "sampleSize": 144,
+            "type": "merchant-period-verification-rate",
+            "value": 50.0
+          },
+          "comparisonPeriod": {
+            "from": "2026-05-01",
+            "to": "2026-05-31"
+          },
+          "controls": [
+            "حداقل ۲۵ Session در cell",
+            "baseline همان merchant و period"
+          ],
+          "dataQuality": [
+            {
+              "code": "DEVELOPMENT_FIXTURE",
+              "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+              "severity": "info"
+            }
+          ],
+          "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
+          "explanationFa": "نرخ هر cell واجد شرایط با baseline همان پذیرنده و دوره مقایسه شده است.",
+          "filters": [
+            {
+              "field": "merchant_key",
+              "operator": "=",
+              "value": "M275"
+            },
+            {
+              "field": "sessions",
+              "operator": ">=",
+              "value": 25
+            }
+          ],
+          "formulaFa": "(نرخ cell − نرخ baseline) ÷ نرخ baseline",
+          "formulaId": "time.window_lift.v1",
+          "grain": "merchant-period",
+          "id": "timing-window-m275",
+          "limitations": [
+            "الگوی زمانی مشاهده‌ای است و اثر علّی نیست"
+          ],
+          "period": {
+            "from": "2026-06-01",
+            "to": "2026-06-30"
+          },
+          "result": {
+            "displayPrecision": 1,
+            "kind": "benchmark",
+            "labelFa": "بیشترین Lift مشاهده‌شده",
+            "unit": "percent",
+            "value": 60.0
+          },
+          "sampleRows": [
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T09:00:00",
+              "sessionKey": "M275-MAY-000",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T12:00:00",
+              "sessionKey": "M275-MAY-001",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T15:00:00",
+              "sessionKey": "M275-MAY-002",
+              "sessionStatus": "Verified"
+            },
+            {
+              "amountRial": 1000,
+              "createdAt": "2026-05-01T18:00:00",
+              "sessionKey": "M275-MAY-003",
+              "sessionStatus": "Verified"
+            }
+          ],
+          "sourceColumns": [
+            "session_key",
+            "merchant_key",
+            "category_id",
+            "amount_rial",
+            "created_at",
+            "eventual_verified"
+          ],
+          "titleFa": "مقایسه بازه‌های زمانی"
+        }
+      ],
+      "insights": [
+        {
+          "actionFa": "ابتدا Driver منفی را بررسی کنید و تغییر حجم را به‌تنهایی نشانه افت تقاضا ندانید.",
+          "confidence": "high",
+          "confidenceReasonFa": "محاسبه روی Session grain و با Shapley identity انجام شده است.",
+          "destination": "/opportunities",
+          "evidenceId": "peer-growth-decomposition-m275",
+          "feature": "growth",
+          "findingFa": "اثر Traffic، Conversion و Ticket بدون دوباره‌شماری interaction از هم جدا شده است.",
+          "id": "growth-driver-m275",
+          "impact": {
+            "displayPrecision": 0,
+            "kind": "actual",
+            "labelFa": "سهم Driver از تغییر حجم موفق",
+            "unit": "rial",
+            "value": -13880
+          },
+          "priority": 1,
+          "status": "warning",
+          "titleFa": "بیشترین فشار منفی از نرخ موفقیت آمده است"
+        },
+        {
+          "actionFa": "هم‌زمان نرخ موفقیت، حجم و متوسط مبلغ را ببینید؛ رتبه حجم به‌تنهایی کافی نیست.",
+          "confidence": "medium",
+          "confidenceReasonFa": "گروه peer هم‌صنف، هم‌دوره و دارای حداقل sample است.",
+          "destination": "/opportunities",
+          "evidenceId": "peer-benchmark-m275",
+          "feature": "peers",
+          "findingFa": "نرخ موفقیت در صدک 33.3 میان 12 پذیرنده واجد شرایط قرار دارد.",
+          "id": "peer-position-m275",
+          "impact": {
+            "displayPrecision": 1,
+            "kind": "benchmark",
+            "labelFa": "صدک نرخ موفقیت",
+            "unit": "percent",
+            "value": 33.3
+          },
+          "priority": 2,
+          "status": "warning",
+          "titleFa": "جایگاه نرخ موفقیت نسبت به هم‌صنف"
+        },
+        {
+          "actionFa": "الگوی Checkout و کمپین‌های این بازه را بررسی کنید؛ این مشاهده ادعای علّی نیست.",
+          "confidence": "medium",
+          "confidenceReasonFa": "فقط cellهای دارای حداقل ۲۵ Session وارد مقایسه شده‌اند.",
+          "destination": "/opportunities",
+          "evidenceId": "timing-window-m275",
+          "feature": "timing",
+          "findingFa": "این بازه 60.0٪ بالاتر از baseline همان دوره است.",
+          "id": "timing-opportunity-m275",
+          "impact": {
+            "displayPrecision": 1,
+            "kind": "benchmark",
+            "labelFa": "Lift نسبت به baseline",
+            "unit": "percent",
+            "value": 60.0
+          },
+          "priority": 3,
+          "status": "opportunity",
+          "titleFa": "یک بازه زمانی قابل بررسی پیدا شد"
+        }
+      ],
+      "peerBenchmarks": [
+        {
+          "controls": [
+            "صنف یکسان: کیف و کفش",
+            "دوره کامل و یکسان",
+            "حداقل ۱۰۰ Session برای هر پذیرنده",
+            "حذف پذیرنده هدف از گروه peer",
+            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+          ],
+          "merchantValue": 50.0,
+          "metric": "verificationRate",
+          "peerCount": 12,
+          "peerMedian": 57.5,
+          "percentile": 33.3,
+          "sufficient": true
+        },
+        {
+          "controls": [
+            "صنف یکسان: کیف و کفش",
+            "دوره کامل و یکسان",
+            "حداقل ۱۰۰ Session برای هر پذیرنده",
+            "حذف پذیرنده هدف از گروه peer",
+            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+          ],
+          "merchantValue": 79200.0,
+          "metric": "verifiedVolumeRial",
+          "peerCount": 12,
+          "peerMedian": 67625.0,
+          "percentile": 58.3,
+          "sufficient": true
+        },
+        {
+          "controls": [
+            "صنف یکسان: کیف و کفش",
+            "دوره کامل و یکسان",
+            "حداقل ۱۰۰ Session برای هر پذیرنده",
+            "حذف پذیرنده هدف از گروه peer",
+            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+          ],
+          "merchantValue": 1100.0,
+          "metric": "averageVerifiedTicketRial",
+          "peerCount": 12,
+          "peerMedian": 1175.0,
+          "percentile": 37.5,
+          "sufficient": true
+        }
+      ],
+      "selection": {
+        "comparison": {
+          "from": "2026-05-01",
+          "to": "2026-05-31"
+        },
+        "merchantKey": "M275",
+        "period": {
+          "from": "2026-06-01",
+          "to": "2026-06-30"
+        }
+      },
+      "timeWindows": [
+        {
+          "hour": 10,
+          "liftVsBaselinePct": 60.0,
+          "sessions": 30,
+          "verifyPct": 80.0,
+          "volumeRial": 26400,
+          "weekday": 1
+        },
+        {
+          "hour": 18,
+          "liftVsBaselinePct": 0.0,
+          "sessions": 30,
+          "verifyPct": 50.0,
+          "volumeRial": 16500,
+          "weekday": 3
+        },
+        {
+          "hour": 12,
+          "liftVsBaselinePct": 0.0,
+          "sessions": 30,
+          "verifyPct": 50.0,
+          "volumeRial": 16500,
+          "weekday": 4
+        },
+        {
+          "hour": 14,
+          "liftVsBaselinePct": -60.0,
+          "sessions": 30,
+          "verifyPct": 20.0,
+          "volumeRial": 6600,
+          "weekday": 2
+        }
+      ]
+    }
+  },
+  "schemaVersion": "1.0"
+}
