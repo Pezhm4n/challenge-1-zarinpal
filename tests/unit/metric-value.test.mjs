@@ -1,0 +1,65 @@
+import assert from "node:assert/strict"
+import test from "node:test"
+
+import {
+  formatMetricValue,
+  metricKindLabels,
+} from "../../src/entities/insight/metric-value.ts"
+
+
+test("مبلغ ریالی بدون تبدیل ضمنی به تومان نمایش داده می‌شود", () => {
+  const value = formatMetricValue({
+    value: 4_900_000_000,
+    unit: "rial",
+    labelFa: "پتانسیل برآوردی",
+    kind: "estimate",
+    displayPrecision: 0,
+  })
+
+  assert.equal(value, "۴٬۹۰۰٬۰۰۰٬۰۰۰ ریال")
+})
+
+
+test("درصد و واحد درصد با Precision قراردادی نمایش داده می‌شوند", () => {
+  assert.equal(
+    formatMetricValue({
+      value: 39.49,
+      unit: "percent",
+      labelFa: "سهم NoAttempt",
+      kind: "actual",
+      displayPrecision: 2,
+    }),
+    "۳۹٫۴۹ ٪",
+  )
+  assert.equal(
+    formatMetricValue({
+      value: -21.01,
+      unit: "percentage-point",
+      labelFa: "افت Conversion",
+      kind: "actual",
+      displayPrecision: 2,
+    }),
+    "‎−۲۱٫۰۱ واحد درصد",
+  )
+})
+
+
+test("مقدار غیرمتناهی عدد عادی نمایش داده نمی‌شود", () => {
+  assert.equal(
+    formatMetricValue({
+      value: Number.NaN,
+      unit: "count",
+      labelFa: "نامعتبر",
+      kind: "actual",
+      displayPrecision: 0,
+    }),
+    "داده نامعتبر",
+  )
+})
+
+
+test("Label نوع Metric، Actual و Estimate را صریح جدا می‌کند", () => {
+  assert.equal(metricKindLabels.actual, "مقدار واقعی")
+  assert.equal(metricKindLabels.estimate, "برآورد سناریویی")
+  assert.equal(metricKindLabels.benchmark, "معیار مقایسه")
+})
