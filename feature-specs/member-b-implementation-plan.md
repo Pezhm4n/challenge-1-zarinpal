@@ -5,7 +5,7 @@
 - Owner: Member B / Codex #1
 - Branch: `feat/member-b-conversion-rescue`
 - Scope: `conversion-recovery` vertical slice only
-- State: **Phase 1 complete; awaiting Human Lead approval before implementation**
+- State: **Phase 2 complete and verified; awaiting Human Lead approval for Phase 3**
 - Source of truth: official challenge brief → `AGENTS.md` → `context/architecture.md` → `contracts.md` → `feature-specs/member-b.md`
 
 ## Goal
@@ -215,7 +215,7 @@ npm run build
 git diff --check
 ```
 
-## Approval Gate — Decisions Required Before Phase 2
+## Approval Gate — Resolved Before Phase 2
 
 ### 1. Retry denominator / shared naming mismatch
 
@@ -229,6 +229,8 @@ git diff --check
 
 تا تأیید، Contract مشترک تغییر نمی‌کند.
 
+Resolution: Human Lead تعریف Formula را حفظ و shape آینده Shared Contract را با نام `firstTryNonVerifiedSessions` تأیید کرد. Member B در Phase 2 همین semantics را بدون تغییر Shared files پیاده‌سازی کرد.
+
 ### 2. Zero denominator and TypeScript nullability
 
 Guardrail مشترک می‌گوید denominator صفر باید `null` بدهد، اما چند field عددی `ConversionRecoveryPayload` و `MetricValue.value` در TypeScript فعلی nullable نیستند.
@@ -239,6 +241,8 @@ Guardrail مشترک می‌گوید denominator صفر باید `null` بدهد
 - local boundary type فقط برای stateهای ناکافی nullable باشد؛
 - Shared contract فقط توسط Member A/Human Lead در صورت تأیید هماهنگ شود.
 
+Resolution: Human Lead nullability محلی Conversion Recovery را تأیید کرد. Shared Contract، Schema و Evidence UI توسط Lead هماهنگ می‌شوند و در Branch Member B تغییر نکرده‌اند.
+
 ### 3. PSP sample threshold
 
 Feature Spec minimum sample را اجباری کرده ولی عدد threshold را مشخص نکرده است.
@@ -248,6 +252,18 @@ Feature Spec minimum sample را اجباری کرده ولی عدد threshold �
 - حداقل `100` Session attempted برای هر PSP در period؛
 - حداقل `25` Session در هر PSP×amount-band cell؛
 - زیر threshold فقط `insufficient-data` و بدون recommendation.
+
+Resolution: Human Lead thresholdهای `100` Session attempted برای هر PSP و `25` Session برای هر PSP×amount-band را تأیید کرد. Phase 2 مرزهای دقیق این guard را با تست قفل کرد.
+
+## Phase 2 Verification Record
+
+- Fixture Attempt-level با NoAttempt، Verified، Failed، Paid، Retry recovered/unrecovered، missing PSP و zero denominator اضافه شد.
+- Feature-owned Session view ترتیب Funnel و first-try-non-verified semantics را تثبیت کرد.
+- Pure formulaها برای percentage/nullability، Retry، Scenario، amount band و PSP sample guard اضافه شدند.
+- `20` تست Phase 2 Passed.
+- کل Regression Suite: `51` Passed.
+- lint با ignore صریح cache غیرقابل‌دسترسی sandbox، TypeScript و Production build Passed.
+- Shared files، raw dataset، Context و Runtime UI تغییر نکردند.
 
 ## Risks and Mitigations
 
