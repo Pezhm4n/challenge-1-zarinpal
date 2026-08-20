@@ -50,8 +50,10 @@ export default async function RecoveryRoute({ searchParams }: RecoveryRouteProps
       >
         <Alert variant="destructive">
           <CircleAlert aria-hidden="true" />
-          <AlertTitle id="recovery-error-title">
-            خطا در بارگذاری تحلیل بازیابی
+          <AlertTitle>
+            <h1 id="recovery-error-title">
+              خطا در بارگذاری تحلیل بازیابی
+            </h1>
           </AlertTitle>
           <AlertDescription>{result.errorMessage}</AlertDescription>
         </Alert>

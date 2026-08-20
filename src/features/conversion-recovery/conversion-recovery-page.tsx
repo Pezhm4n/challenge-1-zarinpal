@@ -65,6 +65,20 @@ const bandLabels: Record<string, string> = {
   "upper-middle": "میانی بالا",
   high: "مبلغ بالا",
 }
+const confidenceLabels: Record<"low" | "medium" | "high", string> = {
+  low: "کم",
+  medium: "متوسط",
+  high: "زیاد",
+}
+const persianDigits = "۰۱۲۳۴۵۶۷۸۹"
+
+function localizeEmbeddedNumbers(value: string): string {
+  return value.replace(/\d+(?:\.\d+)?/g, (number) =>
+    number
+      .replace(/\d/g, (digit) => persianDigits[Number(digit)])
+      .replace(".", "٫"),
+  )
+}
 
 function formatRial(value: number): string {
   return `${faInteger.format(value)} ریال`
@@ -350,13 +364,15 @@ export function ConversionRecoveryPage({
                 <CircleGauge aria-hidden="true" data-icon="inline-start" />
                 ریشه افت
               </Badge>
-              <Badge variant="outline">اطمینان {insight.confidence === "medium" ? "متوسط" : insight.confidence}</Badge>
+              <Badge variant="outline">
+                اطمینان {confidenceLabels[insight.confidence]}
+              </Badge>
             </div>
             <CardTitle className="text-xl sm:text-2xl">
               <h2>{insight.titleFa}</h2>
             </CardTitle>
             <CardDescription className="max-w-4xl text-sm leading-7 text-foreground/80 sm:text-base">
-              {insight.findingFa}
+              {localizeEmbeddedNumbers(insight.findingFa)}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-4 lg:grid-cols-[1fr_18rem]">
@@ -397,7 +413,15 @@ export function ConversionRecoveryPage({
             ) : null}
           </CardFooter>
         </Card>
-      ) : null}
+      ) : (
+        <Alert>
+          <CircleAlert aria-hidden="true" />
+          <AlertTitle>Insight اولویت‌دار ساخته نشد</AlertTitle>
+          <AlertDescription>
+            داده این دوره برای پیشنهاد عددی کافی نیست. Funnel و Evidenceهای موجود را بررسی کنید؛ هیچ اثر یا Recommendation جعلی نمایش داده نمی‌شود.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <section aria-labelledby="payment-rail-title" className="grid gap-4">
         <div>
@@ -521,8 +545,9 @@ export function ConversionRecoveryPage({
           </Badge>
         </div>
 
-        <div className="grid gap-4 lg:grid-cols-2">
-          {pspGroups.map(([psp, segments]) => (
+        {pspGroups.length > 0 ? (
+          <div className="grid gap-4 lg:grid-cols-2">
+            {pspGroups.map(([psp, segments]) => (
             <Card key={psp} size="sm">
               <CardHeader>
                 <CardTitle>
@@ -549,8 +574,17 @@ export function ConversionRecoveryPage({
                 ))}
               </CardContent>
             </Card>
-          ))}
-        </div>
+            ))}
+          </div>
+        ) : (
+          <Alert>
+            <CircleAlert aria-hidden="true" />
+            <AlertTitle>داده PSP برای مقایسه موجود نیست</AlertTitle>
+            <AlertDescription>
+              هیچ رتبه، برنده یا پیشنهاد مقایسه‌ای ساخته نشده است. Funnel و تحلیل NoAttempt همچنان بر پایه Sessionهای معتبر قابل بررسی‌اند.
+            </AlertDescription>
+          </Alert>
+        )}
       </section>
 
       <Card size="sm">

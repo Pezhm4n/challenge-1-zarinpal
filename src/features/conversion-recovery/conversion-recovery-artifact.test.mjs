@@ -67,6 +67,42 @@ test("rejects unresolved evidence references", () => {
   )
 })
 
+test("accepts an explicit insufficient-data payload without scenarios or PSP rows", () => {
+  const artifact = cloneArtifact()
+  const payload = artifact.merchants.M275
+
+  payload.scenarios = []
+  payload.segments = payload.segments.filter((segment) => segment.dimension !== "psp")
+  payload.insights[0].status = "insufficient-data"
+  payload.insights[0].impact = null
+
+  const parsed = parseConversionRecoveryArtifact(artifact).merchants.M275
+  assert.equal(parsed.insights[0].status, "insufficient-data")
+  assert.equal(parsed.insights[0].impact, null)
+  assert.deepEqual(parsed.scenarios, [])
+  assert.ok(parsed.segments.every((segment) => segment.dimension !== "psp"))
+})
+
+test("rejects duplicate evidence identifiers", () => {
+  const artifact = cloneArtifact()
+  artifact.merchants.M275.evidence[1].id = artifact.merchants.M275.evidence[0].id
+
+  assert.throws(
+    () => parseConversionRecoveryArtifact(artifact),
+    ConversionRecoveryArtifactError,
+  )
+})
+
+test("rejects a displayed NoAttempt rate that disagrees with its formula", () => {
+  const artifact = cloneArtifact()
+  artifact.merchants.M275.noAttempt.sharePct = 40
+
+  assert.throws(
+    () => parseConversionRecoveryArtifact(artifact),
+    ConversionRecoveryArtifactError,
+  )
+})
+
 test("accepts explicit zero-denominator null semantics", () => {
   const artifact = cloneArtifact()
   const payload = artifact.merchants.M275

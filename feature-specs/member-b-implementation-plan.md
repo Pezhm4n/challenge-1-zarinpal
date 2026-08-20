@@ -5,7 +5,7 @@
 - Owner: Member B / Codex #1
 - Branch: `feat/member-b-conversion-rescue`
 - Scope: `conversion-recovery` vertical slice only
-- State: **Phase 4 complete and verified; awaiting Human Lead approval for Phase 5**
+- State: **Phase 5 complete and verified; awaiting Human Lead approval for Phase 6**
 - Source of truth: official challenge brief → `AGENTS.md` → `context/architecture.md` → `contracts.md` → `feature-specs/member-b.md`
 
 ## Goal
@@ -185,6 +185,8 @@ Route فقط composition انجام می‌دهد. UI از Shared Evidence Sheet
 - keyboard/focus/heading order
 - Mobile `390×844` و Desktop `1440×900`
 - جدول Segment در Mobile به summary/key-value خوانا تبدیل می‌شود.
+
+Implemented without Shared-file changes: route-specific unexpected-error boundary، explicit empty Insight/PSP states، complete Persian confidence labels، localized embedded digits، duplicate Evidence/formula-drift boundary tests و browser accessibility checks. Invalid merchant، nullable low-sample Evidence و safe error copy نیز دوباره بررسی شدند.
 
 ### Phase 6 — Integration readiness
 
