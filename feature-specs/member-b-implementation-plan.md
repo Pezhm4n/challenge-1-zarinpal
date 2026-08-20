@@ -5,7 +5,7 @@
 - Owner: Member B / Codex #1
 - Branch: `feat/member-b-conversion-rescue`
 - Scope: `conversion-recovery` vertical slice only
-- State: **Phase 2 complete and verified; awaiting Human Lead approval for Phase 3**
+- State: **Phase 3 complete and verified; awaiting Human Lead approval for Phase 4**
 - Source of truth: official challenge brief → `AGENTS.md` → `context/architecture.md` → `contracts.md` → `feature-specs/member-b.md`
 
 ## Goal
@@ -114,6 +114,17 @@ June:
 - Session retried وقتی `attempt_count > 1` است.
 - Recovered-after-retry وقتی first attempt غیرVerified، بیش از یک attempt و eventual verified باشد.
 - تعریف denominator نهایی در Approval Gate قفل می‌شود؛ UI مقدار ناسازگار با numerator/denominator نمایش نمی‌دهد.
+
+### Stage progression
+
+- Formula ID: `funnel.stage_progression.v1`.
+- Grain: `session` و ترتیب nested برابر `session → attempted → in-bank → verified` است.
+- `attempted` حداقل یک `try_seq > 0` دارد.
+- `in-bank` حداقل یک status از `InBank`, `Paid`, `Verified` دارد؛ `Paid` فقط عبور از Stage است.
+- `verified` فقط با وجود `try_status='Verified'` ساخته می‌شود.
+- `Reversed` به‌تنهایی success یا Stage progression ایجاد نمی‌کند و محدودیت آن در Evidence ثبت می‌شود.
+- Count و Amount بعد از Session deduplication محاسبه می‌شوند؛ Amount هر Session در هر Stage یک‌بار جمع می‌شود.
+- `rateFromPrevious` برای Stage اول و مخرج صفر `null` است؛ zero denominator با `ZERO_DENOMINATOR` ثبت می‌شود.
 
 ### PSP and amount controls
 
@@ -264,6 +275,22 @@ Resolution: Human Lead thresholdهای `100` Session attempted برای هر PSP
 - کل Regression Suite: `51` Passed.
 - lint با ignore صریح cache غیرقابل‌دسترسی sandbox، TypeScript و Production build Passed.
 - Shared files، raw dataset، Context و Runtime UI تغییر نکردند.
+
+## Phase 3 Verification Record
+
+- Builder قطعی `analytics/conversion_recovery/build_artifact.py` با انتخاب Merchant و بازه‌های جاری/مقایسه اضافه شد.
+- Artifact عمومی فقط برای Demo Merchant یعنی `M275` تولید شد و حدود `79KB` است؛ CSV خام در Artifact یا Git وارد نشد.
+- Funnel واقعی June برای M275 با Count/Amount دقیق تأیید شد:
+  - Session: `3,183` / `27,489,740,003` ریال
+  - Attempted: `1,926` / `17,157,870,003` ریال
+  - In-bank: `1,835` / `16,294,400,003` ریال
+  - Verified: `1,170` / `10,421,270,000` ریال
+- NoAttempt برابر `1,257` Session و `39.4910%`، و Retry recovery برابر `30 / 786 = 3.8168%` بازتولید شد.
+- سناریوی غیرعلّی و غیرتضمینی M275 برابر `551` سفارش و `4,908,817,383` ریال است.
+- PSPها در Quartile مبلغ Merchant-period کنترل شدند؛ guardهای `100` PSP و `25` cell اعمال و cellهای ناکافی بدون نرخ، baseline، ranking یا recommendation تولید شدند.
+- Evidence برای Count، Amount، Rate، NoAttempt، Retry، Segment و Scenario با fingerprint، فیلتر، numerator/denominator، کنترل‌ها، فرض‌ها، محدودیت Reversed/Paid و Session نمونه masked تولید شد.
+- Fixture مستقل Phase 3، zero denominator، Reversed، Retry deduplication، Amount-once و reference کامل M275 را پوشش می‌دهد.
+- Shared files، UI، Route، Context و Formula Registry در Branch Member B تغییر نکردند.
 
 ## Risks and Mitigations
 
