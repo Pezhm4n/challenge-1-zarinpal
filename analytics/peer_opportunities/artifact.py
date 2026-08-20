@@ -224,14 +224,14 @@ def build_artifact(
         ),
         "titleFa": "جایگاه نرخ پرداخت موفق میان هم‌صنفان",
         "findingFa": (
-            f"نرخ پرداخت موفق در صدک {peer_verification['percentile']:.1f} میان "
-            f"{peer_verification['peerCount']} کسب‌وکار مشابه قرار دارد."
+            "نرخ پرداخت موفق شما در مقایسه با کسب‌وکارهای مشابه قابل بهبود است؛ "
+            "جزئیات مقایسه را پایین‌تر ببینید."
         ),
         "actionFa": "هم‌زمان نرخ موفقیت، حجم و متوسط مبلغ را ببینید؛ رتبه حجم به‌تنهایی کافی نیست.",
         "impact": _metric_value(
             peer_verification["percentile"],
             "percent",
-            "صدک نرخ موفقیت",
+            "درصد کسب‌وکارهای مشابه با عملکرد پایین‌تر",
             "benchmark",
             1,
         ) if peer_verification["sufficient"] else None,
@@ -304,7 +304,7 @@ def build_artifact(
             "id": peer_evidence_id,
             "formulaId": "peer.robust_percentile.v1",
             "titleFa": "جایگاه در گروه هم‌صنف",
-            "explanationFa": "صدک با درنظرگرفتن رتبه‌های مساوی و میانه با مقاومت در برابر مقدارهای بسیار دور از معمول محاسبه شده است.",
+            "explanationFa": "درصد مقایسه‌ای با درنظرگرفتن رتبه‌های مساوی و میانه با مقاومت در برابر مقدارهای بسیار دور از معمول محاسبه شده است.",
             "grain": "peer-group",
             "filters": [
                 {"field": "category_id", "operator": "=", "value": current.category_id},
@@ -314,7 +314,7 @@ def build_artifact(
             "result": _metric_value(
                 peer_verification["percentile"],
                 "percent",
-                "صدک نرخ موفقیت",
+                "درصد کسب‌وکارهای مشابه با عملکرد پایین‌تر",
                 "benchmark",
                 1,
             ),

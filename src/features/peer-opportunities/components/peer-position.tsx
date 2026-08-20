@@ -12,22 +12,26 @@ const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 1,
 });
 
-function formatValue(value: number, unit: "percent" | "rial") {
-  return unit === "percent"
-    ? `${numberFormatter.format(value)}٪`
-    : `${numberFormatter.format(value)} ریال`;
-}
-
-function formatPercentile(value: number) {
-  return `${numberFormatter.format(value)}٪`;
-}
-
 function MetricValue({ value, unit }: { value: number; unit: "percent" | "rial" }) {
   return (
-    <bdi dir="ltr" className="tabular-nums">
-      {formatValue(value, unit)}
-    </bdi>
+    <span dir="ltr" className="inline-flex items-baseline gap-0.5 tabular-nums">
+      {unit === "percent" ? (
+        <>
+          <bdi>{numberFormatter.format(value)}</bdi>
+          <span>٪</span>
+        </>
+      ) : (
+        <>
+          <span>ریال</span>
+          <bdi>{numberFormatter.format(value)}</bdi>
+        </>
+      )}
+    </span>
   );
+}
+
+function PercentageValue({ value }: { value: number }) {
+  return <MetricValue value={value} unit="percent" />;
 }
 
 export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
@@ -39,7 +43,7 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
           جایگاه شما میان کسب‌وکارهای مشابه
         </h2>
         <p className="text-sm text-muted-foreground">
-          صدک را کنار میانهٔ هم‌صنفان ببینید تا نتیجه قابل تفسیر باشد.
+          ببینید عملکرد شما از چند درصدِ کسب‌وکارهای مشابه بالاتر است.
         </p>
       </header>
 
@@ -81,10 +85,10 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
               <div className="grid gap-3">
                 <div className="flex items-end justify-between gap-3">
                   <p className="grid gap-0.5">
-                    <span className="text-xs text-muted-foreground">جایگاه شما</span>
-                    <bdi dir="ltr" className="text-2xl font-semibold tabular-nums">
-                      صدک {formatPercentile(benchmark.percentile)}
-                    </bdi>
+                    <span className="text-xs text-muted-foreground">عملکرد شما بهتر از</span>
+                    <span className="text-2xl font-semibold">
+                      <PercentageValue value={benchmark.percentile} />
+                    </span>
                   </p>
                   <p className="text-xs text-muted-foreground">
                     <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(benchmark.peerCount)}</bdi>
@@ -92,7 +96,7 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
                   </p>
                 </div>
                 <div
-                  aria-label={`جایگاه ${label.title}: بهتر از ${formatPercentile(benchmark.percentile)} کسب‌وکارهای مشابه`}
+                  aria-label={`جایگاه ${label.title}: بهتر از ${numberFormatter.format(benchmark.percentile)} درصد کسب‌وکارهای مشابه`}
                   className="relative h-3 rounded-full bg-muted"
                   dir="ltr"
                   role="img"
@@ -127,7 +131,7 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
                   </div>
                 </dl>
                 <p className="text-xs text-muted-foreground">
-                  بهتر از <bdi dir="ltr" className="tabular-nums">{formatPercentile(benchmark.percentile)}</bdi>
+                  بهتر از <PercentageValue value={benchmark.percentile} />
                   {" "}کسب‌وکار مشابه هستید.
                 </p>
               </div>

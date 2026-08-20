@@ -17,13 +17,40 @@ const rialFormatter = new Intl.NumberFormat("fa-IR", {
 });
 
 function formatDriverValue(item: DecompositionItem, value: number) {
-  if (item.driver === "conversion") {
-    return `${numberFormatter.format(value)}٪`;
-  }
-  if (item.driver === "ticket") {
-    return `${rialFormatter.format(value)} ریال`;
-  }
-  return `${rialFormatter.format(value)} پرداخت`;
+  return item.driver === "conversion"
+    ? numberFormatter.format(value)
+    : rialFormatter.format(value);
+}
+
+function DriverUnit({ driver }: { driver: Driver }) {
+  return <span>{driver === "conversion" ? "٪" : driver === "ticket" ? "ریال" : "پرداخت"}</span>;
+}
+
+function DriverValue({ item, value }: { item: DecompositionItem; value: number }) {
+  return (
+    <span dir="ltr" className="inline-flex items-baseline gap-0.5 tabular-nums">
+      <DriverUnit driver={item.driver} />
+      <bdi>{formatDriverValue(item, value)}</bdi>
+    </span>
+  );
+}
+
+function PercentValue({ value }: { value: number }) {
+  return (
+    <span dir="ltr" className="inline-flex items-baseline gap-0.5 tabular-nums">
+      <bdi>{numberFormatter.format(Math.abs(value))}</bdi>
+      <span>٪</span>
+    </span>
+  );
+}
+
+function RialValue({ value }: { value: number }) {
+  return (
+    <span dir="ltr" className="inline-flex items-baseline gap-0.5 tabular-nums">
+      <span>ریال</span>
+      <bdi>{rialFormatter.format(Math.abs(value))}</bdi>
+    </span>
+  );
 }
 
 function ChangeSummary({ value }: { value: number | null }) {
@@ -36,11 +63,9 @@ function ChangeSummary({ value }: { value: number | null }) {
   }
 
   return (
-    <span className="inline-flex items-center gap-1">
-      <span>{value > 0 ? "رشد" : "افت"}</span>
-      <bdi dir="ltr" className="tabular-nums">
-        {numberFormatter.format(Math.abs(value))}٪
-      </bdi>
+      <span className="inline-flex items-center gap-1">
+        <span>{value > 0 ? "رشد" : "افت"}</span>
+      <PercentValue value={value} />
     </span>
   );
 }
@@ -53,9 +78,7 @@ function ImpactSummary({ value }: { value: number }) {
   return (
     <span className="inline-flex flex-wrap items-baseline gap-x-1">
       <span>{value > 0 ? "افزایش فروش:" : "کاهش فروش:"}</span>
-      <bdi dir="ltr" className="tabular-nums">
-        {rialFormatter.format(Math.abs(value))} ریال
-      </bdi>
+      <RialValue value={value} />
     </span>
   );
 }
@@ -108,8 +131,8 @@ export function GrowthDecomposition({
                 <div className="grid gap-1">
                   <h3 className="font-medium">{driverLabels[item.driver]}</h3>
                   <p className="text-xs text-muted-foreground">
-                    از <bdi dir="ltr" className="tabular-nums">{formatDriverValue(item, item.previous)}</bdi>
-                    {" "}به <bdi dir="ltr" className="tabular-nums">{formatDriverValue(item, item.current)}</bdi>
+                    از <DriverValue item={item} value={item.previous} />
+                    {" "}به <DriverValue item={item} value={item.current} />
                   </p>
                 </div>
                 <span

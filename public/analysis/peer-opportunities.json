@@ -7,7 +7,7 @@
     "sessionCount": 1464
   },
   "feature": "peer-opportunities",
-  "generatedAt": "2026-08-20T04:28:52.036559+00:00",
+  "generatedAt": "2026-08-20T05:06:25.159423+00:00",
   "merchants": {
     "M275": {
       "decomposition": [
@@ -145,7 +145,7 @@
             }
           ],
           "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
-          "explanationFa": "صدک با درنظرگرفتن رتبه‌های مساوی و میانه با مقاومت در برابر مقدارهای بسیار دور از معمول محاسبه شده است.",
+          "explanationFa": "درصد مقایسه‌ای با درنظرگرفتن رتبه‌های مساوی و میانه با مقاومت در برابر مقدارهای بسیار دور از معمول محاسبه شده است.",
           "filters": [
             {
               "field": "category_id",
@@ -172,7 +172,7 @@
           "result": {
             "displayPrecision": 1,
             "kind": "benchmark",
-            "labelFa": "صدک نرخ موفقیت",
+            "labelFa": "درصد کسب‌وکارهای مشابه با عملکرد پایین‌تر",
             "unit": "percent",
             "value": 33.3
           },
@@ -333,12 +333,12 @@
           "destination": "/opportunities",
           "evidenceId": "peer-benchmark-m275",
           "feature": "peers",
-          "findingFa": "نرخ پرداخت موفق در صدک 33.3 میان 12 کسب‌وکار مشابه قرار دارد.",
+          "findingFa": "نرخ پرداخت موفق شما در مقایسه با کسب‌وکارهای مشابه قابل بهبود است؛ جزئیات مقایسه را پایین‌تر ببینید.",
           "id": "peer-position-m275",
           "impact": {
             "displayPrecision": 1,
             "kind": "benchmark",
-            "labelFa": "صدک نرخ موفقیت",
+            "labelFa": "درصد کسب‌وکارهای مشابه با عملکرد پایین‌تر",
             "unit": "percent",
             "value": 33.3
           },

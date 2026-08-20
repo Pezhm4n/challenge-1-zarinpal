@@ -16,17 +16,24 @@ const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 1,
 });
 
+function PercentageValue({ value }: { value: number }) {
+  return (
+    <span dir="ltr" className="inline-flex items-baseline gap-0.5 tabular-nums">
+      <bdi>{numberFormatter.format(Math.abs(value))}</bdi>
+      <span>٪</span>
+    </span>
+  );
+}
+
 function LiftSummary({ value }: { value: number }) {
   if (value === 0) {
     return <span>هم‌سطح نرخ مبنا</span>;
   }
 
   return (
-    <span className="inline-flex flex-wrap items-center gap-x-1">
-      <span>{value > 0 ? "بالاتر از نرخ مبنا" : "پایین‌تر از نرخ مبنا"}</span>
-      <bdi dir="ltr" className="tabular-nums">
-        {numberFormatter.format(Math.abs(value))}٪
-      </bdi>
+    <span dir="ltr" className="inline-flex flex-wrap items-center gap-x-1">
+      <PercentageValue value={value} />
+      <span dir="rtl">{value > 0 ? "بالاتر از نرخ مبنا" : "پایین‌تر از نرخ مبنا"}</span>
     </span>
   );
 }
@@ -74,12 +81,13 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
                 </div>
                 <div className="grid gap-1">
                   <h3 className="font-medium">
-                    {weekdays[window.weekday] ?? `روز ${window.weekday}`}، ساعت {numberFormatter.format(window.hour)}
+                    {weekdays[window.weekday] ?? `روز ${window.weekday}`}، ساعت{" "}
+                    <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.hour)}</bdi>
                   </h3>
                   <p className="text-xs text-muted-foreground" dir="rtl">
                     تعداد پرداخت‌های یکتا: <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.sessions)}</bdi>
                     <span aria-hidden="true"> · </span>
-                    نرخ پرداخت موفق: <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.verifyPct)}٪</bdi>
+                    نرخ پرداخت موفق: <PercentageValue value={window.verifyPct} />
                   </p>
                 </div>
               </div>
