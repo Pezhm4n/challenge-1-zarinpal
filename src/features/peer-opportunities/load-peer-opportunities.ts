@@ -39,6 +39,18 @@ function isPeriod(value: unknown): value is { from: string; to: string } {
   );
 }
 
+function isIsoTimestamp(value: unknown): value is string {
+  return typeof value === "string" && Number.isFinite(Date.parse(value));
+}
+
+function isInternalDestination(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.startsWith("/") &&
+    !value.startsWith("//")
+  );
+}
+
 function isDecompositionItem(value: unknown): value is DecompositionItem {
   return (
     isRecord(value) &&
@@ -84,16 +96,19 @@ function isInsight(value: unknown): value is InsightSummary {
       String(value.feature),
     ) &&
     Number.isInteger(value.priority) &&
+    Number(value.priority) >= 1 &&
+    Number(value.priority) <= 5 &&
     ["opportunity", "warning", "stable", "insufficient-data"].includes(
       String(value.status),
     ) &&
     typeof value.titleFa === "string" &&
     typeof value.findingFa === "string" &&
     typeof value.actionFa === "string" &&
+    (value.impact === null || isMetricValue(value.impact)) &&
     ["high", "medium", "low"].includes(String(value.confidence)) &&
     typeof value.confidenceReasonFa === "string" &&
     typeof value.evidenceId === "string" &&
-    typeof value.destination === "string"
+    isInternalDestination(value.destination)
   );
 }
 
@@ -180,7 +195,7 @@ function isEvidenceSampleRow(value: unknown): boolean {
     isRecord(value) &&
     typeof value.sessionKey === "string" &&
     (value.trySeq === undefined || Number.isInteger(value.trySeq)) &&
-    typeof value.createdAt === "string" &&
+    isIsoTimestamp(value.createdAt) &&
     isFiniteNumber(value.amountRial) &&
     (value.sessionStatus === undefined || typeof value.sessionStatus === "string") &&
     (value.tryStatus === undefined || typeof value.tryStatus === "string") &&
@@ -195,6 +210,7 @@ function isEvidenceSampleRow(value: unknown): boolean {
 
 function hasCompleteEvidenceReferences(payload: PeerOpportunitiesPayload): boolean {
   const evidenceIds = new Set<string>();
+  const evidenceById = new Map<string, EvidenceRecord>();
   const evidenceScopes = new Set<string>();
 
   for (const record of payload.evidence) {
@@ -202,6 +218,7 @@ function hasCompleteEvidenceReferences(payload: PeerOpportunitiesPayload): boole
       return false;
     }
     evidenceIds.add(record.id);
+    evidenceById.set(record.id, record);
 
     const scope = record.filters.find(
       (filter) => filter.field === "evidence_scope",
@@ -221,7 +238,18 @@ function hasCompleteEvidenceReferences(payload: PeerOpportunitiesPayload): boole
   ];
 
   return (
-    payload.insights.every((insight) => evidenceIds.has(insight.evidenceId)) &&
+    payload.insights.every((insight) => {
+      const evidence = evidenceById.get(insight.evidenceId);
+      return (
+        evidence !== undefined &&
+        (insight.impact === null ||
+          (insight.impact.value === evidence.result.value &&
+            insight.impact.unit === evidence.result.unit &&
+            insight.impact.labelFa === evidence.result.labelFa &&
+            insight.impact.kind === evidence.result.kind &&
+            insight.impact.displayPrecision === evidence.result.displayPrecision))
+      );
+    }) &&
     requiredScopes.every((scope) => evidenceScopes.has(scope))
   );
 }
@@ -256,21 +284,30 @@ export function parsePeerOpportunitiesArtifact(
     !isRecord(value) ||
     value.schemaVersion !== "1.0" ||
     value.feature !== "peer-opportunities" ||
-    typeof value.generatedAt !== "string" ||
+    !isIsoTimestamp(value.generatedAt) ||
     !isRecord(value.dataset) ||
     typeof value.dataset.fingerprint !== "string" ||
     !Number.isInteger(value.dataset.rowCount) ||
     !Number.isInteger(value.dataset.sessionCount) ||
-    typeof value.dataset.minCreatedAt !== "string" ||
-    typeof value.dataset.maxCreatedAt !== "string" ||
+    Number(value.dataset.rowCount) < Number(value.dataset.sessionCount) ||
+    !isIsoTimestamp(value.dataset.minCreatedAt) ||
+    !isIsoTimestamp(value.dataset.maxCreatedAt) ||
     !isRecord(value.merchants)
   ) {
     return null;
   }
+  const datasetFingerprint = value.dataset.fingerprint;
   const merchantEntries = Object.entries(value.merchants);
   if (
     merchantEntries.length === 0 ||
-    merchantEntries.some(([, payload]) => !isPayload(payload))
+    merchantEntries.some(
+      ([merchantKey, payload]) =>
+        !isPayload(payload) ||
+        payload.selection.merchantKey !== merchantKey ||
+        payload.evidence.some(
+          (record) => record.datasetFingerprint !== datasetFingerprint,
+        ),
+    )
   ) {
     return null;
   }

@@ -3,7 +3,7 @@
     "fingerprint": "2e04a0606153487e900df111605bb8a02797c1a3b9fed2454b1e95f6d1bbe882",
     "maxCreatedAt": "2026-06-30T23:59:55",
     "minCreatedAt": "2026-01-01T00:00:08",
-    "rowCount": 2062839,
+    "rowCount": 2213289,
     "sessionCount": 2062839
   },
   "feature": "peer-opportunities",
@@ -14,9 +14,9 @@
         {
           "changePct": 16.5934,
           "contributionRial": 1887428470,
-          "current": 3183.0,
+          "current": 3183,
           "driver": "traffic",
-          "previous": 2730.0
+          "previous": 2730
         },
         {
           "changePct": -36.3673,
@@ -92,26 +92,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -180,7 +180,7 @@
           ],
           "numerator": {
             "labelFa": "امتیاز رتبه‌ای با احتساب نصف رتبه‌های مساوی",
-            "value": 4.0
+            "value": 4
           },
           "period": {
             "from": "2026-06-01",
@@ -196,26 +196,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -236,7 +236,7 @@
           "baseline": {
             "sampleSize": 2730,
             "type": "previous-period-traffic",
-            "value": 2730.0
+            "value": 2730
           },
           "comparisonPeriod": {
             "from": "2026-05-01",
@@ -257,7 +257,7 @@
           "datasetFingerprint": "2e04a0606153487e900df111605bb8a02797c1a3b9fed2454b1e95f6d1bbe882",
           "denominator": {
             "labelFa": "تعداد پرداخت یکتا دوره مقایسه",
-            "value": 2730.0
+            "value": 2730
           },
           "explanationFa": "مقدار تعداد پرداخت یکتا در دوره جاری با دوره مقایسه سنجیده شده و سهم آن از تغییر فروش موفق با روش شاپلی محاسبه شده است.",
           "filters": [
@@ -281,7 +281,7 @@
           ],
           "numerator": {
             "labelFa": "تعداد پرداخت یکتا دوره جاری",
-            "value": 3183.0
+            "value": 3183
           },
           "period": {
             "from": "2026-06-01",
@@ -297,26 +297,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -398,26 +398,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -499,26 +499,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -597,7 +597,7 @@
           ],
           "numerator": {
             "labelFa": "امتیاز رتبه‌ای با احتساب نصف مقادیر مساوی",
-            "value": 4.0
+            "value": 4
           },
           "period": {
             "from": "2026-06-01",
@@ -613,26 +613,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -653,7 +653,7 @@
           "baseline": {
             "sampleSize": 30,
             "type": "same-category-peer-median-verifiedVolumeRial",
-            "value": 4849560500.0
+            "value": 4849560500
           },
           "comparisonPeriod": {
             "from": "2026-05-01",
@@ -711,7 +711,7 @@
           ],
           "numerator": {
             "labelFa": "امتیاز رتبه‌ای با احتساب نصف مقادیر مساوی",
-            "value": 25.0
+            "value": 25
           },
           "period": {
             "from": "2026-06-01",
@@ -727,26 +727,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -825,7 +825,7 @@
           ],
           "numerator": {
             "labelFa": "امتیاز رتبه‌ای با احتساب نصف مقادیر مساوی",
-            "value": 2.0
+            "value": 2
           },
           "period": {
             "from": "2026-06-01",
@@ -841,26 +841,26 @@
           "sampleRows": [
             {
               "amountRial": 12770000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۰۵:۵۴",
-              "sessionKey": "۱۵۲۹۹۲",
+              "createdAt": "2026-06-01T00:05:54",
+              "sessionKey": "152992",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۱:۱۷",
-              "sessionKey": "۱۴۸۷۷۴۳",
+              "createdAt": "2026-06-01T00:21:17",
+              "sessionKey": "1487743",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 20240000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۲۶:۴۳",
-              "sessionKey": "۴۴۲۴۹۹",
+              "createdAt": "2026-06-01T00:26:43",
+              "sessionKey": "442499",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 5190000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۰۰:۳۱:۳۸",
-              "sessionKey": "۱۶۸۱۰۶",
+              "createdAt": "2026-06-01T00:31:38",
+              "sessionKey": "168106",
               "sessionStatus": "موفق"
             }
           ],
@@ -954,26 +954,26 @@
           "sampleRows": [
             {
               "amountRial": 11180000,
-              "createdAt": "۲۰۲۶/۰۶/۰۵، ۲۲:۰۵:۴۵",
-              "sessionKey": "۱۹۴۹۶۸۱",
+              "createdAt": "2026-06-05T22:05:45",
+              "sessionKey": "1949681",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 15580000,
-              "createdAt": "۲۰۲۶/۰۶/۰۵، ۲۲:۲۶:۰۳",
-              "sessionKey": "۱۱۹۸۲۵۷",
+              "createdAt": "2026-06-05T22:26:03",
+              "sessionKey": "1198257",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 4090000,
-              "createdAt": "۲۰۲۶/۰۶/۰۵، ۲۲:۳۴:۵۴",
-              "sessionKey": "۵۶۹۴۴۰",
+              "createdAt": "2026-06-05T22:34:54",
+              "sessionKey": "569440",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 9790000,
-              "createdAt": "۲۰۲۶/۰۶/۰۵، ۲۲:۳۵:۴۹",
-              "sessionKey": "۶۸۶۷۳",
+              "createdAt": "2026-06-05T22:35:49",
+              "sessionKey": "68673",
               "sessionStatus": "موفق"
             }
           ],
@@ -1067,26 +1067,26 @@
           "sampleRows": [
             {
               "amountRial": 19830000,
-              "createdAt": "۲۰۲۶/۰۶/۰۴، ۱۴:۰۲:۴۴",
-              "sessionKey": "۱۵۸۰۳۰۸",
+              "createdAt": "2026-06-04T14:02:44",
+              "sessionKey": "1580308",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 4880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۴، ۱۴:۰۴:۴۴",
-              "sessionKey": "۱۵۸۸۳۵۵",
+              "createdAt": "2026-06-04T14:04:44",
+              "sessionKey": "1588355",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 12960000,
-              "createdAt": "۲۰۲۶/۰۶/۰۴، ۱۴:۰۶:۳۷",
-              "sessionKey": "۷۲۳۷۳۹",
+              "createdAt": "2026-06-04T14:06:37",
+              "sessionKey": "723739",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 19570000,
-              "createdAt": "۲۰۲۶/۰۶/۰۴، ۱۴:۱۵:۲۵",
-              "sessionKey": "۱۸۱۳۲۱۱",
+              "createdAt": "2026-06-04T14:15:25",
+              "sessionKey": "1813211",
               "sessionStatus": "ناموفق"
             }
           ],
@@ -1180,26 +1180,26 @@
           "sampleRows": [
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۲۲:۰۴:۲۳",
-              "sessionKey": "۱۷۳۶۹۳۶",
+              "createdAt": "2026-06-01T22:04:23",
+              "sessionKey": "1736936",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 7570000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۲۲:۰۶:۳۵",
-              "sessionKey": "۱۸۲۲۴۶",
+              "createdAt": "2026-06-01T22:06:35",
+              "sessionKey": "182246",
               "sessionStatus": "موفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۲۲:۰۷:۵۹",
-              "sessionKey": "۱۱۰۹۳۹۰",
+              "createdAt": "2026-06-01T22:07:59",
+              "sessionKey": "1109390",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 21640000,
-              "createdAt": "۲۰۲۶/۰۶/۰۱، ۲۲:۱۵:۰۷",
-              "sessionKey": "۵۵۳۴۱۸",
+              "createdAt": "2026-06-01T22:15:07",
+              "sessionKey": "553418",
               "sessionStatus": "موفق"
             }
           ],
@@ -1293,26 +1293,26 @@
           "sampleRows": [
             {
               "amountRial": 14970000,
-              "createdAt": "۲۰۲۶/۰۶/۰۷، ۲۲:۰۰:۴۵",
-              "sessionKey": "۱۴۵۴۱۴۷",
+              "createdAt": "2026-06-07T22:00:45",
+              "sessionKey": "1454147",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 14970000,
-              "createdAt": "۲۰۲۶/۰۶/۰۷، ۲۲:۰۳:۴۱",
-              "sessionKey": "۶۵۳۷۵۹",
+              "createdAt": "2026-06-07T22:03:41",
+              "sessionKey": "653759",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 13370000,
-              "createdAt": "۲۰۲۶/۰۶/۰۷، ۲۲:۰۹:۵۱",
-              "sessionKey": "۱۰۴۸۲۳۰",
+              "createdAt": "2026-06-07T22:09:51",
+              "sessionKey": "1048230",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 13580000,
-              "createdAt": "۲۰۲۶/۰۶/۰۷، ۲۲:۱۶:۴۷",
-              "sessionKey": "۱۳۸۹۲۷۳",
+              "createdAt": "2026-06-07T22:16:47",
+              "sessionKey": "1389273",
               "sessionStatus": "ناموفق"
             }
           ],
@@ -1406,26 +1406,26 @@
           "sampleRows": [
             {
               "amountRial": 27250000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۲:۰۱:۵۷",
-              "sessionKey": "۶۴۹۸۴۵",
+              "createdAt": "2026-06-03T12:01:57",
+              "sessionKey": "649845",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 3580000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۲:۰۴:۱۷",
-              "sessionKey": "۹۶۱۸۵",
+              "createdAt": "2026-06-03T12:04:17",
+              "sessionKey": "96185",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 3580000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۲:۰۴:۲۱",
-              "sessionKey": "۷۳۵۳۹۷",
+              "createdAt": "2026-06-03T12:04:21",
+              "sessionKey": "735397",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 3580000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۲:۰۴:۲۵",
-              "sessionKey": "۱۸۴۱۳۶۶",
+              "createdAt": "2026-06-03T12:04:25",
+              "sessionKey": "1841366",
               "sessionStatus": "ناموفق"
             }
           ],
@@ -1519,26 +1519,26 @@
           "sampleRows": [
             {
               "amountRial": 11870000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۷:۰۳:۰۷",
-              "sessionKey": "۲۷۲۳۱۶",
+              "createdAt": "2026-06-03T17:03:07",
+              "sessionKey": "272316",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 6880000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۷:۰۹:۰۷",
-              "sessionKey": "۸۵۶۸۱۷",
+              "createdAt": "2026-06-03T17:09:07",
+              "sessionKey": "856817",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 7980000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۷:۲۰:۵۸",
-              "sessionKey": "۱۵۱۱۴۱۰",
+              "createdAt": "2026-06-03T17:20:58",
+              "sessionKey": "1511410",
               "sessionStatus": "ناموفق"
             },
             {
               "amountRial": 6500000,
-              "createdAt": "۲۰۲۶/۰۶/۰۳، ۱۷:۲۶:۲۹",
-              "sessionKey": "۱۶۲۹۳۷۶",
+              "createdAt": "2026-06-03T17:26:29",
+              "sessionKey": "1629376",
               "sessionStatus": "ناموفق"
             }
           ],
@@ -1566,9 +1566,9 @@
           "impact": {
             "displayPrecision": 0,
             "kind": "actual",
-            "labelFa": "سهم عامل از تغییر فروش موفق",
+            "labelFa": "تغییر حجم موفق",
             "unit": "rial",
-            "value": -5480727254
+            "value": -3357260000
           },
           "priority": 1,
           "status": "warning",
@@ -1606,7 +1606,7 @@
           "impact": {
             "displayPrecision": 1,
             "kind": "benchmark",
-            "labelFa": "تغییر نسبت به نرخ مبنا",
+            "labelFa": "تغییر نرخ این بازه نسبت به نرخ مبنا",
             "unit": "percent",
             "value": 59.25
           },
@@ -1639,10 +1639,10 @@
             "حذف پذیرندهٔ مورد بررسی از گروه هم‌صنفان",
             "نمایش جداگانهٔ مبلغ کل و میانگین مبلغ برای تفسیر منصفانه"
           ],
-          "merchantValue": 10421270000.0,
+          "merchantValue": 10421270000,
           "metric": "verifiedVolumeRial",
           "peerCount": 30,
-          "peerMedian": 4849560500.0,
+          "peerMedian": 4849560500,
           "percentile": 83.3,
           "sufficient": true
         },

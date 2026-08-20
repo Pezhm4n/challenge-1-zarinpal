@@ -32,19 +32,7 @@ export type EvidenceReference = {
   baseline?: number;
 };
 
-export type InsightSummary = {
-  id: string;
-  feature: "recovery" | "customers" | "peers" | "timing" | "growth";
-  priority: 1 | 2 | 3 | 4 | 5;
-  status: "opportunity" | "warning" | "stable" | "insufficient-data";
-  titleFa: string;
-  findingFa: string;
-  actionFa: string;
-  confidence: "high" | "medium" | "low";
-  confidenceReasonFa: string;
-  evidenceId: string;
-  destination: string;
-};
+export type InsightSummary = SharedInsightSummary;
 
 export type EvidenceRecord = SharedEvidenceRecord;
 
@@ -94,4 +82,7 @@ export type LoadPeerOpportunitiesResult =
       payload: PeerOpportunitiesPayload;
     }
   | { status: "error"; error: ArtifactError };
-import type { EvidenceRecord as SharedEvidenceRecord } from "@/contracts";
+import type {
+  EvidenceRecord as SharedEvidenceRecord,
+  InsightSummary as SharedInsightSummary,
+} from "@/contracts";

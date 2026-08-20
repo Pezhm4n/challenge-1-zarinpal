@@ -9,16 +9,8 @@ import duckdb
 from analytics.common.loader import CsvDatasetLoader
 from analytics.common.sessions import normalize_attempts_to_sessions
 
-_PERSIAN_DIGITS = str.maketrans("0123456789", "۰۱۲۳۴۵۶۷۸۹")
-
-
-def _to_persian_digits(value: str) -> str:
-    return value.translate(_PERSIAN_DIGITS)
-
-
 def _format_evidence_datetime(value: Any) -> str:
-    ascii_value = value.strftime("%Y/%m/%d, %H:%M:%S")
-    return _to_persian_digits(ascii_value).replace(",", "،")
+    return value.isoformat()
 
 
 @dataclass(frozen=True, slots=True)
@@ -75,6 +67,13 @@ def load_normalized_sessions(connection: duckdb.DuckDBPyConnection, source: Path
 
     if not normalized_columns.issubset(source_columns):
         loader.register_attempts("peer_raw_attempts")
+        connection.execute(
+            """
+            CREATE OR REPLACE TEMP TABLE peer_source_metadata AS
+            SELECT count(*)::BIGINT AS row_count
+            FROM peer_raw_attempts
+            """
+        )
         normalize_attempts_to_sessions(
             connection,
             attempt_view="peer_raw_attempts",
@@ -110,6 +109,13 @@ def load_normalized_sessions(connection: duckdb.DuckDBPyConnection, source: Path
         FROM read_csv_auto(?, header = true)
         """,
         [str(source.resolve())],
+    )
+    connection.execute(
+        """
+        CREATE OR REPLACE TEMP TABLE peer_source_metadata AS
+        SELECT count(*)::BIGINT AS row_count
+        FROM normalized_sessions
+        """
     )
     row_count, distinct_sessions, invalid_rows = connection.execute(
         """
@@ -215,15 +221,19 @@ def fetch_time_windows(
 def fetch_dataset_metadata(connection: duckdb.DuckDBPyConnection) -> dict[str, Any]:
     row = connection.execute(
         """
-        SELECT count(*), min(created_at), max(created_at)
+        SELECT
+            (SELECT row_count FROM peer_source_metadata),
+            count(*),
+            min(created_at),
+            max(created_at)
         FROM normalized_sessions
         """
     ).fetchone()
     return {
         "rowCount": int(row[0]),
-        "sessionCount": int(row[0]),
-        "minCreatedAt": row[1].isoformat(),
-        "maxCreatedAt": row[2].isoformat(),
+        "sessionCount": int(row[1]),
+        "minCreatedAt": row[2].isoformat(),
+        "maxCreatedAt": row[3].isoformat(),
     }
 
 
@@ -248,7 +258,7 @@ def fetch_sample_rows(
     ).fetchall()
     return [
         {
-            "sessionKey": _to_persian_digits(str(row[0])),
+            "sessionKey": str(row[0]),
             "createdAt": _format_evidence_datetime(row[1]),
             "amountRial": int(row[2]),
             "sessionStatus": "موفق" if row[3] else "ناموفق",
@@ -289,7 +299,7 @@ def fetch_time_window_sample_rows(
     ).fetchall()
     return [
         {
-            "sessionKey": _to_persian_digits(str(row[0])),
+            "sessionKey": str(row[0]),
             "createdAt": _format_evidence_datetime(row[1]),
             "amountRial": int(row[2]),
             "sessionStatus": "موفق" if row[3] else "ناموفق",

@@ -27,6 +27,27 @@ function formatDate(value: string) {
   return dateFormatter.format(new Date(`${value}T00:00:00Z`));
 }
 
+const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+
+function localizeDigits(value: string) {
+  return value.replace(/\d/g, (digit) => persianDigits[Number(digit)]);
+}
+
+function localizeEvidence(evidence: EvidenceRecord | null): EvidenceRecord | null {
+  if (!evidence) {
+    return null;
+  }
+
+  return {
+    ...evidence,
+    sampleRows: evidence.sampleRows.map((row) => ({
+      ...row,
+      sessionKey: localizeDigits(row.sessionKey),
+      createdAt: localizeDigits(row.createdAt.replace("T", "، ")),
+    })),
+  };
+}
+
 const confidenceLabels = {
   high: "اطمینان بالا",
   medium: "اطمینان متوسط",
@@ -92,8 +113,9 @@ export function PeerOpportunitiesPage({
     window.requestAnimationFrame(() => evidenceTriggerRef.current?.focus());
   }
 
-  const selectedEvidence: EvidenceRecord | null =
-    evidenceResolution?.success === true ? evidenceResolution.data : null;
+  const selectedEvidence: EvidenceRecord | null = localizeEvidence(
+    evidenceResolution?.success === true ? evidenceResolution.data : null,
+  );
   const selectedEvidenceError: ArtifactError | null =
     evidenceResolution?.success === false ? evidenceResolution.error : null;
 

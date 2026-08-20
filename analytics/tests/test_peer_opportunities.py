@@ -28,6 +28,7 @@ from analytics.peer_opportunities.pipeline import PeriodWindow, run_pipeline
 from analytics.peer_opportunities.queries import (
     PeriodMetrics,
     TimeWindowAggregate,
+    fetch_dataset_metadata,
     load_normalized_sessions,
 )
 
@@ -207,11 +208,14 @@ def test_member_d_loader_uses_common_retry_normalization() -> None:
             WHERE session_key = 'S2'
             """
         ).fetchone()
+        dataset_metadata = fetch_dataset_metadata(connection)
     finally:
         connection.close()
 
     assert row_count == distinct_sessions == 4
     assert recovered == (True,)
+    assert dataset_metadata["rowCount"] == 5
+    assert dataset_metadata["sessionCount"] == 4
 
 
 def test_period_window_is_parameterized_and_uses_inclusive_contract_end() -> None:
@@ -259,6 +263,11 @@ def test_fixture_pipeline_builds_contract_safe_artifact(tmp_path: Path) -> None:
     with pytest.raises(ValueError, match="existing evidence"):
         validate_artifact(dangling_evidence)
 
+    mismatched_impact = deepcopy(persisted)
+    mismatched_impact["merchants"]["M275"]["insights"][0]["impact"]["value"] += 1
+    with pytest.raises(ValueError, match="impact must match"):
+        validate_artifact(mismatched_impact)
+
 
 def test_deployable_artifact_uses_full_june_data() -> None:
     artifact = json.loads(
@@ -274,6 +283,7 @@ def test_deployable_artifact_uses_full_june_data() -> None:
     }
 
     assert artifact["dataset"]["sessionCount"] == 2_062_839
+    assert artifact["dataset"]["rowCount"] == 2_213_289
     assert payload["selection"]["period"] == {
         "from": "2026-06-01",
         "to": "2026-06-30",
@@ -311,7 +321,6 @@ def test_deployable_artifact_uses_full_june_data() -> None:
         ),
     }
     assert evidence_scopes == expected_scopes
-    latin_digits = str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")
     for record in payload["evidence"]:
         timing_scope = next(
             (
@@ -326,16 +335,14 @@ def test_deployable_artifact_uses_full_june_data() -> None:
             continue
         _, weekday, hour = str(timing_scope).split(":")
         for row in record["sampleRows"]:
-            date_text, time_text = row["createdAt"].translate(latin_digits).split("، ")
-            created_at = datetime.fromisoformat(
-                f"{date_text.replace('/', '-')}T{time_text}"
-            )
+            created_at = datetime.fromisoformat(row["createdAt"])
             assert created_at.isoweekday() == int(weekday)
             assert created_at.hour == int(hour)
     assert all(
-        row["createdAt"].startswith("۲۰۲۶/۰۶/")
-        and "T" not in row["createdAt"]
-        and row["sessionKey"].translate(str.maketrans("۰۱۲۳۴۵۶۷۸۹", "0123456789")).isdigit()
+        row["createdAt"].startswith("2026-06-")
+        and "T" in row["createdAt"]
+        and row["sessionKey"].isascii()
+        and row["sessionKey"].isdigit()
         for record in payload["evidence"]
         for row in record["sampleRows"]
     )

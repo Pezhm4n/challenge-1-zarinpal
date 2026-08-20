@@ -242,6 +242,24 @@ def build_artifact(
         if strongest_window
         else timing_summary_evidence_id
     )
+    growth_evidence_result = _metric_value(
+        current.verified_volume_rial - previous.verified_volume_rial,
+        "rial",
+        "تغییر حجم موفق",
+        "actual",
+        0,
+    )
+    timing_insight_impact = (
+        _metric_value(
+            strongest_window["liftVsBaselinePct"],
+            "percent",
+            "تغییر نرخ این بازه نسبت به نرخ مبنا",
+            "benchmark",
+            1,
+        )
+        if strongest_window
+        else None
+    )
     growth_insight = {
         "id": "growth-driver-m275",
         "feature": "growth",
@@ -266,17 +284,7 @@ def build_artifact(
             if negative_driver
             else "ابتدا نبود پرداخت موفق یا پوشش دادهٔ دوره را بررسی کنید."
         ),
-        "impact": (
-            _metric_value(
-                negative_driver.contribution_rial,
-                "rial",
-                "سهم عامل از تغییر فروش موفق",
-                "actual",
-                0,
-            )
-            if negative_driver
-            else None
-        ),
+        "impact": growth_evidence_result if negative_driver else None,
         "confidence": "high" if negative_driver else "low",
         "confidenceReasonFa": (
             "هر پرداخت یکتا یک‌بار شمرده شده و سهم عوامل بدون هم‌پوشانی محاسبه شده است."
@@ -339,13 +347,7 @@ def build_artifact(
             )
         ),
         "actionFa": "مسیر پرداخت و فعالیت‌های بازاریابی این زمان را بررسی کنید؛ این الگو علت قطعی را نشان نمی‌دهد.",
-        "impact": _metric_value(
-            strongest_window["liftVsBaselinePct"],
-            "percent",
-            "تغییر نسبت به نرخ مبنا",
-            "benchmark",
-            1,
-        ) if strongest_window else None,
+        "impact": timing_insight_impact,
         "confidence": "medium" if strongest_window else "low",
         "confidenceReasonFa": (
             "فقط زمان‌هایی با حداقل ۲۵ پرداخت یکتا وارد مقایسه شده‌اند."
@@ -543,13 +545,7 @@ def build_artifact(
             "grain": "merchant-period",
             "filters": [{"field": "merchant_key", "operator": "=", "value": target_key}],
             "formulaFa": "فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
-            "result": _metric_value(
-                current.verified_volume_rial - previous.verified_volume_rial,
-                "rial",
-                "تغییر حجم موفق",
-                "actual",
-                0,
-            ),
+            "result": growth_evidence_result,
             **growth_operands,
             "controls": ["دوره‌های هم‌اندازه", "هر پرداخت یکتا فقط یک‌بار شمرده شده است", "تفکیک سهم عوامل بدون دوباره‌شماری"],
             "assumptions": ["eventual_verified از Loader مشترک معتبر دریافت می‌شود"],
@@ -854,7 +850,8 @@ def validate_artifact(artifact: dict[str, Any]) -> None:
 
     assert_finite(artifact, "artifact")
     for payload in artifact["merchants"].values():
-        evidence_ids = {record["id"] for record in payload["evidence"]}
+        evidence_by_id = {record["id"]: record for record in payload["evidence"]}
+        evidence_ids = set(evidence_by_id)
         if len(evidence_ids) != len(payload["evidence"]):
             raise ValueError("evidence record ids must be unique")
         evidence_scopes = [
@@ -868,6 +865,11 @@ def validate_artifact(artifact: dict[str, Any]) -> None:
         for insight in payload["insights"]:
             if insight["evidenceId"] not in evidence_ids:
                 raise ValueError("every insight must reference an existing evidence record")
+            if (
+                insight["impact"] is not None
+                and insight["impact"] != evidence_by_id[insight["evidenceId"]]["result"]
+            ):
+                raise ValueError("insight impact must match its evidence result")
         timing_insight = next(
             insight
             for insight in payload["insights"]
