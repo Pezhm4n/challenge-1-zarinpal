@@ -1,4 +1,5 @@
 import assert from "node:assert/strict"
+import { readFile } from "node:fs/promises"
 import test from "node:test"
 
 import {
@@ -13,6 +14,47 @@ import {
 function cloneFixture() {
   return structuredClone(m275ActionCenterArtifact)
 }
+
+test("Artifact نهایی Action Center بدون Fixture معتبر است", async () => {
+  const artifact = JSON.parse(
+    await readFile("public/analysis/action-center.json", "utf8"),
+  )
+  const result = parseActionCenterArtifact(artifact)
+
+  assert.equal(result.success, true)
+  if (!result.success) return
+  assert.equal(result.data.dataset.rowCount, 2_213_289)
+  assert.equal(result.data.dataset.sessionCount, 2_062_839)
+  assert.deepEqual(
+    result.data.merchants.M275.prioritizedInsights.map((insight) => insight.id),
+    [
+      "recovery-no-attempt-M275",
+      "growth-driver-m275",
+      "customers-returning-change-M275",
+    ],
+  )
+})
+
+test("نتیجه null فقط همراه هشدار کیفیت پذیرفته می‌شود", () => {
+  const artifact = cloneFixture()
+  const source = artifact.merchants.M275.evidenceIndex["evidence-m275-conversion"]
+  artifact.merchants.M275.evidenceIndex["evidence-null-sample"] = {
+    ...structuredClone(source),
+    id: "evidence-null-sample",
+    result: null,
+    dataQuality: [
+      {
+        severity: "warning",
+        code: "INSUFFICIENT_SAMPLE",
+        messageFa: "نمونه برای محاسبه کافی نیست.",
+      },
+    ],
+  }
+
+  assert.equal(parseActionCenterArtifact(artifact).success, true)
+  artifact.merchants.M275.evidenceIndex["evidence-null-sample"].dataQuality = []
+  assert.equal(parseActionCenterArtifact(artifact).success, false)
+})
 
 test("fixture M275 قرارداد Action Center را کامل رعایت می‌کند", () => {
   const result = parseActionCenterArtifact(m275ActionCenterArtifact)
@@ -182,6 +224,19 @@ test("شناسه کارت Mask‌نشده در Sample Row رد می‌شود", (
     "evidence-m275-conversion"
   ].sampleRows[0].payerCardMasked = "6037991234567890"
 
+  assert.equal(parseActionCenterArtifact(artifact).success, false)
+})
+
+test("توکن کارت ناشناس هش‌شده پذیرفته و شماره خام رد می‌شود", () => {
+  const artifact = cloneFixture()
+  artifact.merchants.M275.evidenceIndex[
+    "evidence-m275-conversion"
+  ].sampleRows[0].payerCardMasked = "کارت-ناشناس-6a353901"
+  assert.equal(parseActionCenterArtifact(artifact).success, true)
+
+  artifact.merchants.M275.evidenceIndex[
+    "evidence-m275-conversion"
+  ].sampleRows[0].payerCardMasked = "6037991234567890"
   assert.equal(parseActionCenterArtifact(artifact).success, false)
 })
 

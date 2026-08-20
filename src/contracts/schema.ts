@@ -112,13 +112,27 @@ function isMetricValue(value: unknown): value is MetricValue {
   return value.unit !== "rial" || Number.isInteger(value.value)
 }
 
-function metricValuesMatch(left: MetricValue, right: MetricValue): boolean {
+function metricValuesMatch(left: MetricValue, right: MetricValue | null): boolean {
   return (
+    right !== null &&
     left.value === right.value &&
     left.unit === right.unit &&
     left.labelFa === right.labelFa &&
     left.kind === right.kind &&
     left.displayPrecision === right.displayPrecision
+  )
+}
+
+function hasExplicitNullResultWarning(value: UnknownRecord): boolean {
+  return (
+    Array.isArray(value.dataQuality) &&
+    value.dataQuality.some(
+      (note) =>
+        isRecord(note) &&
+        note.severity === "warning" &&
+        isNonEmptyString(note.code) &&
+        isNonEmptyString(note.messageFa),
+    )
   )
 }
 
@@ -205,7 +219,9 @@ function isEvidenceSampleRow(value: unknown): value is EvidenceSampleRow {
 
   return (
     typeof value.payerCardMasked !== "string" ||
-    (value.payerCardMasked.includes("*") && !/^\d{12,19}$/.test(value.payerCardMasked))
+    ((value.payerCardMasked.includes("*") ||
+      /^کارت-ناشناس-[a-f0-9]{8}$/.test(value.payerCardMasked)) &&
+      !/^\d{12,19}$/.test(value.payerCardMasked))
   )
 }
 
@@ -287,7 +303,8 @@ function isEvidenceRecord(value: unknown): value is EvidenceRecord {
     (value.numerator === undefined || isLabeledNumber(value.numerator)) &&
     (value.denominator === undefined || isLabeledNumber(value.denominator)) &&
     isNonEmptyString(value.formulaFa) &&
-    isMetricValue(value.result) &&
+    (isMetricValue(value.result) ||
+      (value.result === null && hasExplicitNullResultWarning(value))) &&
     (value.baseline === undefined || isBaseline(value.baseline)) &&
     isStringArray(value.controls) &&
     isStringArray(value.assumptions) &&

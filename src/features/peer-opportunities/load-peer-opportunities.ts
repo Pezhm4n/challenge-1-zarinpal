@@ -242,6 +242,7 @@ function hasCompleteEvidenceReferences(payload: PeerOpportunitiesPayload): boole
       const evidence = evidenceById.get(insight.evidenceId);
       return (
         evidence !== undefined &&
+        evidence.result !== null &&
         (insight.impact === null ||
           (insight.impact.value === evidence.result.value &&
             insight.impact.unit === evidence.result.unit &&
