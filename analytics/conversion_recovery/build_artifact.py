@@ -995,7 +995,7 @@ def _merchant_payload(
                     result=_metric(
                         scenario_result.estimated_volume_rial,
                         "rial",
-                        "حجم بالقوه",
+                        "پتانسیل برآوردی و غیرتضمینی",
                         kind="estimate",
                     ),
                     baseline=baseline,

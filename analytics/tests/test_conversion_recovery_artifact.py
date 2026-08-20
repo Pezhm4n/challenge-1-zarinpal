@@ -87,6 +87,7 @@ def test_builder_emits_hand_computable_session_funnel(tmp_path: Path) -> None:
 
 def test_retry_no_attempt_and_scenario_are_exact(tmp_path: Path) -> None:
     payload = _build_fixture(tmp_path)["merchants"]["MBUILD"]
+    evidence = {row["id"]: row for row in payload["evidence"]}
 
     assert payload["noAttempt"] == {
         "sessions": 3,
@@ -126,6 +127,8 @@ def test_retry_no_attempt_and_scenario_are_exact(tmp_path: Path) -> None:
             },
         }
     ]
+    insight = payload["insights"][0]
+    assert insight["impact"] == evidence[insight["evidenceId"]]["result"]
 
 
 def test_low_sample_psp_cells_are_not_ranked_or_recommended(tmp_path: Path) -> None:

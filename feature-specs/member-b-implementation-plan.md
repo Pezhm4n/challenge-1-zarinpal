@@ -5,7 +5,7 @@
 - Owner: Member B / Codex #1
 - Branch: `feat/member-b-conversion-rescue`
 - Scope: `conversion-recovery` vertical slice only
-- State: **Phase 5 complete and verified; awaiting Human Lead approval for Phase 6**
+- State: **Phase 6 complete; ready for Human Lead review and integration**
 - Source of truth: official challenge brief → `AGENTS.md` → `context/architecture.md` → `contracts.md` → `feature-specs/member-b.md`
 
 ## Goal
@@ -193,6 +193,8 @@ Implemented without Shared-file changes: route-specific unexpected-error boundar
 - InsightSummary و Evidence IDهای recovery برای Member A گزارش می‌شود.
 - Action Center، shared contract یا shared navigation توسط Member B تغییر نمی‌کند.
 - Human Lead تغییرات را review/cherry-pick/merge/push می‌کند.
+
+Completed in `member-b-integration-handoff.md`: real Insight/Evidence consumer packet، commit order، conflict surface، Action Center composition recipe، validation matrix و demo path ثبت شد. Integration dry-run یک label mismatch بین `Insight.impact` و `Evidence.result` را آشکار کرد؛ Feature-owned builder/artifact اصلاح و regression test اضافه شد. Shared nullability همچنان مطابق تصمیم قبلی در مالکیت Human Lead باقی مانده است.
 
 ## Test Matrix
 
