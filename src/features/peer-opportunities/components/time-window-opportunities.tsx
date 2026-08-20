@@ -23,7 +23,7 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
         <Clock3 aria-hidden="true" className="size-5 text-muted-foreground" />
         <h2 className="font-medium">نمونه کافی برای بازه زمانی وجود ندارد</h2>
         <p className="text-sm text-muted-foreground">
-          فقط بازه‌هایی با حداقل ۲۵ Session نمایش داده می‌شوند.
+          فقط بازه‌هایی با حداقل ۲۵ پرداخت یکتا نمایش داده می‌شوند.
         </p>
       </section>
     );
@@ -38,8 +38,11 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
       <header className="grid gap-1">
         <p className="text-sm font-medium text-muted-foreground">فرصت‌های زمانی</p>
         <h2 id="timing-title" className="text-xl font-semibold">
-          بازه‌های قابل بررسی، نه ادعای علت
+          زمان‌های مناسب برای بررسی
         </h2>
+        <p className="text-sm text-muted-foreground">
+          این الگوها به شما می‌گویند کدام زمان‌ها را بررسی کنید؛ علت قطعی را نشان نمی‌دهند.
+        </p>
       </header>
 
       <div className="grid gap-3 md:grid-cols-2">
@@ -58,8 +61,12 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
                   <h3 className="font-medium">
                     {weekdays[window.weekday] ?? `روز ${window.weekday}`}، ساعت {numberFormatter.format(window.hour)}
                   </h3>
-                  <p className="text-xs text-muted-foreground">
-                    {numberFormatter.format(window.sessions)} Session · نرخ موفقیت {numberFormatter.format(window.verifyPct)}٪
+                  <p className="text-xs text-muted-foreground" dir="rtl">
+                    <bdi dir="ltr" className="tabular-nums">
+                      {numberFormatter.format(window.sessions)} پرداخت یکتا
+                    </bdi>
+                    <span aria-hidden="true"> · </span>
+                    نرخ پرداخت موفق <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.verifyPct)}٪</bdi>
                   </p>
                 </div>
               </div>
@@ -70,12 +77,14 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
                     : "flex items-center gap-1 text-sm font-semibold text-destructive"
                 }
               >
-                {positive ? (
-                  <TrendingUp aria-hidden="true" className="size-4" />
-                ) : (
-                  <TrendingDown aria-hidden="true" className="size-4" />
-                )}
-                {numberFormatter.format(window.liftVsBaselinePct)}٪
+                <span dir="ltr" className="inline-flex items-center gap-1 tabular-nums">
+                  {positive ? (
+                    <TrendingUp aria-hidden="true" className="size-4" />
+                  ) : (
+                    <TrendingDown aria-hidden="true" className="size-4" />
+                  )}
+                  {window.liftVsBaselinePct > 0 ? "+" : ""}{numberFormatter.format(window.liftVsBaselinePct)}٪
+                </span>
               </div>
             </article>
           );
@@ -84,4 +93,3 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
     </section>
   );
 }
-

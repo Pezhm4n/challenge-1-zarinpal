@@ -75,9 +75,9 @@ def build_peer_benchmarks(
     controls = [
         f"صنف یکسان: {target.category_title}",
         "دوره کامل و یکسان",
-        "حداقل ۱۰۰ Session برای هر پذیرنده",
-        "حذف پذیرنده هدف از گروه peer",
-        "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket",
+        "حداقل ۱۰۰ پرداخت یکتا برای هر پذیرنده",
+        "حذف پذیرندهٔ مورد بررسی از گروه هم‌صنفان",
+        "نمایش جداگانهٔ مبلغ کل و میانگین مبلغ برای تفسیر منصفانه",
     ]
     benchmarks: list[dict[str, Any]] = []
     for metric, merchant_value, peer_values in definitions:
@@ -138,7 +138,7 @@ def _data_quality_note() -> dict[str, str]:
     return {
         "severity": "info",
         "code": "DEVELOPMENT_FIXTURE",
-        "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+        "messageFa": "این خروجی فعلاً با دادهٔ آزمایشیِ پرداخت‌های یکتا تولید شده و با دادهٔ کامل جایگزین می‌شود.",
     }
 
 
@@ -176,7 +176,11 @@ def build_artifact(
     timing_payload = select_time_windows(time_windows, current.verification_rate_pct)
 
     negative_driver = min(decomposition, key=lambda result: result.contribution_rial)
-    driver_fa = {"traffic": "تعداد Session", "conversion": "نرخ موفقیت", "ticket": "متوسط مبلغ"}
+    driver_fa = {
+        "traffic": "تعداد پرداخت‌های یکتا",
+        "conversion": "نرخ پرداخت موفق",
+        "ticket": "میانگین مبلغ پرداخت موفق",
+    }
     peer_verification = next(
         benchmark for benchmark in peer_benchmarks if benchmark["metric"] == "verificationRate"
     )
@@ -195,17 +199,17 @@ def build_artifact(
         "priority": 1,
         "status": "warning" if negative_driver.contribution_rial < 0 else "stable",
         "titleFa": f"بیشترین فشار منفی از {driver_fa[negative_driver.driver]} آمده است",
-        "findingFa": "اثر Traffic، Conversion و Ticket بدون دوباره‌شماری interaction از هم جدا شده است.",
-        "actionFa": "ابتدا Driver منفی را بررسی کنید و تغییر حجم را به‌تنهایی نشانه افت تقاضا ندانید.",
+        "findingFa": "سهم تعداد پرداخت‌ها، نرخ موفقیت و میانگین مبلغ جداگانه محاسبه شده است.",
+        "actionFa": "ابتدا عامل کاهشی را بررسی کنید و تغییر فروش را به‌تنهایی نشانهٔ افت تقاضا ندانید.",
         "impact": _metric_value(
             negative_driver.contribution_rial,
             "rial",
-            "سهم Driver از تغییر حجم موفق",
+            "سهم عامل از تغییر فروش موفق",
             "actual",
             0,
         ),
         "confidence": "high",
-        "confidenceReasonFa": "محاسبه روی Session grain و با Shapley identity انجام شده است.",
+        "confidenceReasonFa": "هر پرداخت یکتا یک‌بار شمرده شده و سهم عوامل بدون هم‌پوشانی محاسبه شده است.",
         "evidenceId": growth_evidence_id,
         "destination": "/opportunities",
     }
@@ -218,10 +222,10 @@ def build_artifact(
             if not peer_verification["sufficient"]
             else "warning" if peer_verification["percentile"] < 50 else "stable"
         ),
-        "titleFa": "جایگاه نرخ موفقیت نسبت به هم‌صنف",
+        "titleFa": "جایگاه نرخ پرداخت موفق میان هم‌صنفان",
         "findingFa": (
-            f"نرخ موفقیت در صدک {peer_verification['percentile']:.1f} میان "
-            f"{peer_verification['peerCount']} پذیرنده واجد شرایط قرار دارد."
+            f"نرخ پرداخت موفق در صدک {peer_verification['percentile']:.1f} میان "
+            f"{peer_verification['peerCount']} کسب‌وکار مشابه قرار دارد."
         ),
         "actionFa": "هم‌زمان نرخ موفقیت، حجم و متوسط مبلغ را ببینید؛ رتبه حجم به‌تنهایی کافی نیست.",
         "impact": _metric_value(
@@ -232,7 +236,7 @@ def build_artifact(
             1,
         ) if peer_verification["sufficient"] else None,
         "confidence": "medium" if peer_verification["sufficient"] else "low",
-        "confidenceReasonFa": "گروه peer هم‌صنف، هم‌دوره و دارای حداقل sample است.",
+        "confidenceReasonFa": "کسب‌وکارهای مقایسه‌شده هم‌صنف، هم‌دوره و دارای حداقل دادهٔ لازم هستند.",
         "evidenceId": peer_evidence_id,
         "destination": "/opportunities",
     }
@@ -243,19 +247,19 @@ def build_artifact(
         "status": "opportunity" if strongest_window else "insufficient-data",
         "titleFa": "یک بازه زمانی قابل بررسی پیدا شد" if strongest_window else "داده کافی برای بازه زمانی نیست",
         "findingFa": (
-            f"این بازه {strongest_window['liftVsBaselinePct']:.1f}٪ بالاتر از baseline همان دوره است."
-            if strongest_window else "هیچ cell با حداقل ۲۵ Session وجود ندارد."
+            f"نرخ پرداخت موفق در این بازه {strongest_window['liftVsBaselinePct']:.1f}٪ بالاتر از نرخ مبنای همان دوره است."
+            if strongest_window else "هیچ بازه‌ای با حداقل ۲۵ پرداخت یکتا وجود ندارد."
         ),
-        "actionFa": "الگوی Checkout و کمپین‌های این بازه را بررسی کنید؛ این مشاهده ادعای علّی نیست.",
+        "actionFa": "مسیر پرداخت و فعالیت‌های بازاریابی این زمان را بررسی کنید؛ این الگو علت قطعی را نشان نمی‌دهد.",
         "impact": _metric_value(
             strongest_window["liftVsBaselinePct"],
             "percent",
-            "Lift نسبت به baseline",
+            "تغییر نسبت به نرخ مبنا",
             "benchmark",
             1,
         ) if strongest_window else None,
         "confidence": "medium" if strongest_window else "low",
-        "confidenceReasonFa": "فقط cellهای دارای حداقل ۲۵ Session وارد مقایسه شده‌اند.",
+        "confidenceReasonFa": "فقط زمان‌هایی با حداقل ۲۵ پرداخت یکتا وارد مقایسه شده‌اند.",
         "evidenceId": timing_evidence_id,
         "destination": "/opportunities",
     }
@@ -280,10 +284,10 @@ def build_artifact(
             "id": growth_evidence_id,
             "formulaId": "growth.revenue_decomposition.v1",
             "titleFa": "تفکیک تغییر حجم موفق",
-            "explanationFa": "میانگین اثر حاشیه‌ای سه Driver در تمام شش ترتیب Shapley محاسبه شده است.",
+            "explanationFa": "اثر هر عامل در همهٔ حالت‌های ممکنِ ترکیب تغییرات محاسبه شده تا سهم‌ها دوباره‌شماری نشوند.",
             "grain": "merchant-period",
             "filters": [{"field": "merchant_key", "operator": "=", "value": target_key}],
-            "formulaFa": "حجم موفق = Session × نرخ موفقیت × متوسط مبلغ موفق",
+            "formulaFa": "فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
             "result": _metric_value(
                 current.verified_volume_rial - previous.verified_volume_rial,
                 "rial",
@@ -291,7 +295,7 @@ def build_artifact(
                 "actual",
                 0,
             ),
-            "controls": ["دوره‌های هم‌اندازه", "Session grain", "Shapley interaction allocation"],
+            "controls": ["دوره‌های هم‌اندازه", "هر پرداخت یکتا فقط یک‌بار شمرده شده است", "تفکیک سهم عوامل بدون دوباره‌شماری"],
             "assumptions": ["eventual_verified از Loader مشترک معتبر دریافت می‌شود"],
             "limitations": ["این تفکیک توصیفی است و ادعای علیت ندارد"],
             **common_evidence,
@@ -300,13 +304,13 @@ def build_artifact(
             "id": peer_evidence_id,
             "formulaId": "peer.robust_percentile.v1",
             "titleFa": "جایگاه در گروه هم‌صنف",
-            "explanationFa": "Percentile با mid-rank و median مقاوم در برابر outlier محاسبه شده است.",
+            "explanationFa": "صدک با درنظرگرفتن رتبه‌های مساوی و میانه با مقاومت در برابر مقدارهای بسیار دور از معمول محاسبه شده است.",
             "grain": "peer-group",
             "filters": [
                 {"field": "category_id", "operator": "=", "value": current.category_id},
                 {"field": "sessions", "operator": ">=", "value": 100},
             ],
-            "formulaFa": "۱۰۰ × (تعداد کمتر + نصف تعداد مساوی) ÷ تعداد peer",
+            "formulaFa": "۱۰۰ × (تعداد کمتر + نصف تعداد مساوی) ÷ تعداد کسب‌وکارهای مشابه",
             "result": _metric_value(
                 peer_verification["percentile"],
                 "percent",
@@ -320,25 +324,25 @@ def build_artifact(
                 "sampleSize": peer_verification["peerCount"],
             },
             "controls": peer_verification["controls"],
-            "assumptions": ["تعریف دقیق size/ticket cohort در انتظار تأیید Human Lead است"],
-            "limitations": ["Volume rank و performance rank معادل نیستند"],
+            "assumptions": ["قواعد دقیق کنترل اندازه و مبلغ در نسخهٔ کامل نهایی می‌شود"],
+            "limitations": ["رتبهٔ مبلغ کل، به‌تنهایی نشانهٔ عملکرد بهتر نیست"],
             **common_evidence,
         },
         {
             "id": timing_evidence_id,
             "formulaId": "time.window_lift.v1",
             "titleFa": "مقایسه بازه‌های زمانی",
-            "explanationFa": "نرخ هر cell واجد شرایط با baseline همان پذیرنده و دوره مقایسه شده است.",
+            "explanationFa": "نرخ هر بازهٔ واجد شرایط با نرخ مبنای همان پذیرنده و دوره مقایسه شده است.",
             "grain": "merchant-period",
             "filters": [
                 {"field": "merchant_key", "operator": "=", "value": target_key},
                 {"field": "sessions", "operator": ">=", "value": 25},
             ],
-            "formulaFa": "(نرخ cell − نرخ baseline) ÷ نرخ baseline",
+            "formulaFa": "(نرخ بازه − نرخ مبنا) ÷ نرخ مبنا",
             "result": _metric_value(
                 strongest_window["liftVsBaselinePct"] if strongest_window else 0,
                 "percent",
-                "بیشترین Lift مشاهده‌شده",
+                "بیشترین تغییر مشاهده‌شده",
                 "benchmark",
                 1,
             ),
@@ -347,8 +351,8 @@ def build_artifact(
                 "value": current.verification_rate_pct,
                 "sampleSize": current.sessions,
             },
-            "controls": ["حداقل ۲۵ Session در cell", "baseline همان merchant و period"],
-            "assumptions": ["timestamp بدون تبدیل timezone مصرف شده است"],
+            "controls": ["حداقل ۲۵ پرداخت یکتا در هر بازه", "نرخ مبنای همان پذیرنده و دوره"],
+            "assumptions": ["زمان ثبت‌شده بدون تبدیل منطقهٔ زمانی استفاده شده است"],
             "limitations": ["الگوی زمانی مشاهده‌ای است و اثر علّی نیست"],
             **common_evidence,
         },
@@ -421,4 +425,3 @@ def write_artifact(artifact: dict[str, Any], destination: Path) -> None:
         json.dumps(artifact, ensure_ascii=False, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
-

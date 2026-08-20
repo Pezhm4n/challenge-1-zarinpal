@@ -14,11 +14,5 @@ export default async function OpportunitiesRoute() {
   if (result.status === "error") {
     return <FeatureState error={result.error} />;
   }
-  return (
-    <PeerOpportunitiesPage
-      payload={result.payload}
-      generatedAt={result.artifact.generatedAt}
-      fingerprint={result.artifact.dataset.fingerprint}
-    />
-  );
+  return <PeerOpportunitiesPage payload={result.payload} />;
 }

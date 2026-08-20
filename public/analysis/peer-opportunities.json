@@ -7,7 +7,7 @@
     "sessionCount": 1464
   },
   "feature": "peer-opportunities",
-  "generatedAt": "2026-08-20T00:37:18.455879+00:00",
+  "generatedAt": "2026-08-20T04:28:52.036559+00:00",
   "merchants": {
     "M275": {
       "decomposition": [
@@ -44,18 +44,18 @@
           },
           "controls": [
             "دوره‌های هم‌اندازه",
-            "Session grain",
-            "Shapley interaction allocation"
+            "هر پرداخت یکتا فقط یک‌بار شمرده شده است",
+            "تفکیک سهم عوامل بدون دوباره‌شماری"
           ],
           "dataQuality": [
             {
               "code": "DEVELOPMENT_FIXTURE",
-              "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+              "messageFa": "این خروجی فعلاً با دادهٔ آزمایشیِ پرداخت‌های یکتا تولید شده و با دادهٔ کامل جایگزین می‌شود.",
               "severity": "info"
             }
           ],
           "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
-          "explanationFa": "میانگین اثر حاشیه‌ای سه Driver در تمام شش ترتیب Shapley محاسبه شده است.",
+          "explanationFa": "اثر هر عامل در همهٔ حالت‌های ممکنِ ترکیب تغییرات محاسبه شده تا سهم‌ها دوباره‌شماری نشوند.",
           "filters": [
             {
               "field": "merchant_key",
@@ -63,7 +63,7 @@
               "value": "M275"
             }
           ],
-          "formulaFa": "حجم موفق = Session × نرخ موفقیت × متوسط مبلغ موفق",
+          "formulaFa": "فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
           "formulaId": "growth.revenue_decomposition.v1",
           "grain": "merchant-period",
           "id": "peer-growth-decomposition-m275",
@@ -119,7 +119,7 @@
         },
         {
           "assumptions": [
-            "تعریف دقیق size/ticket cohort در انتظار تأیید Human Lead است"
+            "قواعد دقیق کنترل اندازه و مبلغ در نسخهٔ کامل نهایی می‌شود"
           ],
           "baseline": {
             "sampleSize": 12,
@@ -133,19 +133,19 @@
           "controls": [
             "صنف یکسان: کیف و کفش",
             "دوره کامل و یکسان",
-            "حداقل ۱۰۰ Session برای هر پذیرنده",
-            "حذف پذیرنده هدف از گروه peer",
-            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+            "حداقل ۱۰۰ پرداخت یکتا برای هر پذیرنده",
+            "حذف پذیرندهٔ مورد بررسی از گروه هم‌صنفان",
+            "نمایش جداگانهٔ مبلغ کل و میانگین مبلغ برای تفسیر منصفانه"
           ],
           "dataQuality": [
             {
               "code": "DEVELOPMENT_FIXTURE",
-              "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+              "messageFa": "این خروجی فعلاً با دادهٔ آزمایشیِ پرداخت‌های یکتا تولید شده و با دادهٔ کامل جایگزین می‌شود.",
               "severity": "info"
             }
           ],
           "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
-          "explanationFa": "Percentile با mid-rank و median مقاوم در برابر outlier محاسبه شده است.",
+          "explanationFa": "صدک با درنظرگرفتن رتبه‌های مساوی و میانه با مقاومت در برابر مقدارهای بسیار دور از معمول محاسبه شده است.",
           "filters": [
             {
               "field": "category_id",
@@ -158,12 +158,12 @@
               "value": 100
             }
           ],
-          "formulaFa": "۱۰۰ × (تعداد کمتر + نصف تعداد مساوی) ÷ تعداد peer",
+          "formulaFa": "۱۰۰ × (تعداد کمتر + نصف تعداد مساوی) ÷ تعداد کسب‌وکارهای مشابه",
           "formulaId": "peer.robust_percentile.v1",
           "grain": "peer-group",
           "id": "peer-benchmark-m275",
           "limitations": [
-            "Volume rank و performance rank معادل نیستند"
+            "رتبهٔ مبلغ کل، به‌تنهایی نشانهٔ عملکرد بهتر نیست"
           ],
           "period": {
             "from": "2026-06-01",
@@ -214,7 +214,7 @@
         },
         {
           "assumptions": [
-            "timestamp بدون تبدیل timezone مصرف شده است"
+            "زمان ثبت‌شده بدون تبدیل منطقهٔ زمانی استفاده شده است"
           ],
           "baseline": {
             "sampleSize": 144,
@@ -226,18 +226,18 @@
             "to": "2026-05-31"
           },
           "controls": [
-            "حداقل ۲۵ Session در cell",
-            "baseline همان merchant و period"
+            "حداقل ۲۵ پرداخت یکتا در هر بازه",
+            "نرخ مبنای همان پذیرنده و دوره"
           ],
           "dataQuality": [
             {
               "code": "DEVELOPMENT_FIXTURE",
-              "messageFa": "این Artifact فعلاً از Fixture سطح Session تولید شده و باید با خروجی کامل analytics/common جایگزین شود.",
+              "messageFa": "این خروجی فعلاً با دادهٔ آزمایشیِ پرداخت‌های یکتا تولید شده و با دادهٔ کامل جایگزین می‌شود.",
               "severity": "info"
             }
           ],
           "datasetFingerprint": "b9e8f1a88e6edda782c29ae6c5fdbeb248571a2d0a2cc614305854d9cb81ef9a",
-          "explanationFa": "نرخ هر cell واجد شرایط با baseline همان پذیرنده و دوره مقایسه شده است.",
+          "explanationFa": "نرخ هر بازهٔ واجد شرایط با نرخ مبنای همان پذیرنده و دوره مقایسه شده است.",
           "filters": [
             {
               "field": "merchant_key",
@@ -250,7 +250,7 @@
               "value": 25
             }
           ],
-          "formulaFa": "(نرخ cell − نرخ baseline) ÷ نرخ baseline",
+          "formulaFa": "(نرخ بازه − نرخ مبنا) ÷ نرخ مبنا",
           "formulaId": "time.window_lift.v1",
           "grain": "merchant-period",
           "id": "timing-window-m275",
@@ -264,7 +264,7 @@
           "result": {
             "displayPrecision": 1,
             "kind": "benchmark",
-            "labelFa": "بیشترین Lift مشاهده‌شده",
+            "labelFa": "بیشترین تغییر مشاهده‌شده",
             "unit": "percent",
             "value": 60.0
           },
@@ -307,33 +307,33 @@
       ],
       "insights": [
         {
-          "actionFa": "ابتدا Driver منفی را بررسی کنید و تغییر حجم را به‌تنهایی نشانه افت تقاضا ندانید.",
+          "actionFa": "ابتدا عامل کاهشی را بررسی کنید و تغییر فروش را به‌تنهایی نشانهٔ افت تقاضا ندانید.",
           "confidence": "high",
-          "confidenceReasonFa": "محاسبه روی Session grain و با Shapley identity انجام شده است.",
+          "confidenceReasonFa": "هر پرداخت یکتا یک‌بار شمرده شده و سهم عوامل بدون هم‌پوشانی محاسبه شده است.",
           "destination": "/opportunities",
           "evidenceId": "peer-growth-decomposition-m275",
           "feature": "growth",
-          "findingFa": "اثر Traffic، Conversion و Ticket بدون دوباره‌شماری interaction از هم جدا شده است.",
+          "findingFa": "سهم تعداد پرداخت‌ها، نرخ موفقیت و میانگین مبلغ جداگانه محاسبه شده است.",
           "id": "growth-driver-m275",
           "impact": {
             "displayPrecision": 0,
             "kind": "actual",
-            "labelFa": "سهم Driver از تغییر حجم موفق",
+            "labelFa": "سهم عامل از تغییر فروش موفق",
             "unit": "rial",
             "value": -13880
           },
           "priority": 1,
           "status": "warning",
-          "titleFa": "بیشترین فشار منفی از نرخ موفقیت آمده است"
+          "titleFa": "بیشترین فشار منفی از نرخ پرداخت موفق آمده است"
         },
         {
           "actionFa": "هم‌زمان نرخ موفقیت، حجم و متوسط مبلغ را ببینید؛ رتبه حجم به‌تنهایی کافی نیست.",
           "confidence": "medium",
-          "confidenceReasonFa": "گروه peer هم‌صنف، هم‌دوره و دارای حداقل sample است.",
+          "confidenceReasonFa": "کسب‌وکارهای مقایسه‌شده هم‌صنف، هم‌دوره و دارای حداقل دادهٔ لازم هستند.",
           "destination": "/opportunities",
           "evidenceId": "peer-benchmark-m275",
           "feature": "peers",
-          "findingFa": "نرخ موفقیت در صدک 33.3 میان 12 پذیرنده واجد شرایط قرار دارد.",
+          "findingFa": "نرخ پرداخت موفق در صدک 33.3 میان 12 کسب‌وکار مشابه قرار دارد.",
           "id": "peer-position-m275",
           "impact": {
             "displayPrecision": 1,
@@ -344,21 +344,21 @@
           },
           "priority": 2,
           "status": "warning",
-          "titleFa": "جایگاه نرخ موفقیت نسبت به هم‌صنف"
+          "titleFa": "جایگاه نرخ پرداخت موفق میان هم‌صنفان"
         },
         {
-          "actionFa": "الگوی Checkout و کمپین‌های این بازه را بررسی کنید؛ این مشاهده ادعای علّی نیست.",
+          "actionFa": "مسیر پرداخت و فعالیت‌های بازاریابی این زمان را بررسی کنید؛ این الگو علت قطعی را نشان نمی‌دهد.",
           "confidence": "medium",
-          "confidenceReasonFa": "فقط cellهای دارای حداقل ۲۵ Session وارد مقایسه شده‌اند.",
+          "confidenceReasonFa": "فقط زمان‌هایی با حداقل ۲۵ پرداخت یکتا وارد مقایسه شده‌اند.",
           "destination": "/opportunities",
           "evidenceId": "timing-window-m275",
           "feature": "timing",
-          "findingFa": "این بازه 60.0٪ بالاتر از baseline همان دوره است.",
+          "findingFa": "نرخ پرداخت موفق در این بازه 60.0٪ بالاتر از نرخ مبنای همان دوره است.",
           "id": "timing-opportunity-m275",
           "impact": {
             "displayPrecision": 1,
             "kind": "benchmark",
-            "labelFa": "Lift نسبت به baseline",
+            "labelFa": "تغییر نسبت به نرخ مبنا",
             "unit": "percent",
             "value": 60.0
           },
@@ -372,9 +372,9 @@
           "controls": [
             "صنف یکسان: کیف و کفش",
             "دوره کامل و یکسان",
-            "حداقل ۱۰۰ Session برای هر پذیرنده",
-            "حذف پذیرنده هدف از گروه peer",
-            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+            "حداقل ۱۰۰ پرداخت یکتا برای هر پذیرنده",
+            "حذف پذیرندهٔ مورد بررسی از گروه هم‌صنفان",
+            "نمایش جداگانهٔ مبلغ کل و میانگین مبلغ برای تفسیر منصفانه"
           ],
           "merchantValue": 50.0,
           "metric": "verificationRate",
@@ -387,9 +387,9 @@
           "controls": [
             "صنف یکسان: کیف و کفش",
             "دوره کامل و یکسان",
-            "حداقل ۱۰۰ Session برای هر پذیرنده",
-            "حذف پذیرنده هدف از گروه peer",
-            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+            "حداقل ۱۰۰ پرداخت یکتا برای هر پذیرنده",
+            "حذف پذیرندهٔ مورد بررسی از گروه هم‌صنفان",
+            "نمایش جداگانهٔ مبلغ کل و میانگین مبلغ برای تفسیر منصفانه"
           ],
           "merchantValue": 79200.0,
           "metric": "verifiedVolumeRial",
@@ -402,9 +402,9 @@
           "controls": [
             "صنف یکسان: کیف و کفش",
             "دوره کامل و یکسان",
-            "حداقل ۱۰۰ Session برای هر پذیرنده",
-            "حذف پذیرنده هدف از گروه peer",
-            "نمایش جداگانه حجم و متوسط مبلغ برای کنترل تفسیر size/ticket"
+            "حداقل ۱۰۰ پرداخت یکتا برای هر پذیرنده",
+            "حذف پذیرندهٔ مورد بررسی از گروه هم‌صنفان",
+            "نمایش جداگانهٔ مبلغ کل و میانگین مبلغ برای تفسیر منصفانه"
           ],
           "merchantValue": 1100.0,
           "metric": "averageVerifiedTicketRial",

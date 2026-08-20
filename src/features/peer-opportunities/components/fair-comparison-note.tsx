@@ -16,7 +16,7 @@ export function FairComparisonNote({
       <div className="flex items-center gap-2">
         <Scale aria-hidden="true" className="size-5" />
         <h3 id="fair-title" className="font-medium">
-          مقایسه منصفانه چگونه انجام شد؟
+          مبنای این مقایسه چیست؟
         </h3>
       </div>
       <ul className="grid gap-2 text-sm text-muted-foreground sm:grid-cols-2">
@@ -30,4 +30,3 @@ export function FairComparisonNote({
     </aside>
   );
 }
-

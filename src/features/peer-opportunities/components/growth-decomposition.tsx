@@ -3,9 +3,9 @@ import { ArrowDown, ArrowUp, Minus } from "lucide-react";
 import type { DecompositionItem, Driver } from "../types";
 
 const driverLabels: Record<Driver, string> = {
-  traffic: "تعداد Session",
-  conversion: "نرخ موفقیت",
-  ticket: "متوسط مبلغ موفق",
+  traffic: "تعداد پرداخت‌های یکتا",
+  conversion: "نرخ پرداخت موفق",
+  ticket: "میانگین مبلغ پرداخت موفق",
 };
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
@@ -23,7 +23,15 @@ function formatDriverValue(item: DecompositionItem, value: number) {
   if (item.driver === "ticket") {
     return `${rialFormatter.format(value)} ریال`;
   }
-  return `${rialFormatter.format(value)} Session`;
+  return `${rialFormatter.format(value)} پرداخت`;
+}
+
+function formatChange(value: number | null) {
+  if (value === null) {
+    return "نامشخص";
+  }
+
+  return `${value > 0 ? "+" : ""}${numberFormatter.format(value)}٪`;
 }
 
 function DirectionIcon({ value }: { value: number }) {
@@ -49,10 +57,13 @@ export function GrowthDecomposition({
   return (
     <section aria-labelledby="decomposition-title" className="grid gap-4">
       <header className="grid gap-1">
-        <p className="text-sm font-medium text-muted-foreground">علت تغییر حجم موفق</p>
+        <p className="text-sm font-medium text-muted-foreground">تغییر فروش موفق</p>
         <h2 id="decomposition-title" className="text-xl font-semibold">
-          سه عامل، بدون دوباره‌شماری اثر مشترک
+          فروش موفق چرا تغییر کرد؟
         </h2>
+        <p className="text-sm text-muted-foreground">
+          سهم هر عامل جداگانه محاسبه شده تا اثر یک تغییر، دوبار شمرده نشود.
+        </p>
       </header>
 
       <div className="grid gap-3 lg:grid-cols-3">
@@ -70,8 +81,8 @@ export function GrowthDecomposition({
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
                   <h3 className="font-medium">{driverLabels[item.driver]}</h3>
-                  <p className="text-xs text-muted-foreground">
-                    {formatDriverValue(item, item.previous)} ← {formatDriverValue(item, item.current)}
+                  <p className="text-xs text-muted-foreground" dir="ltr">
+                    {formatDriverValue(item, item.previous)} → {formatDriverValue(item, item.current)}
                   </p>
                 </div>
                 <span
@@ -81,10 +92,10 @@ export function GrowthDecomposition({
                       : "flex items-center gap-1 text-sm font-medium text-foreground"
                   }
                 >
-                  <DirectionIcon value={item.contributionRial} />
-                  {item.changePct === null
-                    ? "تعریف‌نشده"
-                    : `${numberFormatter.format(item.changePct)}٪`}
+                  <span dir="ltr" className="inline-flex items-center gap-1 tabular-nums">
+                    <DirectionIcon value={item.contributionRial} />
+                    {formatChange(item.changePct)}
+                  </span>
                 </span>
               </div>
 
@@ -99,7 +110,7 @@ export function GrowthDecomposition({
                     style={{ width }}
                   />
                 </div>
-                <p className="text-sm font-semibold tabular-nums">
+                <p className="text-sm font-semibold tabular-nums" dir="ltr">
                   {rialFormatter.format(item.contributionRial)} ریال
                 </p>
               </div>
@@ -110,4 +121,3 @@ export function GrowthDecomposition({
     </section>
   );
 }
-

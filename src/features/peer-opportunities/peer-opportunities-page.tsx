@@ -12,6 +12,10 @@ const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
   day: "numeric",
 });
 
+function formatDate(value: string) {
+  return dateFormatter.format(new Date(`${value}T00:00:00Z`));
+}
+
 const confidenceLabels = {
   high: "اطمینان بالا",
   medium: "اطمینان متوسط",
@@ -20,12 +24,8 @@ const confidenceLabels = {
 
 export function PeerOpportunitiesPage({
   payload,
-  generatedAt,
-  fingerprint,
 }: {
   payload: PeerOpportunitiesPayload;
-  generatedAt: string;
-  fingerprint: string;
 }) {
   const primaryInsight = [...payload.insights].sort(
     (first, second) => first.priority - second.priority,
@@ -39,16 +39,16 @@ export function PeerOpportunitiesPage({
             <div className="grid gap-1">
               <p className="text-sm font-medium text-muted-foreground">نبض زرین / فرصت‌ها</p>
               <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                فرصت‌های رشد پذیرنده {payload.selection.merchantKey}
+                فرصت‌های رشد پذیرنده <bdi dir="ltr">{payload.selection.merchantKey}</bdi>
               </h1>
             </div>
             <div className="rounded-lg border bg-card px-3 py-2 text-xs text-muted-foreground">
               {payload.selection.comparison ? (
                 <span>
-                  {payload.selection.comparison.from} تا {payload.selection.period.to}
+                  {formatDate(payload.selection.comparison.from)} تا {formatDate(payload.selection.period.to)}
                 </span>
               ) : (
-                <span>{payload.selection.period.from} تا {payload.selection.period.to}</span>
+                <span>{formatDate(payload.selection.period.from)} تا {formatDate(payload.selection.period.to)}</span>
               )}
             </div>
           </div>
@@ -56,10 +56,10 @@ export function PeerOpportunitiesPage({
           <div className="flex items-start gap-3 rounded-xl border bg-card p-4">
             <Database aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
             <div className="grid gap-1">
-              <p className="text-sm font-medium">نسخه مستقل توسعه با داده Session-level</p>
+              <p className="text-sm font-medium">نمایش آزمایشی با دادهٔ پرداخت‌های یکتا</p>
               <p className="text-sm text-muted-foreground">
-                Retryها در این ورودی قبلاً به یک Session تبدیل شده‌اند. Artifact نهایی پس از اتصال
-                به `analytics/common` ایدین جایگزین می‌شود.
+                تلاش‌های تکراری یک پرداخت فقط یک‌بار شمرده شده‌اند. داده‌های کامل در نسخهٔ نهایی
+                جایگزین می‌شوند.
               </p>
             </div>
           </div>
@@ -99,36 +99,28 @@ export function PeerOpportunitiesPage({
 
         <TimeWindowOpportunities windows={payload.timeWindows} />
 
-        <section aria-labelledby="evidence-ready-title" className="grid gap-4 rounded-xl border bg-card p-5">
+        <section aria-labelledby="evidence-ready-title" className="grid gap-3 rounded-xl border bg-card p-5">
           <div className="flex items-start gap-3">
             <FileSearch2 aria-hidden="true" className="mt-0.5 size-5 shrink-0" />
             <div className="grid gap-1">
               <h2 id="evidence-ready-title" className="font-semibold">
-                مدارک محاسبه برای اتصال آماده‌اند
+                مبنای محاسبه
               </h2>
               <p className="text-sm text-muted-foreground">
-                Formula، controls و Data-quality داخل Artifact وجود دارند. تعامل نهایی «چطور حساب
-                شد؟» بعد از دریافت Shared Evidence Drawer ایدین فعال می‌شود.
+                این تحلیل بر پایهٔ پرداخت‌های یکتا و دوره‌های هم‌اندازه محاسبه شده است. جزئیات هر
+                بخش در همین صفحه قابل بررسی خواهد بود.
               </p>
             </div>
           </div>
-          <div className="grid gap-2 md:grid-cols-3">
+          <ul className="grid gap-2 text-sm md:grid-cols-3">
             {payload.evidence.map((record) => (
-              <article key={record.id} className="grid gap-1 rounded-lg border bg-muted/30 p-3">
-                <h3 className="text-sm font-medium">{record.titleFa}</h3>
-                <code className="overflow-hidden text-ellipsis text-xs text-muted-foreground" dir="ltr">
-                  {record.formulaId}
-                </code>
-              </article>
+              <li key={record.id} className="rounded-lg border bg-muted/30 p-3 font-medium">
+                {record.titleFa}
+              </li>
             ))}
-          </div>
-          <footer className="flex flex-wrap justify-between gap-2 border-t pt-3 text-xs text-muted-foreground">
-            <span>تولید: {dateFormatter.format(new Date(generatedAt))}</span>
-            <span dir="ltr">fingerprint: {fingerprint.slice(0, 12)}…</span>
-          </footer>
+          </ul>
         </section>
       </div>
     </main>
   );
 }
-
