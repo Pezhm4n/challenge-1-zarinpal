@@ -1,25 +1,50 @@
 "use client"
 
-import { useMemo, useState } from "react"
-import { CircleGauge, Database, FlaskConical, TrendingDown, TrendingUp } from "lucide-react"
+import { useMemo, useRef, useState } from "react"
+import {
+  Calculator,
+  CircleGauge,
+  CircleMinus,
+  Database,
+  FlaskConical,
+  TrendingDown,
+  TrendingUp,
+} from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import type { ActionCenterPayload, AnalysisArtifact } from "@/contracts"
-import { resolveActionCenterSelection } from "@/contracts"
+import type {
+  ActionCenterPayload,
+  AnalysisArtifact,
+  ArtifactError,
+  EvidenceRecord,
+} from "@/contracts"
+import {
+  parseActionCenterArtifact,
+  resolveActionCenterSelection,
+} from "@/contracts"
+import { EvidenceSheet } from "@/entities/evidence/evidence-sheet"
+import {
+  resolveEvidenceRecord,
+  type EvidenceResolution,
+} from "@/entities/evidence/model"
 import { InsightCard } from "@/entities/insight/insight-card"
 import { formatMetricValue } from "@/entities/insight/metric-value"
 import { MerchantSelector } from "@/entities/merchant/merchant-selector"
 import { cn } from "@/lib/utils"
 
+import {
+  ActionCenterEmptyState,
+  ActionCenterErrorState,
+  InsufficientDataNotice,
+} from "./action-center-state"
 import { prioritizeInsights } from "./model"
 import { PeriodSelector } from "./period-selector"
-
 
 function periodKey(period: { from: string; to: string }): string {
   return `${period.from}|${period.to}`
 }
-
 
 function coverageLabel(quality: ActionCenterPayload["merchant"]["dataCoverage"]["quality"]): string {
   const labels = {
@@ -30,19 +55,20 @@ function coverageLabel(quality: ActionCenterPayload["merchant"]["dataCoverage"][
   return labels[quality]
 }
 
-
 function HeadlineMetric({
   metric,
+  onEvidenceRequest,
 }: {
   metric: ActionCenterPayload["headlineMetrics"][number]
+  onEvidenceRequest: (evidenceId: string) => void
 }) {
   const change = metric.change
   const isPositive = change ? change.value > 0 : false
   const isNegative = change ? change.value < 0 : false
-  const DirectionIcon = isPositive ? TrendingUp : TrendingDown
+  const DirectionIcon = isPositive ? TrendingUp : isNegative ? TrendingDown : CircleMinus
 
   return (
-    <div className="min-w-0 rounded-lg border bg-card p-4">
+    <div className="flex min-w-0 flex-col rounded-lg border bg-card p-4">
       <p className="text-xs leading-5 text-muted-foreground">{metric.value.labelFa}</p>
       <p className="mt-2 break-words text-lg font-bold tabular-nums sm:text-xl">
         {formatMetricValue(metric.value)}
@@ -62,17 +88,34 @@ function HeadlineMetric({
           </span>
         </div>
       ) : null}
+      <Button
+        variant="ghost"
+        size="sm"
+        className="mt-auto min-h-11 w-full justify-start px-0 text-info-foreground"
+        aria-label={`چطور ${metric.value.labelFa} محاسبه شد؟`}
+        onClick={() => onEvidenceRequest(metric.evidenceId)}
+      >
+        <Calculator aria-hidden="true" data-icon="inline-start" />
+        چطور محاسبه شد؟
+      </Button>
     </div>
   )
 }
 
+function noMerchantError(): ArtifactError {
+  return {
+    code: "INSUFFICIENT_DATA",
+    messageFa: "برای هیچ پذیرنده‌ای گزارش آماده نشده است. Artifact تحلیل را دوباره تولید کنید.",
+    recoverable: true,
+  }
+}
 
-export function ActionCenter({
+function ResolvedActionCenter({
   artifact,
-  showDevelopmentFixture = false,
+  showDevelopmentFixture,
 }: {
   artifact: AnalysisArtifact<ActionCenterPayload>
-  showDevelopmentFixture?: boolean
+  showDevelopmentFixture: boolean
 }) {
   const merchantKeys = Object.keys(artifact.merchants)
   const [merchantKey, setMerchantKey] = useState(merchantKeys[0] ?? "")
@@ -80,6 +123,9 @@ export function ActionCenter({
   const [selectedPeriodKey, setSelectedPeriodKey] = useState(
     initialPayload ? periodKey(initialPayload.selection.period) : "",
   )
+  const [evidenceResolution, setEvidenceResolution] =
+    useState<EvidenceResolution | null>(null)
+  const evidenceTriggerRef = useRef<HTMLElement | null>(null)
 
   const merchantOptions = merchantKeys.map((key) => {
     const merchant = artifact.merchants[key].merchant
@@ -114,6 +160,13 @@ export function ActionCenter({
   )
   const headlineInsight =
     insights.find((insight) => insight.feature === "growth") ?? insights[0]
+  const hasInsufficientData =
+    payload?.merchant.dataCoverage.quality === "insufficient" ||
+    insights.some((insight) => insight.status === "insufficient-data")
+
+  function closeEvidence() {
+    setEvidenceResolution(null)
+  }
 
   function handleMerchantChange(nextMerchantKey: string) {
     const nextPayload = artifact.merchants[nextMerchantKey]
@@ -121,20 +174,42 @@ export function ActionCenter({
     setSelectedPeriodKey(
       nextPayload ? periodKey(nextPayload.selection.period) : "",
     )
+    closeEvidence()
+  }
+
+  function handlePeriodChange(nextPeriodKey: string) {
+    setSelectedPeriodKey(nextPeriodKey)
+    closeEvidence()
+  }
+
+  function handleEvidenceRequest(evidenceId: string) {
+    if (document.activeElement instanceof HTMLElement) {
+      evidenceTriggerRef.current = document.activeElement
+    }
+    setEvidenceResolution(
+      resolveEvidenceRecord(payload?.evidenceIndex ?? {}, evidenceId),
+    )
+  }
+
+  function handleEvidenceOpenChange(open: boolean) {
+    if (open) return
+
+    closeEvidence()
+    window.requestAnimationFrame(() => evidenceTriggerRef.current?.focus())
   }
 
   if (!payload) {
     return (
-      <section aria-labelledby="action-center-title" className="rounded-xl border bg-card p-6">
-        <h1 id="action-center-title" className="text-xl font-semibold">
-          گزارش قابل نمایش نیست
-        </h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          پذیرنده یا دوره دیگری را انتخاب کنید.
-        </p>
-      </section>
+      <ActionCenterErrorState
+        error={resolution?.success === false ? resolution.error : noMerchantError()}
+      />
     )
   }
+
+  const selectedEvidence: EvidenceRecord | null =
+    evidenceResolution?.success === true ? evidenceResolution.data : null
+  const selectedEvidenceError: ArtifactError | null =
+    evidenceResolution?.success === false ? evidenceResolution.error : null
 
   return (
     <div className="grid gap-6 lg:gap-8">
@@ -176,10 +251,12 @@ export function ActionCenter({
           <PeriodSelector
             value={selectedPeriodKey}
             options={periodOptions}
-            onValueChange={setSelectedPeriodKey}
+            onValueChange={handlePeriodChange}
           />
         </div>
       </section>
+
+      {hasInsufficientData ? <InsufficientDataNotice /> : null}
 
       <section aria-labelledby="headline-title" className="grid gap-4">
         <div>
@@ -192,11 +269,17 @@ export function ActionCenter({
               "برای این انتخاب هنوز Insight دارای مدرک کافی تولید نشده است."}
           </p>
         </div>
-        <div className="grid gap-3 sm:grid-cols-3">
-          {payload.headlineMetrics.map((metric) => (
-            <HeadlineMetric key={metric.id} metric={metric} />
-          ))}
-        </div>
+        {payload.headlineMetrics.length > 0 ? (
+          <div className="grid gap-3 sm:grid-cols-3">
+            {payload.headlineMetrics.map((metric) => (
+              <HeadlineMetric
+                key={metric.id}
+                metric={metric}
+                onEvidenceRequest={handleEvidenceRequest}
+              />
+            ))}
+          </div>
+        ) : null}
       </section>
 
       <section aria-labelledby="insights-title" className="grid gap-4">
@@ -207,11 +290,24 @@ export function ActionCenter({
           </h2>
         </div>
 
-        {insights[0] ? <InsightCard insight={insights[0]} rank={1} featured /> : null}
+        {insights.length === 0 ? <ActionCenterEmptyState /> : null}
+        {insights[0] ? (
+          <InsightCard
+            insight={insights[0]}
+            rank={1}
+            featured
+            onEvidenceRequest={handleEvidenceRequest}
+          />
+        ) : null}
         {insights.length > 1 ? (
           <div className="grid gap-4 lg:grid-cols-2">
             {insights.slice(1).map((insight, index) => (
-              <InsightCard key={insight.id} insight={insight} rank={index + 2} />
+              <InsightCard
+                key={insight.id}
+                insight={insight}
+                rank={index + 2}
+                onEvidenceRequest={handleEvidenceRequest}
+              />
             ))}
           </div>
         ) : null}
@@ -225,6 +321,38 @@ export function ActionCenter({
           {new Intl.NumberFormat("fa-IR").format(payload.merchant.dataCoverage.sessions)} Session بررسی شده است. مبلغ‌ها ریال‌اند و Retryها پیش از محاسبه فروش روی Session تجمیع شده‌اند.
         </CardContent>
       </Card>
+
+      <EvidenceSheet
+        evidence={selectedEvidence}
+        error={selectedEvidenceError}
+        open={evidenceResolution !== null}
+        onOpenChange={handleEvidenceOpenChange}
+      />
     </div>
+  )
+}
+
+export function ActionCenter({
+  artifact,
+  showDevelopmentFixture = false,
+}: {
+  artifact: unknown
+  showDevelopmentFixture?: boolean
+}) {
+  const parsedArtifact = parseActionCenterArtifact(artifact)
+
+  if (!parsedArtifact.success) {
+    return <ActionCenterErrorState error={parsedArtifact.error} />
+  }
+
+  if (Object.keys(parsedArtifact.data.merchants).length === 0) {
+    return <ActionCenterErrorState error={noMerchantError()} />
+  }
+
+  return (
+    <ResolvedActionCenter
+      artifact={parsedArtifact.data}
+      showDevelopmentFixture={showDevelopmentFixture}
+    />
   )
 }

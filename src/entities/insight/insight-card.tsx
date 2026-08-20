@@ -2,6 +2,7 @@ import Link from "next/link"
 import {
   ArrowLeft,
   ArrowUpLeft,
+  Calculator,
   CircleAlert,
   CircleCheck,
   CircleMinus,
@@ -60,10 +61,12 @@ export function InsightCard({
   insight,
   featured = false,
   rank,
+  onEvidenceRequest,
 }: {
   insight: InsightSummary
   featured?: boolean
   rank: number
+  onEvidenceRequest: (evidenceId: string) => void
 }) {
   const status = statusPresentation[insight.status]
   const StatusIcon = status.icon
@@ -89,7 +92,7 @@ export function InsightCard({
           </Badge>
         </div>
         <CardTitle className={cn(featured && "text-lg sm:text-xl")}>
-          {insight.titleFa}
+          <h3>{insight.titleFa}</h3>
         </CardTitle>
         <CardDescription className="text-sm leading-7 text-foreground/80">
           {insight.findingFa}
@@ -141,15 +144,26 @@ export function InsightCard({
           </p>
         </div>
 
-        <Button
-          variant="outline"
-          size="lg"
-          className="min-h-11 w-full sm:w-fit"
-          render={<Link href={insight.destination} />}
-        >
-          بررسی جزئیات
-          <ArrowUpLeft aria-hidden="true" data-icon="inline-end" />
-        </Button>
+        <div className="grid gap-2 sm:flex sm:flex-wrap">
+          <Button
+            size="lg"
+            className="min-h-11 w-full sm:w-fit"
+            aria-label={`چطور ${insight.titleFa} محاسبه شد؟`}
+            onClick={() => onEvidenceRequest(insight.evidenceId)}
+          >
+            <Calculator aria-hidden="true" data-icon="inline-start" />
+            چطور محاسبه شد؟
+          </Button>
+          <Button
+            variant="outline"
+            size="lg"
+            className="min-h-11 w-full sm:w-fit"
+            render={<Link href={insight.destination} />}
+          >
+            بررسی جزئیات
+            <ArrowUpLeft aria-hidden="true" data-icon="inline-end" />
+          </Button>
+        </div>
       </CardContent>
     </Card>
   )
