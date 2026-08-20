@@ -1,0 +1,6 @@
+session_key,try_seq,terminal_key,merchant_key,category_id,category_title,amount,adjusted_fee,session_status,try_status,switch_response_code,psp_code,issuer_bank_code,payer_card_key,verify_type,init_time_ms,verify_time_ms,created_at,try_created_at,verified_at,settled_at,expire_in
+S1,1,T1,M1,C1,Test Category,1000,10,Verified,Verified,,PSP-01,BANK-01,CARD-TEST-0001,Automated,10,20,2026-01-01 10:00:00,2026-01-01 10:00:00,2026-01-01 10:01:00,2026-01-01 10:02:00,1800
+S2,1,T1,M1,C1,Test Category,2000,20,Failed,Failed,ERR-01,PSP-02,,,Automated,11,,2026-01-01 11:00:00,2026-01-01 11:00:00,,,1800
+S2,2,T1,M1,C1,Test Category,2000,20,Verified,Verified,,PSP-01,BANK-02,CARD-TEST-0002,Automated,12,30,2026-01-01 11:00:00,2026-01-01 11:03:00,2026-01-01 11:04:00,2026-01-01 11:05:00,1800
+S3,0,T2,M2,C2,Test Category 2,3000,30,Failed,NoAttempt,,,,,,,,2026-01-02 09:00:00,2026-01-02 09:00:00,,,1800
+S4,1,T2,M2,C2,Test Category 2,4000,40,Failed,Failed,ERR-02,PSP-03,,,Automated,13,,2026-01-02 10:00:00,2026-01-02 10:00:00,,,1800

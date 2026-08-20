@@ -6,7 +6,7 @@ import type {
 } from "../contracts/analysis"
 
 const datasetFingerprint =
-  "abb353bb023c6870ccf6694ce9d2bc38c9170e490b609d2a00b1722e807322db"
+  "2e04a0606153487e900df111605bb8a02797c1a3b9fed2454b1e95f6d1bbe882"
 
 const currentPeriod = { from: "2026-06-01", to: "2026-06-30" } as const
 const comparisonPeriod = { from: "2026-05-01", to: "2026-05-31" } as const
