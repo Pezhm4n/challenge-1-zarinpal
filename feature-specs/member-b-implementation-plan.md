@@ -5,7 +5,7 @@
 - Owner: Member B / Codex #1
 - Branch: `feat/member-b-conversion-rescue`
 - Scope: `conversion-recovery` vertical slice only
-- State: **Phase 3 complete and verified; awaiting Human Lead approval for Phase 4**
+- State: **Phase 4 complete and verified; awaiting Human Lead approval for Phase 5**
 - Source of truth: official challenge brief → `AGENTS.md` → `context/architecture.md` → `contracts.md` → `feature-specs/member-b.md`
 
 ## Goal
@@ -291,6 +291,19 @@ Resolution: Human Lead thresholdهای `100` Session attempted برای هر PSP
 - Evidence برای Count، Amount، Rate، NoAttempt، Retry، Segment و Scenario با fingerprint، فیلتر، numerator/denominator، کنترل‌ها، فرض‌ها، محدودیت Reversed/Paid و Session نمونه masked تولید شد.
 - Fixture مستقل Phase 3، zero denominator، Reversed، Retry deduplication، Amount-once و reference کامل M275 را پوشش می‌دهد.
 - Shared files، UI، Route، Context و Formula Registry در Branch Member B تغییر نکردند.
+
+## Phase 4 Verification Record
+
+- Boundary محلی Strict برای `conversion-recovery.json` اضافه شد و Artifact واقعی M275 را در Runtime اعتبارسنجی می‌کند.
+- Validator ترتیب و nested بودن Funnel، amount/count invariant، Null semantics، PSP insufficient-data و تمام Evidence referenceها را Fail-closed بررسی می‌کند.
+- Route اختصاصی `/recovery` با loading، missing/invalid artifact و merchant-not-found state اضافه شد.
+- UI فارسی RTL با محور «ریل تشخیصی پرداخت» پیاده شد: Root cause، Funnel چهارمرحله‌ای، NoAttempt، Retry، Scenario و PSP×amount-band.
+- هر Count، Amount، Rate، Scenario و Segment دارای Trigger مستقل Evidence است.
+- Evidence Sheet Feature-owned با `EvidenceRecord.result: null` سازگار است و Formula، فیلتر، numerator/denominator، baseline، کنترل، فرض، محدودیت، Data Quality، نمونه Mask‌شده و fingerprint را نمایش می‌دهد.
+- PSP کم‌نمونه بدون Rate، Baseline، Ranking، Winner label یا Recommendation نمایش داده می‌شود.
+- Browser smoke test در Desktop `1440×900` و Mobile `390×844` بدون horizontal overflow انجام شد.
+- بازگشت Focus از Sheet، RTL/lang، heading hierarchy، Merchant error بدون path/stack و تاریخ UTC بررسی شد.
+- Shared Contract، Shared UI، layout، globals، config، Context tracked و `analytics/common` تغییر نکردند.
 
 ## Risks and Mitigations
 
