@@ -47,6 +47,14 @@ function isNonEmptyString(value: unknown): value is string {
   return typeof value === "string" && value.trim().length > 0
 }
 
+function isInternalDestination(value: unknown): value is string {
+  return (
+    typeof value === "string" &&
+    value.startsWith("/") &&
+    !value.startsWith("//")
+  )
+}
+
 function isFiniteNumber(value: unknown): value is number {
   return typeof value === "number" && Number.isFinite(value)
 }
@@ -144,7 +152,7 @@ function isInsightSummary(value: unknown): value is InsightSummary {
     isOneOf(value.confidence, confidenceLevels) &&
     isNonEmptyString(value.confidenceReasonFa) &&
     isNonEmptyString(value.evidenceId) &&
-    isNonEmptyString(value.destination)
+    isInternalDestination(value.destination)
   )
 }
 

@@ -168,6 +168,14 @@ test("شناسه کارت Mask‌نشده در Sample Row رد می‌شود", (
   assert.equal(parseActionCenterArtifact(artifact).success, false)
 })
 
+test("مقصد خارجی یا اجرایی Insight رد می‌شود", () => {
+  for (const destination of ["https://example.com", "//example.com", "javascript:alert(1)"]) {
+    const artifact = cloneFixture()
+    artifact.merchants.M275.prioritizedInsights[0].destination = destination
+    assert.equal(parseActionCenterArtifact(artifact).success, false)
+  }
+})
+
 test("Artifact غایب Error قابل اقدام برمی‌گرداند", () => {
   const result = parseActionCenterArtifact(undefined)
 

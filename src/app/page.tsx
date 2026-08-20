@@ -1,12 +1,12 @@
+import { ActionCenter } from "@/features/action-center/action-center"
+import { m275ActionCenterArtifact } from "@/mocks/action-center-m275"
+
+
 export default function Home() {
   return (
-    <main className="flex min-h-screen items-center justify-center p-6">
-      <div className="text-center">
-        <h1 className="text-2xl font-semibold">نبض زرین</h1>
-        <p className="mt-2 text-sm text-muted-foreground">
-          مخزن برای شروع پیاده‌سازی چهار Feature آماده شده است.
-        </p>
-      </div>
-    </main>
-  );
+    <ActionCenter
+      artifact={m275ActionCenterArtifact}
+      showDevelopmentFixture={process.env.NODE_ENV === "development"}
+    />
+  )
 }
