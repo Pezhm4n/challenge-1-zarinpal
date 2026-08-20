@@ -39,7 +39,7 @@ STAGE_FORMULA_ID = "funnel.stage_progression.v1"
 
 STAGE_ORDER = ("session", "attempted", "in-bank", "verified")
 STAGE_LABELS = {
-    "session": "Session",
+    "session": "پرداخت یکتا",
     "attempted": "شروع تلاش پرداخت",
     "in-bank": "ورود به درگاه یا بانک",
     "verified": "پرداخت Verified",
@@ -691,7 +691,12 @@ def _merchant_payload(
                 denominator=("تمام Sessionها", session_count),
                 formula_fa="NoAttempt Session ÷ تمام Session × ۱۰۰",
                 result=(
-                    _metric(no_attempt_rate.value, "percent", "سهم NoAttempt", precision=2)
+                _metric(
+                    no_attempt_rate.value,
+                    "percent",
+                    "سهم پرداخت‌های بدون شروع تلاش",
+                    precision=2,
+                )
                     if no_attempt_rate.value is not None
                     else None
                 ),

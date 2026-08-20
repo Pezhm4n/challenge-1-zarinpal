@@ -88,7 +88,7 @@ export type EvidenceRecord = {
   numerator?: { labelFa: string; value: number }
   denominator?: { labelFa: string; value: number }
   formulaFa: string
-  result: MetricValue
+  result: MetricValue | null
   baseline?: { type: string; value: number; sampleSize: number }
   controls: string[]
   assumptions: string[]

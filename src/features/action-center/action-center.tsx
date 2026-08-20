@@ -318,7 +318,7 @@ function ResolvedActionCenter({
           <CardTitle className="text-sm">مبنای این گزارش</CardTitle>
         </CardHeader>
         <CardContent className="text-xs leading-6 text-muted-foreground">
-          {new Intl.NumberFormat("fa-IR").format(payload.merchant.dataCoverage.sessions)} Session بررسی شده است. مبلغ‌ها ریال‌اند و Retryها پیش از محاسبه فروش روی Session تجمیع شده‌اند.
+          {new Intl.NumberFormat("fa-IR").format(payload.merchant.dataCoverage.sessions)} پرداخت یکتا بررسی شده است. مبلغ‌ها ریال‌اند و تلاش‌های مجدد پیش از محاسبه فروش روی هر پرداخت تجمیع شده‌اند.
         </CardContent>
       </Card>
 

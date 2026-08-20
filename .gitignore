@@ -63,4 +63,7 @@ venv/
 *.sqlite
 *.sqlite3
 
-public/analysis/action-center.json
+# local editor and coding-agent settings
+.idea/
+.agents/
+.claude/settings.local.json

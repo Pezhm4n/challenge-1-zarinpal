@@ -87856,6 +87856,115 @@
             "created_at"
           ],
           "titleFa": "تمرکز مبلغ روی پرتراکنش‌ترین Card"
+        },
+        {
+          "assumptions": [
+            "تعریف کارت بازگشتی و پوشش کارت در هر دو دوره یکسان است."
+          ],
+          "baseline": {
+            "sampleSize": 1512,
+            "type": "comparison-returning-share",
+            "value": 5.3571
+          },
+          "comparisonPeriod": {
+            "from": "2026-05-01",
+            "to": "2026-05-31"
+          },
+          "controls": [
+            "محاسبه فقط در همان پذیرنده",
+            "Deduplicate در سطح Session"
+          ],
+          "dataQuality": [
+            {
+              "code": "CUSTOMER_CARD_COVERAGE",
+              "messageFa": "100.0٪ از Sessionهای موفق این بازه شناسه کارت ناشناس قابل استفاده دارند؛ KPIهای مشتری فقط بر همین پوشش متکی‌اند.",
+              "severity": "info"
+            }
+          ],
+          "datasetFingerprint": "2e04a0606153487e900df111605bb8a02797c1a3b9fed2454b1e95f6d1bbe882",
+          "denominator": {
+            "labelFa": "سهم کارت بازگشتی دوره مقایسه",
+            "value": 5.3571
+          },
+          "explanationFa": "سهم کارت‌های بازگشتی دوره جاری از سهم همان شاخص در دوره مقایسه کم شده است.",
+          "filters": [
+            {
+              "field": "merchant_key",
+              "operator": "=",
+              "value": "M275"
+            },
+            {
+              "field": "try_status",
+              "operator": "=",
+              "value": "Verified"
+            },
+            {
+              "field": "payer_card_key",
+              "operator": "is not",
+              "value": "null"
+            }
+          ],
+          "formulaFa": "سهم دوره جاری منهای سهم دوره مقایسه",
+          "formulaId": "customer.returning_share.v1",
+          "grain": "merchant-card",
+          "id": "customers-returning-change-M275",
+          "limitations": [
+            "Card ناشناس معادل هویت کامل مشتری یا راه تماس نیست.",
+            "رفتار Card در پذیرنده‌های دیگر بررسی یا نمایش داده نمی‌شود.",
+            "Sessionهای موفق فاقد payer_card_key در Customer denominatorها وارد نمی‌شوند."
+          ],
+          "numerator": {
+            "labelFa": "سهم کارت بازگشتی دوره جاری",
+            "value": 4.1556
+          },
+          "period": {
+            "from": "2026-06-01",
+            "to": "2026-06-30"
+          },
+          "result": {
+            "displayPrecision": 2,
+            "kind": "actual",
+            "labelFa": "تغییر سهم بازگشتی",
+            "unit": "percentage-point",
+            "value": -1.2015
+          },
+          "sampleRows": [
+            {
+              "amountRial": 3980000,
+              "createdAt": "2026-06-19T17:26:30",
+              "payerCardMasked": "کارت-ناشناس-6a353901",
+              "pspCode": "PSP-06",
+              "sessionKey": "1482386",
+              "sessionStatus": "Verified",
+              "tryStatus": "Verified"
+            },
+            {
+              "amountRial": 9790000,
+              "createdAt": "2026-06-19T14:41:55",
+              "payerCardMasked": "کارت-ناشناس-cdb96096",
+              "pspCode": "PSP-06",
+              "sessionKey": "37590",
+              "sessionStatus": "Verified",
+              "tryStatus": "Verified"
+            },
+            {
+              "amountRial": 18070000,
+              "createdAt": "2026-06-18T14:23:31",
+              "payerCardMasked": "کارت-ناشناس-11b086b5",
+              "pspCode": "PSP-06",
+              "sessionKey": "1401981",
+              "sessionStatus": "Verified",
+              "tryStatus": "Verified"
+            }
+          ],
+          "sourceColumns": [
+            "merchant_key",
+            "session_key",
+            "try_status",
+            "payer_card_key",
+            "created_at"
+          ],
+          "titleFa": "تغییر سهم کارت‌های بازگشتی"
         }
       ],
       "insights": [
@@ -87864,7 +87973,7 @@
           "confidence": "medium",
           "confidenceReasonFa": "عدد قطعی است اما فقط رفتار Cardهای ناشناس دارای پوشش را می‌سنجد.",
           "destination": "/customers",
-          "evidenceId": "customers-returning-M275-current",
+          "evidenceId": "customers-returning-change-M275",
           "feature": "customers",
           "findingFa": "سهم Cardهای بازگشتی از 5.36٪ به 4.16٪ رسیده؛ تغییر -1.20 واحد درصد است.",
           "id": "customers-returning-change-M275",
@@ -87891,7 +88000,7 @@
           "impact": {
             "displayPrecision": 2,
             "kind": "actual",
-            "labelFa": "سهم مبلغ Card اول",
+            "labelFa": "تمرکز مبلغ Card اول",
             "unit": "percent",
             "value": 1.4263
           },

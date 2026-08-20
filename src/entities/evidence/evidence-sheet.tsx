@@ -31,9 +31,9 @@ const dateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-gregory", {
 
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
   attempt: "تلاش پرداخت",
-  session: "Session",
+  session: "پرداخت یکتا",
   "merchant-period": "پذیرنده در بازه",
-  "merchant-card": "پذیرنده و کارت Mask‌شده",
+  "merchant-card": "پذیرنده و کارت پوشانده‌شده",
   "peer-group": "گروه همتا",
 }
 
@@ -96,23 +96,41 @@ function SampleValue({ value }: { value: string | number | null | undefined }) {
   return <>{typeof value === "number" ? numberFormatter.format(value) : value}</>
 }
 
+const persianDigits = "۰۱۲۳۴۵۶۷۸۹"
+
+function localizeDigits(value: string): string {
+  return value.replace(/\d/g, (digit) => persianDigits[Number(digit)])
+}
+
+function formatSampleTimestamp(value: string): string {
+  return localizeDigits(value.replace("T", "، ").replace(/Z$/, ""))
+}
+
 const sampleFields: Array<{
   key: keyof EvidenceSampleRow
   label: string
   format?: (row: EvidenceSampleRow) => string | number | null | undefined
 }> = [
-  { key: "sessionKey", label: "Session" },
+  {
+    key: "sessionKey",
+    label: "شناسه پرداخت",
+    format: (row) => localizeDigits(row.sessionKey),
+  },
   { key: "trySeq", label: "شماره تلاش" },
-  { key: "createdAt", label: "زمان" },
+  {
+    key: "createdAt",
+    label: "زمان",
+    format: (row) => formatSampleTimestamp(row.createdAt),
+  },
   {
     key: "amountRial",
     label: "مبلغ (ریال)",
     format: (row) => numberFormatter.format(row.amountRial),
   },
-  { key: "sessionStatus", label: "وضعیت Session" },
+  { key: "sessionStatus", label: "وضعیت پرداخت" },
   { key: "tryStatus", label: "وضعیت تلاش" },
   { key: "pspCode", label: "PSP" },
-  { key: "payerCardMasked", label: "کارت Mask‌شده" },
+  { key: "payerCardMasked", label: "کارت پوشانده‌شده" },
 ]
 
 function SampleRows({ rows }: { rows: EvidenceSampleRow[] }) {
@@ -149,7 +167,7 @@ function SampleRows({ rows }: { rows: EvidenceSampleRow[] }) {
 
       <div className="hidden overflow-x-auto sm:block">
         <table className="w-full min-w-3xl border-separate border-spacing-0 text-xs">
-          <caption className="sr-only">نمونه Sessionهای استفاده‌شده در مدرک</caption>
+          <caption className="sr-only">نمونه پرداخت‌های استفاده‌شده در مدرک</caption>
           <thead>
             <tr>
               {sampleFields.map((field) => (
@@ -229,8 +247,12 @@ export function EvidenceSheet({
           <>
             <SheetHeader className="gap-2 border-b pe-14 text-start">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant={evidence.result.kind === "estimate" ? "default" : "secondary"}>
-                  {metricKindLabels[evidence.result.kind]}
+                <Badge
+                  variant={evidence.result?.kind === "estimate" ? "default" : "secondary"}
+                >
+                  {evidence.result
+                    ? metricKindLabels[evidence.result.kind]
+                    : "داده ناکافی"}
                 </Badge>
                 <Badge variant="outline">{grainLabels[evidence.grain]}</Badge>
               </div>
@@ -244,7 +266,9 @@ export function EvidenceSheet({
               <div className="rounded-lg bg-muted/70 p-4">
                 <p className="text-xs text-muted-foreground">نتیجه محاسبه</p>
                 <p className="mt-2 break-words text-xl font-bold tabular-nums">
-                  {formatMetricValue(evidence.result)}
+                  {evidence.result
+                    ? formatMetricValue(evidence.result)
+                    : "قابل محاسبه نیست"}
                 </p>
               </div>
 
@@ -267,7 +291,7 @@ export function EvidenceSheet({
 
               <EvidenceSection title="فرمول و بازه">
                 <dl className="grid gap-3">
-                  <KeyValue label="Formula ID">
+                  <KeyValue label="شناسه فرمول">
                     <code dir="ltr" className="inline-block rounded bg-muted px-1.5 py-0.5 text-xs">
                       {evidence.formulaId}
                     </code>
@@ -305,7 +329,7 @@ export function EvidenceSheet({
                       ? `${evidence.denominator.labelFa}: ${numberFormatter.format(evidence.denominator.value)}`
                       : "ثبت نشده"}
                   </KeyValue>
-                  <KeyValue label="Baseline">
+                  <KeyValue label="خط مبنا">
                     {evidence.baseline
                       ? `${evidence.baseline.type}، مقدار ${numberFormatter.format(evidence.baseline.value)}، نمونه ${numberFormatter.format(evidence.baseline.sampleSize)}`
                       : "ثبت نشده"}
@@ -313,62 +337,79 @@ export function EvidenceSheet({
                 </dl>
               </EvidenceSection>
 
-              <EvidenceSection title="منبع و فیلترها">
-                <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Database aria-hidden="true" className="mt-1 size-4 shrink-0" />
-                  <p>Grain محاسبه: {grainLabels[evidence.grain]}</p>
-                </div>
-                <div className="flex flex-wrap gap-2" dir="ltr">
-                  {evidence.sourceColumns.map((column) => (
-                    <code key={column} className="rounded bg-muted px-2 py-1 text-xs">
-                      {column}
-                    </code>
-                  ))}
-                </div>
-                {evidence.filters.length > 0 ? (
-                  <dl className="grid gap-2">
-                    {evidence.filters.map((filter, index) => (
-                      <KeyValue key={`${filter.field}-${index}`} label={`فیلتر ${numberFormatter.format(index + 1)}`}>
-                        <code dir="ltr" className="text-xs">
-                          {filter.field} {filter.operator} {formatFilterValue(filter.value)}
-                        </code>
-                      </KeyValue>
-                    ))}
-                  </dl>
-                ) : (
-                  <p className="text-sm text-muted-foreground">فیلتر اضافه‌ای اعمال نشده است.</p>
-                )}
-              </EvidenceSection>
-
-              <EvidenceSection title="کنترل‌ها و فرض‌ها">
-                <div className="grid gap-4 sm:grid-cols-2">
-                  <div className="grid content-start gap-2">
-                    <p className="text-xs font-semibold">کنترل‌های مقایسه</p>
-                    <EvidenceList items={evidence.controls} emptyLabel="کنترلی ثبت نشده است." />
-                  </div>
-                  <div className="grid content-start gap-2">
-                    <p className="text-xs font-semibold">فرض‌ها</p>
-                    <EvidenceList items={evidence.assumptions} emptyLabel="فرض اضافه‌ای ثبت نشده است." />
-                  </div>
-                </div>
-              </EvidenceSection>
-
               <EvidenceSection title="محدودیت‌ها">
                 <EvidenceList items={evidence.limitations} emptyLabel="محدودیتی ثبت نشده است." />
               </EvidenceSection>
 
-              <EvidenceSection title="نمونه داده Mask‌شده">
-                {!hasSufficientEvidenceSample(evidence) ? null : (
-                  <p className="text-xs leading-5 text-muted-foreground">
-                    Sample Rowها فقط برای ردیابی محاسبه‌اند و اندازه نمونه آماری نیستند.
-                  </p>
-                )}
-                <SampleRows rows={evidence.sampleRows} />
-              </EvidenceSection>
+              <details className="group rounded-xl border bg-muted/20">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span>جزئیات فنی و نمونه داده</span>
+                  <span className="text-xs font-normal text-muted-foreground group-open:hidden">
+                    برای بررسی بیشتر باز کنید
+                  </span>
+                  <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">
+                    بستن جزئیات
+                  </span>
+                </summary>
 
-              <p className="break-all border-t pt-4 text-xs text-muted-foreground">
-                Dataset fingerprint: <span dir="ltr">{evidence.datasetFingerprint}</span>
-              </p>
+                <div className="grid gap-5 px-4 pb-4 sm:px-5 sm:pb-5">
+                  <EvidenceSection title="منبع و فیلترها">
+                    <p className="text-sm leading-6 text-muted-foreground">
+                      منبع نشان می‌دهد عدد از کدام ستون‌ها ساخته شده و فیلترها مشخص می‌کنند چه داده‌هایی وارد محاسبه شده‌اند.
+                    </p>
+                    <div className="flex items-start gap-2 text-sm text-muted-foreground">
+                      <Database aria-hidden="true" className="mt-1 size-4 shrink-0" />
+                      <p>سطح محاسبه: {grainLabels[evidence.grain]}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-2" dir="ltr">
+                      {evidence.sourceColumns.map((column) => (
+                        <code key={column} className="rounded bg-muted px-2 py-1 text-xs">
+                          {column}
+                        </code>
+                      ))}
+                    </div>
+                    {evidence.filters.length > 0 ? (
+                      <dl className="grid gap-2">
+                        {evidence.filters.map((filter, index) => (
+                          <KeyValue key={`${filter.field}-${index}`} label={`فیلتر ${numberFormatter.format(index + 1)}`}>
+                            <code dir="ltr" className="text-xs">
+                              {filter.field} {filter.operator} {formatFilterValue(filter.value)}
+                            </code>
+                          </KeyValue>
+                        ))}
+                      </dl>
+                    ) : (
+                      <p className="text-sm text-muted-foreground">فیلتر اضافه‌ای اعمال نشده است.</p>
+                    )}
+                  </EvidenceSection>
+
+                  <EvidenceSection title="کنترل‌ها و فرض‌ها">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="grid content-start gap-2">
+                        <p className="text-xs font-semibold">کنترل‌های مقایسه</p>
+                        <EvidenceList items={evidence.controls} emptyLabel="کنترلی ثبت نشده است." />
+                      </div>
+                      <div className="grid content-start gap-2">
+                        <p className="text-xs font-semibold">فرض‌ها</p>
+                        <EvidenceList items={evidence.assumptions} emptyLabel="فرض اضافه‌ای ثبت نشده است." />
+                      </div>
+                    </div>
+                  </EvidenceSection>
+
+                  <EvidenceSection title="نمونه داده پوشانده‌شده">
+                    {!hasSufficientEvidenceSample(evidence) ? null : (
+                      <p className="text-xs leading-5 text-muted-foreground">
+                        این ردیف‌ها فقط برای ردیابی محاسبه‌اند و اندازه نمونه آماری محسوب نمی‌شوند.
+                      </p>
+                    )}
+                    <SampleRows rows={evidence.sampleRows} />
+                  </EvidenceSection>
+
+                  <p className="break-all border-t pt-4 text-xs text-muted-foreground">
+                    شناسه نسخه داده: <span dir="ltr">{evidence.datasetFingerprint}</span>
+                  </p>
+                </div>
+              </details>
             </div>
           </>
         )}

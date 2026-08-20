@@ -7,6 +7,7 @@ from typing import Mapping
 
 from analytics.common import write_artifact_json
 
+from .base import build_m275_action_center_base
 from .compose import compose_action_center_artifact
 
 
@@ -21,7 +22,11 @@ def main() -> None:
     parser = argparse.ArgumentParser(
         description="Compose validated feature artifacts into action-center.json",
     )
-    parser.add_argument("--base", required=True, type=Path)
+    parser.add_argument(
+        "--base",
+        type=Path,
+        help="Optional prebuilt Action Center base; omitted for the real M275 base",
+    )
     parser.add_argument(
         "--feature",
         required=True,
@@ -37,9 +42,15 @@ def main() -> None:
     parser.add_argument("--limit", type=int, default=3)
     args = parser.parse_args()
 
+    feature_artifacts = [_read_object(path) for path in args.feature]
+    base_artifact = (
+        _read_object(args.base)
+        if args.base is not None
+        else build_m275_action_center_base(feature_artifacts)
+    )
     artifact = compose_action_center_artifact(
-        _read_object(args.base),
-        [_read_object(path) for path in args.feature],
+        base_artifact,
+        feature_artifacts,
         limit=args.limit,
     )
     write_artifact_json(artifact, args.output)
