@@ -62,3 +62,5 @@ venv/
 *.duckdb.wal
 *.sqlite
 *.sqlite3
+
+public/analysis/action-center.json
