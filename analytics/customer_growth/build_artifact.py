@@ -517,7 +517,7 @@ def _evidence(
     denominator_label: str,
     denominator: int | float,
     formula_fa: str,
-    result: dict[str, Any],
+    result: dict[str, Any] | None,
     fingerprint: str,
     sample_rows: list[dict[str, Any]],
     data_quality: list[dict[str, str]],
@@ -642,6 +642,7 @@ def _merchant_payload(
     ]
 
     returning_evidence_id = f"customers-returning-{merchant_key}-current"
+    returning_change_evidence_id = f"customers-returning-change-{merchant_key}"
     repeat_pair_evidence_id = f"customers-repeat-pair-{merchant_key}-current"
     repeat_revenue_evidence_id = f"customers-repeat-revenue-{merchant_key}-current"
     cohort_evidence_id = f"customers-cohort-{merchant_key}-current"
@@ -807,6 +808,69 @@ def _merchant_payload(
         if returning_share is not None and comparison_share is not None
         else None
     )
+    change_quality = metric_quality(
+        active_cards,
+        "RETURNING_CHANGE_CURRENT_ZERO_DENOMINATOR",
+        "تعداد Card فعال دوره جاری",
+    )
+    if comparison_active == 0:
+        change_quality.append(
+            {
+                "severity": "warning",
+                "code": "RETURNING_CHANGE_COMPARISON_ZERO_DENOMINATOR",
+                "messageFa": "تعداد Card فعال دوره مقایسه صفر است؛ تغییر سهم بازگشتی قابل محاسبه نیست.",
+            }
+        )
+    evidence_records.append(
+        _evidence(
+            evidence_id=returning_change_evidence_id,
+            formula_id="customer.returning_share.v1",
+            title_fa="تغییر سهم کارت‌های بازگشتی",
+            explanation_fa=(
+                "سهم کارت‌های بازگشتی دوره جاری از سهم همان شاخص در دوره مقایسه کم شده است."
+            ),
+            grain="merchant-card",
+            source_columns=[
+                "merchant_key",
+                "session_key",
+                "try_status",
+                "payer_card_key",
+                "created_at",
+            ],
+            selection=selection,
+            numerator_label="سهم کارت بازگشتی دوره جاری",
+            numerator=returning_share or 0,
+            denominator_label="سهم کارت بازگشتی دوره مقایسه",
+            denominator=comparison_share or 0,
+            formula_fa="سهم دوره جاری منهای سهم دوره مقایسه",
+            result=(
+                _metric(
+                    delta_pp,
+                    "percentage-point",
+                    "تغییر سهم بازگشتی",
+                    precision=2,
+                )
+                if delta_pp is not None
+                else None
+            ),
+            fingerprint=fingerprint,
+            sample_rows=serialize_samples("returning"),
+            data_quality=change_quality,
+            assumptions=[
+                "تعریف کارت بازگشتی و پوشش کارت در هر دو دوره یکسان است."
+            ],
+            limitations=common_limitations,
+            baseline=(
+                {
+                    "type": "comparison-returning-share",
+                    "value": comparison_share,
+                    "sampleSize": comparison_active,
+                }
+                if comparison_share is not None
+                else None
+            ),
+        )
+    )
     insufficient = active_cards < min_cohort_size or returning_share is None
     if insufficient:
         status = "insufficient-data"
@@ -859,7 +923,7 @@ def _merchant_payload(
             ),
             "confidence": confidence,
             "confidenceReasonFa": confidence_reason,
-            "evidenceId": returning_evidence_id,
+            "evidenceId": returning_change_evidence_id,
             "destination": "/customers",
         }
     ]
@@ -878,7 +942,7 @@ def _merchant_payload(
                 ),
                 "findingFa": f"پرتراکنش‌ترین Card ناشناس {top_share:.2f}٪ از مبلغ card-known دوره را ساخته است.",
                 "actionFa": "ریسک تمرکز را در برنامه وفاداری بسنجید؛ فهرست تماس یا هویت مشتری از این داده استخراج نمی‌شود.",
-                "impact": _metric(top_share, "percent", "سهم مبلغ Card اول", precision=2),
+                "impact": _metric(top_share, "percent", "تمرکز مبلغ Card اول", precision=2),
                 "confidence": "medium",
                 "confidenceReasonFa": "مبلغ واقعی است اما Card ناشناس معادل هویت مشتری نیست.",
                 "evidenceId": concentration_evidence_id,

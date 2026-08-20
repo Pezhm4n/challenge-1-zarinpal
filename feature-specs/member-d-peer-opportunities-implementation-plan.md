@@ -302,29 +302,28 @@ Fixture-run و full-dataset run جدا اجرا می‌شوند. Fixture بای�
 
 ## 10. Decision Gates and Shared Requests
 
-### D1 — Peer control policy — تأیید پژمان
+### D1 — Peer control policy — مصوب در Integration gate
 
-پیشنهاد پایه: same category + same full period + target exclusion + حداقل ۱۰۰ Session؛ size و ticket به‌صورت metricهای کنترل و Evidence جدا نمایش داده شوند. اگر قرار است size/ticket cohort را فیلتر کنند، threshold دقیق باید قبل از Full run توسط پژمان تعیین شود.
+سیاست نهایی: same category + same full period + target exclusion + حداقل ۱۰۰ Session برای هر پذیرنده و حداقل ۱۰ peer. برای جلوگیری از آستانهٔ دلخواه و افت نمونه، size/ticket فیلتر جداگانه نیستند؛ رتبه مبلغ کل و میانگین مبلغ به‌صورت دو معیار مستقل کنار نرخ موفقیت نمایش داده و محدودیت این تصمیم در Evidence ثبت می‌شود.
 
-### D2 — Undefined numeric fields — تأیید ایدین/پژمان
+### D2 — Undefined numeric fields — مصوب در Integration gate
 
-Guardrail قرارداد می‌گوید zero denominator باید `null` باشد، اما `decomposition.changePct` و `timeWindows.liftVsBaselinePct` در Type فعلی `number` هستند. قبل از Implementation یکی از این رفتارها باید مصوب شود:
+رفتار نهایی:
 
-- Contract به `number | null` تغییر کند؛ یا
-- رکورد undefined از آرایه حذف و فقط Data-quality Evidence/Insight تولید شود.
+- رکورد decomposition یا time-window با مخرج نامعتبر از آرایه نمایشی حذف می‌شود و Insight حالت `insufficient-data` می‌گیرد.
+- `EvidenceRecord.result = null` فقط همراه هشدار صریح Data-quality در Shared boundary پذیرفته می‌شود.
+- `0` جعلی، `Infinity` و `NaN` در Pipeline و Runtime رد می‌شوند.
 
-Member D نباید `0` جعلی یا Infinity تولید کند.
-
-### D3 — Default periods/timezone — تأیید پژمان
+### D3 — Default periods/timezone — مصوب در Integration gate
 
 - Decomposition دموی M275: May در برابر June.
-- Peer facts `54.2 / 38.8 / 87.8 / 10.2` باید period دقیق مصوب داشته باشند.
-- timezone ستون `created_at` باید برای label ساعت مشخص شود؛ تا آن زمان timestamp بدون conversion استفاده می‌شود.
+- تمام واقعیت‌های peer و timing از دوره کامل June در Artifact نهایی بازتولید شده‌اند؛ اعداد آزمایشی اولیه کنار گذاشته شدند.
+- `created_at` زمان محلی ایران است و هیچ تبدیل UTC روی برچسب روز/ساعت اعمال نمی‌شود.
 
 ### Dependencies by member
 
 - **ایدین — Member A:** normalized session contract، dataset fingerprint، TS contracts، Shared Evidence و shell
-- **پژمان — Member B / Human Lead:** تأیید D1–D3 و هر تغییر Shared
+- **پژمان — Member B / Human Lead:** اختیار Integration gate این مرحله را به شایان واگذار کرد
 - **همتی — Member C:** Customer summary فقط در صورت نیاز از Contract مصوب؛ بدون Import مستقیم
 - **شایان — Member D:** تمام Analytics/UI/Testهای Feature و handoff مربوط به peer opportunities
 

@@ -46,6 +46,15 @@ def test_customer_mix_repeat_and_dedupe(tmp_path: Path) -> None:
     assert payload["repeatRevenueSharePct"] == 5.1724
 
 
+def test_customer_insight_impacts_match_their_evidence(tmp_path: Path) -> None:
+    payload = _build(tmp_path)["merchants"]["MTEST"]
+    evidence_by_id = {record["id"]: record for record in payload["evidence"]}
+
+    for insight in payload["insights"]:
+        if insight["impact"] is not None:
+            assert insight["impact"] == evidence_by_id[insight["evidenceId"]]["result"]
+
+
 def test_cohort_retention_is_hand_checkable(tmp_path: Path) -> None:
     cohorts = _build(tmp_path)["merchants"]["MTEST"]["cohorts"]
 
@@ -101,6 +110,7 @@ def test_evidence_samples_contribute_to_each_formula_numerator(tmp_path: Path) -
     evidence = {
         row["formulaId"]: row
         for row in _build(tmp_path)["merchants"]["MTEST"]["evidence"]
+        if not row["id"].startswith("customers-returning-change-")
     }
 
     assert {row["sessionKey"] for row in evidence["customer.returning_share.v1"]["sampleRows"]} == {
@@ -142,7 +152,11 @@ def test_elapsed_zero_cohort_cells_are_materialized_not_omitted(tmp_path: Path) 
 
 def test_zero_denominators_are_null_in_payload_and_evidence(tmp_path: Path) -> None:
     payload = _build_merchant(tmp_path, "MNULL")
-    evidence = {row["formulaId"]: row for row in payload["evidence"]}
+    evidence = {
+        row["formulaId"]: row
+        for row in payload["evidence"]
+        if not row["id"].startswith("customers-returning-change-")
+    }
 
     assert payload["returningSharePct"] is None
     assert payload["repeatPairPct"] is None

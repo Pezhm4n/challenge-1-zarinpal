@@ -1,25 +1,40 @@
 # نبض زرین — Zarin Pulse
 
-مرکز اقدام تحلیلی برای پذیرندگان زرین‌پال. محصول به‌جای نمایش مجموعه‌ای از نمودارها، فرصت‌های رشد را بر اساس اثر ریالی، اقدام پیشنهادی، اطمینان و مدرک محاسبه اولویت‌بندی می‌کند.
+مرکز اقدام تحلیلی برای پذیرندگان زرین‌پال. نبض زرین به‌جای یک داشبورد نمودارمحور، مهم‌ترین فرصت‌ها را با اثر مالی، اقدام بعدی، سطح اطمینان و مدرک محاسبه ارائه می‌کند.
 
-## وضعیت Repository
-
-این Commit فقط Scaffold، معماری، Context، Contract و Feature Specها را آماده می‌کند. Featureهای محصول هنوز پیاده‌سازی نشده‌اند.
-
-## اجرای Scaffold
+## اجرای نسخه دمو
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
-بررسی کامل:
+سپس مسیر اصلی را در `http://localhost:3000` باز کنید. داده دمو از Artifactهای کوچک و ازپیش‌محاسبه‌شده در `public/analysis/` خوانده می‌شود و برای اجرا به CSV خام، پایگاه داده یا سرویس هوش مصنوعی نیاز ندارد.
+
+## مسیرهای محصول
+
+- `/` — مرکز اقدام و سه اولویت اصلی پذیرنده M275
+- `/recovery` — قیف پرداخت، NoAttempt، Retry و سناریوی بازیابی
+- `/customers` — کارت‌های بازگشتی، تکرار خرید، Cohort و تمرکز
+- `/opportunities` — تفکیک تغییر فروش، مقایسه هم‌صنف و فرصت‌های زمانی
+
+هر عدد مهم از داخل رابط به مدرک محاسبه متصل است. مدرک شامل فرمول، بازه، صورت و مخرج، خط مبنا، کنترل‌های مقایسه، محدودیت‌ها و نمونه داده پوشانده‌شده است.
+
+## بازتولید Action Center
+
+پس از آماده‌بودن سه Artifact فیچر، خروجی نهایی بدون محاسبه دوباره تحلیل‌ها ساخته می‌شود:
 
 ```bash
-npm run verify
+python -m analytics.action_center \
+  --feature public/analysis/conversion-recovery.json \
+  --feature public/analysis/customer-growth.json \
+  --feature public/analysis/peer-opportunities.json \
+  --output public/analysis/action-center.json
 ```
 
-## دیتاست
+Composer یکسان‌بودن نسخه داده، بازه، پیوند Insight و Evidence و تطابق مقدارهای نمایشی را کنترل می‌کند.
+
+## بازتولید تحلیل‌ها از داده خام
 
 فایل خام باید با نام زیر قرار گیرد و وارد Git نمی‌شود:
 
@@ -27,29 +42,29 @@ npm run verify
 data/raw/challenge_data.csv
 ```
 
-نسخه محلی فعلی از `I:\Computer\dev\Hackathon\challenge_data.csv` کپی شده است. خروجی‌های کوچک و قطعی تحلیل پس از پیاده‌سازی Pipeline در `public/analysis/` تولید می‌شوند تا نسخه Deployشده به CSV حدود ۴۹۵ مگابایتی نیاز نداشته باشد.
-
-وابستگی‌های تحلیلی:
+وابستگی‌های تحلیل آفلاین:
 
 ```bash
 python -m pip install -r requirements-analytics.txt
 ```
 
+داده خام در سطح «تلاش پرداخت» است. تمام KPIهای فروش پیش از محاسبه در سطح `session_key` تجمیع می‌شوند تا Retryها دوباره‌شماری نشوند. مبلغ‌ها ریال‌اند و `adjusted_fee` کارمزد واقعی زرین‌پال محسوب نمی‌شود.
+
+## بررسی کامل
+
+```bash
+python -m pytest analytics/tests -q
+node --test tests/unit/*.test.mjs
+npm run verify
+```
+
+`npm run verify` شامل lint، TypeScript typecheck و Production build است.
+
 ## مستندات اصلی
 
-- `AGENTS.md`: قوانین Repository
-- `context/project-overview.md`: مسئله، Strategy و Scope
-- `context/architecture.md`: معماری و پوشه‌بندی قطعی
-- `contracts.md`: قرارداد داده و Evidence
-- `feature-specs/`: وظیفه چهار Feature Owner
-- `team-plan.md`: زمان‌بندی، Dependency و Branchها
-- `risk-register.md`: ریسک‌ها و Plan B
-- `submission-plan.md`: الزامات تحویل و Demo
-
-## قواعد مهم
-
-- واحد پول ریال است.
-- `adjusted_fee` کارمزد واقعی زرین‌پال نیست.
-- Grain خام تلاش پرداخت است؛ فروش در سطح `session_key` محاسبه می‌شود.
-- هر Insight باید از داخل UI قابل ردیابی باشد.
-- Remote، Push و Production Deployment فقط توسط Human Lead انجام می‌شود.
+- `AGENTS.md` — قوانین Repository و مالکیت فایل‌ها
+- `context/project-overview.md` — مسئله، راهبرد محصول و Golden Journey
+- `context/architecture.md` — معماری پردازش آفلاین و Runtime استاتیک
+- `contracts.md` — قرارداد تحلیل و Evidence
+- `feature-specs/` — برنامه و تحویل هر Feature
+- `submission-plan.md` — چک‌لیست دمو و تحویل
