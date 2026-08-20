@@ -5,7 +5,7 @@
 - Owner: Member C / Codex
 - Branch: `codex/member-c-customer-growth`
 - Scope: `customer-growth` vertical slice only
-- State: **Review fixes verified; awaiting Human Lead approvals — not Done**
+- State: **Implemented and fully verified in Member C scope; ready for Human Lead integration**
 - Source of truth: `AGENTS.md` → `context/architecture.md` → `contracts.md` → `feature-specs/member-c.md`
 
 ## Goal
@@ -46,16 +46,16 @@ Artifact باید Envelope نسخه `1.0` و `feature: "customer-growth"` داش
 
 ## Metric Definitions
 
-| Metric | Planned deterministic definition | Formula ID / gate |
+| Metric | Planned deterministic definition | Formula ID / resolution |
 |---|---|---|
-| Active cards | تعداد Card یکتای دارای Session موفق در period انتخابی | Feature-local evidence؛ ID نهایی باید تأیید شود |
+| Active cards | تعداد Card یکتای دارای Session موفق در period انتخابی | Feature-local count؛ Formula ID مشترک جداگانه نیاز ندارد |
 | New cards | Active cardهایی که اولین Session موفقشان برای همان Merchant داخل period است | بخشی از customer mix |
 | Returning cards | Active cardهایی که اولین Session موفقشان برای همان Merchant پیش از شروع period است | `customer.returning_share.v1` |
 | Returning share | `returningCards / activeCards × 100` | `customer.returning_share.v1` |
 | Repeat pair rate | زوج‌های merchant/card با حداقل ۲ Session موفق یکتا تا انتهای period تقسیم بر تمام زوج‌های واجد شرایط تا انتهای period | `customer.repeat_pair_rate.v1` |
-| Repeat revenue share | حجم موفق period از Cardهای returning تقسیم بر حجم موفق card-known همان period | **Formula ID نیازمند تأیید Human Lead** |
-| Monthly cohort retention | Cardهای Cohort ماه اولین خرید که در ماه index نیز خرید موفق دارند تقسیم بر اندازه Cohort | **Formula ID و minimum cohort sample نیازمند تأیید Human Lead** |
-| Concentration | سهم Cardها و درآمد در bucketهای ثابت مرتب‌شده بر اساس حجم موفق period | **Formula ID و bucket definition نیازمند تأیید Human Lead** |
+| Repeat revenue share | حجم موفق period از Cardهای returning تقسیم بر حجم موفق card-known همان period | `customer.repeat_revenue_share.v1`؛ تأییدشده توسط Human Lead |
+| Monthly cohort retention | Cardهای Cohort ماه اولین خرید که در ماه index نیز خرید موفق دارند تقسیم بر اندازه Cohort | `customer.cohort_retention.v1` با minimum cohort sample برابر `20`؛ تأییدشده توسط Human Lead |
+| Concentration | سهم Cardها و درآمد در bucketهای ثابت مرتب‌شده بر اساس حجم موفق period | `customer.revenue_concentration.v1` با bucketهای `top-1`، `rank-2-5` و `remaining`؛ تأییدشده توسط Human Lead |
 
 قواعد عمومی: denominator صفر به `null` و Data-quality note منجر می‌شود؛ Retry یا چند Verified row یک Session نباید دوباره شمرده شود؛ مبلغ‌ها integer ریال باقی می‌مانند.
 
@@ -95,14 +95,14 @@ Artifact باید Envelope نسخه `1.0` و `feature: "customer-growth"` داش
 - Evidence Drawer و Insight Card مشترک Member A؛ Duplicate محلی ساخته نمی‌شود.
 - `analytics/common` برای loader، Session normalization، Formula registry و dataset fingerprint؛ تا آماده‌شدن آن، queryهای Fixture مستقل و قابل جایگزینی نگه داشته می‌شوند.
 
-### Resolved inputs and remaining integration gates
+### Resolved inputs and integration notes
 
 1. CSV کامل از مسیر استاندارد و Git-ignored یعنی `data/raw/challenge_data.csv` خوانده می‌شود؛ فایل خام commit یا وارد Client bundle نمی‌شود.
 2. اعداد M275 روی داده کامل بازتولید شدند: May برابر `5.3571%` و June برابر `4.1556%`.
 3. برای Cohort حداقل نمونه `20` و برای Concentration سه bucket غیرهم‌پوشان `top-1`، `rank-2-5` و `remaining` استفاده شد.
 4. تا آماده‌شدن Shared Evidence component، disclosure محدود به Feature و typeهای محلی مطابق `contracts.md` پیاده‌سازی شد.
-5. Formula IDهای `customer.repeat_revenue_share.v1`، `customer.cohort_retention.v1` و `customer.revenue_concentration.v1` هنوز باید توسط Human Lead وارد Registry مشترک شوند؛ فایل مشترک توسط Member C تغییر نکرده است.
-6. Guardrail صفر-denominator به `MetricValue.value: null` نیاز دارد، در حالی که متن فعلی `contracts.md` فقط `number` را اعلام می‌کند؛ Slice رفتار امن `null + DataQuality` را پیاده کرده اما همگام‌سازی قرارداد مشترک نیازمند تصمیم Human Lead است.
+5. Formula IDهای `customer.repeat_revenue_share.v1`، `customer.cohort_retention.v1` و `customer.revenue_concentration.v1` توسط Human Lead تأیید شدند؛ ثبت احتمالی در Registry مشترک Lead-owned است و فایل مشترک توسط Member C تغییر نکرده است.
+6. رفتار `null + DataQuality` برای zero denominator توسط Human Lead تأیید شد؛ `contracts.md` برای رعایت مالکیت Shared دست‌نخورده مانده و همگام‌سازی متن قرارداد در مرحله Integration انجام می‌شود.
 
 ## Implementation Steps
 
@@ -205,6 +205,12 @@ npm run build
 - تست‌های Feature و `npm run verify` سبز باشند.
 - Diff خارج Scope وجود نداشته و Integration برای Human Lead آماده باشد.
 
-## Approval Requested
+## Approval Record
 
-با تأیید Member C، فقط مراحل Feature-owned و Fixture-first آغاز می‌شوند. هر تغییر در Shared Contract، Formula Registry، Shared UI یا معماری همچنان به تأیید جداگانه Human Lead نیاز دارد.
+- Human Lead سه Formula ID جدید، minimum Cohort sample، bucketهای Concentration و رفتار `null + DataQuality` را تأیید کرد.
+- Shared Contract، Formula Registry، Shared UI، README و معماری در این Branch تغییر نکرده‌اند.
+- `python -m pytest`: تعداد `11` تست Passed.
+- `npm run lint`، `npm run typecheck` و `npm run build`: Passed.
+- Desktop `1440×900` و Mobile `390×844`: بررسی‌شده؛ RTL، heading order، touch target، overflow، selector و Evidence Passed.
+- M275، zero denominator در M101، تمایز Cohort صفر/آینده در M131 و merchant نامعتبر بررسی شدند.
+- Branch برای Review و Integration توسط Human Lead آماده است؛ Push، Merge و Deploy توسط Member C انجام نشده است.
