@@ -22,6 +22,14 @@ function formatPercentile(value: number) {
   return `${numberFormatter.format(value)}٪`;
 }
 
+function MetricValue({ value, unit }: { value: number; unit: "percent" | "rial" }) {
+  return (
+    <bdi dir="ltr" className="tabular-nums">
+      {formatValue(value, unit)}
+    </bdi>
+  );
+}
+
 export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
   return (
     <section aria-labelledby="peer-title" className="grid gap-4">
@@ -64,7 +72,7 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
                 <div className="grid gap-1">
                   <h3 className="font-medium">{label.title}</h3>
                   <p className="text-xs text-muted-foreground">
-                    میانهٔ کسب‌وکارهای مشابه: {formatValue(benchmark.peerMedian, label.unit)}
+                    میانهٔ کسب‌وکارهای مشابه: <MetricValue value={benchmark.peerMedian} unit={label.unit} />
                   </p>
                 </div>
                 <UsersRound aria-hidden="true" className="size-5 text-muted-foreground" />
@@ -72,11 +80,15 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
 
               <div className="grid gap-3">
                 <div className="flex items-end justify-between gap-3">
-                  <p className="text-2xl font-semibold tabular-nums" dir="ltr">
-                    صدک {formatPercentile(benchmark.percentile)}
+                  <p className="grid gap-0.5">
+                    <span className="text-xs text-muted-foreground">جایگاه شما</span>
+                    <bdi dir="ltr" className="text-2xl font-semibold tabular-nums">
+                      صدک {formatPercentile(benchmark.percentile)}
+                    </bdi>
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    {numberFormatter.format(benchmark.peerCount)} کسب‌وکار مشابه
+                    <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(benchmark.peerCount)}</bdi>
+                    {" "}کسب‌وکار مشابه
                   </p>
                 </div>
                 <div
@@ -96,26 +108,27 @@ export function PeerPosition({ benchmarks }: { benchmarks: PeerBenchmark[] }) {
                   />
                 </div>
                 <div className="flex justify-between text-xs text-muted-foreground" dir="ltr">
-                  <span>۰</span>
+                  <bdi>۰</bdi>
                   <span>میانه</span>
-                  <span>۱۰۰</span>
+                  <bdi>۱۰۰</bdi>
                 </div>
                 <dl className="grid grid-cols-2 gap-2 text-xs">
                   <div className="grid gap-1 rounded-lg bg-muted/60 p-2">
                     <dt className="text-muted-foreground">مقدار شما</dt>
-                    <dd className="font-medium tabular-nums" dir="ltr">
-                      {formatValue(benchmark.merchantValue, label.unit)}
+                    <dd className="font-medium">
+                      <MetricValue value={benchmark.merchantValue} unit={label.unit} />
                     </dd>
                   </div>
                   <div className="grid gap-1 rounded-lg bg-muted/60 p-2">
                     <dt className="text-muted-foreground">میانهٔ هم‌صنفان</dt>
-                    <dd className="font-medium tabular-nums" dir="ltr">
-                      {formatValue(benchmark.peerMedian, label.unit)}
+                    <dd className="font-medium">
+                      <MetricValue value={benchmark.peerMedian} unit={label.unit} />
                     </dd>
                   </div>
                 </dl>
                 <p className="text-xs text-muted-foreground">
-                  بهتر از {formatPercentile(benchmark.percentile)} کسب‌وکار مشابه هستید.
+                  بهتر از <bdi dir="ltr" className="tabular-nums">{formatPercentile(benchmark.percentile)}</bdi>
+                  {" "}کسب‌وکار مشابه هستید.
                 </p>
               </div>
             </article>

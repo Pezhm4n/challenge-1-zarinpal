@@ -26,12 +26,38 @@ function formatDriverValue(item: DecompositionItem, value: number) {
   return `${rialFormatter.format(value)} پرداخت`;
 }
 
-function formatChange(value: number | null) {
+function ChangeSummary({ value }: { value: number | null }) {
   if (value === null) {
-    return "نامشخص";
+    return <span>تغییر نامشخص</span>;
   }
 
-  return `${value > 0 ? "+" : ""}${numberFormatter.format(value)}٪`;
+  if (value === 0) {
+    return <span>بدون تغییر</span>;
+  }
+
+  return (
+    <span className="inline-flex items-center gap-1">
+      <span>{value > 0 ? "رشد" : "افت"}</span>
+      <bdi dir="ltr" className="tabular-nums">
+        {numberFormatter.format(Math.abs(value))}٪
+      </bdi>
+    </span>
+  );
+}
+
+function ImpactSummary({ value }: { value: number }) {
+  if (value === 0) {
+    return <span>تأثیری بر فروش نداشت</span>;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-baseline gap-x-1">
+      <span>{value > 0 ? "افزایش فروش:" : "کاهش فروش:"}</span>
+      <bdi dir="ltr" className="tabular-nums">
+        {rialFormatter.format(Math.abs(value))} ریال
+      </bdi>
+    </span>
+  );
 }
 
 function DirectionIcon({ value }: { value: number }) {
@@ -81,8 +107,9 @@ export function GrowthDecomposition({
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
                   <h3 className="font-medium">{driverLabels[item.driver]}</h3>
-                  <p className="text-xs text-muted-foreground" dir="ltr">
-                    {formatDriverValue(item, item.previous)} → {formatDriverValue(item, item.current)}
+                  <p className="text-xs text-muted-foreground">
+                    از <bdi dir="ltr" className="tabular-nums">{formatDriverValue(item, item.previous)}</bdi>
+                    {" "}به <bdi dir="ltr" className="tabular-nums">{formatDriverValue(item, item.current)}</bdi>
                   </p>
                 </div>
                 <span
@@ -92,9 +119,9 @@ export function GrowthDecomposition({
                       : "flex items-center gap-1 text-sm font-medium text-foreground"
                   }
                 >
-                  <span dir="ltr" className="inline-flex items-center gap-1 tabular-nums">
+                  <span className="inline-flex items-center gap-1">
                     <DirectionIcon value={item.contributionRial} />
-                    {formatChange(item.changePct)}
+                    <ChangeSummary value={item.changePct} />
                   </span>
                 </span>
               </div>
@@ -110,8 +137,14 @@ export function GrowthDecomposition({
                     style={{ width }}
                   />
                 </div>
-                <p className="text-sm font-semibold tabular-nums" dir="ltr">
-                  {rialFormatter.format(item.contributionRial)} ریال
+                <p
+                  className={
+                    isNegative
+                      ? "text-sm font-semibold text-destructive"
+                      : "text-sm font-semibold text-foreground"
+                  }
+                >
+                  <ImpactSummary value={item.contributionRial} />
                 </p>
               </div>
             </article>

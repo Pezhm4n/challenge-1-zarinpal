@@ -16,6 +16,21 @@ const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 1,
 });
 
+function LiftSummary({ value }: { value: number }) {
+  if (value === 0) {
+    return <span>هم‌سطح نرخ مبنا</span>;
+  }
+
+  return (
+    <span className="inline-flex flex-wrap items-center gap-x-1">
+      <span>{value > 0 ? "بالاتر از نرخ مبنا" : "پایین‌تر از نرخ مبنا"}</span>
+      <bdi dir="ltr" className="tabular-nums">
+        {numberFormatter.format(Math.abs(value))}٪
+      </bdi>
+    </span>
+  );
+}
+
 export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) {
   if (windows.length === 0) {
     return (
@@ -62,11 +77,9 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
                     {weekdays[window.weekday] ?? `روز ${window.weekday}`}، ساعت {numberFormatter.format(window.hour)}
                   </h3>
                   <p className="text-xs text-muted-foreground" dir="rtl">
-                    <bdi dir="ltr" className="tabular-nums">
-                      {numberFormatter.format(window.sessions)} پرداخت یکتا
-                    </bdi>
+                    تعداد پرداخت‌های یکتا: <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.sessions)}</bdi>
                     <span aria-hidden="true"> · </span>
-                    نرخ پرداخت موفق <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.verifyPct)}٪</bdi>
+                    نرخ پرداخت موفق: <bdi dir="ltr" className="tabular-nums">{numberFormatter.format(window.verifyPct)}٪</bdi>
                   </p>
                 </div>
               </div>
@@ -77,13 +90,13 @@ export function TimeWindowOpportunities({ windows }: { windows: TimeWindow[] }) 
                     : "flex items-center gap-1 text-sm font-semibold text-destructive"
                 }
               >
-                <span dir="ltr" className="inline-flex items-center gap-1 tabular-nums">
+                <span className="inline-flex items-center gap-1">
                   {positive ? (
                     <TrendingUp aria-hidden="true" className="size-4" />
                   ) : (
                     <TrendingDown aria-hidden="true" className="size-4" />
                   )}
-                  {window.liftVsBaselinePct > 0 ? "+" : ""}{numberFormatter.format(window.liftVsBaselinePct)}٪
+                  <LiftSummary value={window.liftVsBaselinePct} />
                 </span>
               </div>
             </article>
