@@ -69,6 +69,23 @@ test("Impact هر Insight دقیقاً با نتیجه Evidence آن برابر 
   }
 })
 
+test("Artifact با Metric ناسازگار نسبت به Evidence رد می‌شود", () => {
+  const headlineMismatch = cloneFixture()
+  headlineMismatch.merchants.M275.headlineMetrics[0].value = {
+    ...headlineMismatch.merchants.M275.headlineMetrics[0].value,
+    value: headlineMismatch.merchants.M275.headlineMetrics[0].value.value + 1,
+  }
+
+  const insightMismatch = cloneFixture()
+  insightMismatch.merchants.M275.prioritizedInsights[0].impact = {
+    ...insightMismatch.merchants.M275.prioritizedInsights[0].impact,
+    value: insightMismatch.merchants.M275.prioritizedInsights[0].impact.value + 1,
+  }
+
+  assert.equal(parseActionCenterArtifact(headlineMismatch).success, false)
+  assert.equal(parseActionCenterArtifact(insightMismatch).success, false)
+})
+
 test("اعداد کلیدی M275 با محاسبه دستی صورت و مخرج تطابق دارند", () => {
   const evidence = m275ActionCenterArtifact.merchants.M275.evidenceIndex
   const roundToTwo = (value) => Math.round(value * 100) / 100

@@ -112,6 +112,16 @@ function isMetricValue(value: unknown): value is MetricValue {
   return value.unit !== "rial" || Number.isInteger(value.value)
 }
 
+function metricValuesMatch(left: MetricValue, right: MetricValue): boolean {
+  return (
+    left.value === right.value &&
+    left.unit === right.unit &&
+    left.labelFa === right.labelFa &&
+    left.kind === right.kind &&
+    left.displayPrecision === right.displayPrecision
+  )
+}
+
 function isAnalysisSelection(value: unknown): value is AnalysisSelection {
   return (
     isRecord(value) &&
@@ -379,7 +389,6 @@ function hasValidReferences(
   artifact: AnalysisArtifact<ActionCenterPayload>,
 ): boolean {
   return Object.entries(artifact.merchants).every(([merchantKey, payload]) => {
-    const evidenceIds = new Set(Object.keys(payload.evidenceIndex))
     const insightIds = new Set<string>()
 
     if (
@@ -404,13 +413,20 @@ function hasValidReferences(
     }
 
     for (const metric of payload.headlineMetrics) {
-      if (!evidenceIds.has(metric.evidenceId)) {
+      const evidence = payload.evidenceIndex[metric.evidenceId]
+      if (!evidence || !metricValuesMatch(metric.value, evidence.result)) {
         return false
       }
     }
 
     for (const insight of payload.prioritizedInsights) {
-      if (insightIds.has(insight.id) || !evidenceIds.has(insight.evidenceId)) {
+      const evidence = payload.evidenceIndex[insight.evidenceId]
+      if (
+        insightIds.has(insight.id) ||
+        !evidence ||
+        (insight.impact !== null &&
+          !metricValuesMatch(insight.impact, evidence.result))
+      ) {
         return false
       }
       insightIds.add(insight.id)

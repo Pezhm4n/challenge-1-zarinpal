@@ -211,8 +211,9 @@ export function EvidenceSheet({
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         side="left"
-        className="w-full max-w-none gap-0 overflow-y-auto sm:max-w-2xl"
+        className="data-[side=left]:w-full data-[side=left]:max-w-none data-[side=left]:sm:max-w-2xl gap-0 overflow-y-auto"
         aria-label="مدرک محاسبه"
+        aria-modal="true"
       >
         {!evidence || error ? (
           <EvidenceUnavailable
