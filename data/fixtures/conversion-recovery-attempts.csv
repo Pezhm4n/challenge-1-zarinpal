@@ -1,0 +1,10 @@
+session_key,try_seq,terminal_key,merchant_key,category_id,category_title,amount,adjusted_fee,session_status,try_status,switch_response_code,psp_code,issuer_bank_code,payer_card_key,verify_type,init_time_ms,verify_time_ms,created_at,try_created_at,verified_at,settled_at,expire_in
+R1,0,T1,MTEST,C1,Test Category,1000,10,Failed,NoAttempt,,,,,,,,2026-03-01 09:00:00,2026-03-01 09:00:00,,,1800
+R2,1,T1,MTEST,C1,Test Category,2000,20,Verified,Verified,,PSP-A,BANK-01,CARD-TEST-0002,Automated,10,20,2026-03-01 10:00:00,2026-03-01 10:00:00,2026-03-01 10:01:00,2026-03-01 10:02:00,1800
+R3,1,T1,MTEST,C1,Test Category,3000,30,Failed,Failed,ERR-01,,,,Automated,11,,2026-03-01 11:00:00,2026-03-01 11:00:00,,,1800
+R4,1,T1,MTEST,C1,Test Category,4000,40,Verified,InBank,,PSP-A,,,Automated,12,,2026-03-01 12:00:00,2026-03-01 12:00:00,,,1800
+R4,2,T1,MTEST,C1,Test Category,4000,40,Verified,Verified,,PSP-A,BANK-02,CARD-TEST-0004,Automated,13,30,2026-03-01 12:00:00,2026-03-01 12:03:00,2026-03-01 12:04:00,2026-03-01 12:05:00,1800
+R5,1,T1,MTEST,C1,Test Category,5000,50,Failed,Failed,ERR-02,PSP-B,,,Automated,14,,2026-03-01 13:00:00,2026-03-01 13:00:00,,,1800
+R5,2,T1,MTEST,C1,Test Category,5000,50,Failed,InBank,,PSP-B,,,Automated,15,,2026-03-01 13:00:00,2026-03-01 13:03:00,,,1800
+R6,1,T1,MTEST,C1,Test Category,6000,60,Paid,Paid,,PSP-B,BANK-03,CARD-TEST-0006,Automated,16,25,2026-03-01 14:00:00,2026-03-01 14:00:00,,2026-03-01 14:02:00,1800
+Z1,1,T2,MZERO,C2,Zero Denominator Category,7000,70,Verified,Verified,,PSP-C,BANK-04,CARD-TEST-0007,Automated,17,20,2026-03-02 10:00:00,2026-03-02 10:00:00,2026-03-02 10:01:00,2026-03-02 10:02:00,1800
