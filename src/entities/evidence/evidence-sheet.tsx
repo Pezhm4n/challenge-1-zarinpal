@@ -170,7 +170,7 @@ function SampleRows({ rows }: { rows: EvidenceSampleRow[] }) {
         <CircleAlert aria-hidden="true" />
         <AlertTitle>نمونه قابل نمایش</AlertTitle>
         <AlertDescription>
-          برای این شاخص آماری، ردیف‌های نمونه جداگانه ذخیره نشده است و عدد بر اساس کل سفارش‌های دوره به دست آمده است.
+          برای این عدد نمونه جداگانه‌ای ذخیره نشده؛ عدد از مجموع همه سفارش‌های این دوره محاسبه شده است.
         </AlertDescription>
       </Alert>
     )
@@ -346,7 +346,7 @@ export function EvidenceSheet({
                     <CircleHelp aria-hidden="true" />
                   )}
                   <AlertTitle>
-                    {note.severity === "warning" ? "محدودیت داده" : "یادداشت تحلیلی"}
+                    {note.severity === "warning" ? "نکته مهم درباره داده‌ها" : "نکته تکمیلی"}
                   </AlertTitle>
                   <AlertDescription className="text-sm leading-relaxed">{localizePersianText(note.messageFa)}</AlertDescription>
                 </Alert>
@@ -382,7 +382,7 @@ export function EvidenceSheet({
                       </p>
                     </div>
                     <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل جامعه آماری)</p>
+                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل موارد بررسی‌شده)</p>
                       <p className="mt-1 text-sm font-bold text-foreground">
                         {localizePersianText(evidence.denominator?.labelFa)}
                       </p>
@@ -398,7 +398,7 @@ export function EvidenceSheet({
                 )}
 
                 <div className="rounded-2xl border border-border/60 bg-card p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">خط مبنای مقایسه</p>
+                  <p className="text-xs font-semibold text-muted-foreground">مبنای مقایسه</p>
                   {evidence.baseline ? (
                     <p className="mt-1 text-sm font-medium text-foreground leading-relaxed">
                       {formatBaselineLabel(evidence.baseline.type)}:{" "}

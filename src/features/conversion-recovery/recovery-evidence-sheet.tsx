@@ -290,8 +290,8 @@ export function RecoveryEvidenceSheet({
                     )}
                     <AlertTitle>
                       {note.severity === "warning"
-                        ? "محدودیت داده"
-                        : "یادداشت تحلیلی"}
+                        ? "نکته مهم درباره داده‌ها"
+                        : "نکته تکمیلی"}
                     </AlertTitle>
                     <AlertDescription className="text-sm leading-relaxed">
                       <p>{localizePersianText(note.messageFa)}</p>
@@ -332,7 +332,7 @@ export function RecoveryEvidenceSheet({
                       </p>
                     </div>
                     <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل جامعه آماری)</p>
+                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل موارد بررسی‌شده)</p>
                       <p className="mt-1 text-sm font-bold text-foreground">
                         {localizePersianText(evidence.denominator.labelFa)}
                       </p>
@@ -348,7 +348,7 @@ export function RecoveryEvidenceSheet({
                 )}
 
                 <div className="rounded-2xl border border-border/60 bg-card p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">خط مبنای مقایسه</p>
+                  <p className="text-xs font-semibold text-muted-foreground">مبنای مقایسه</p>
                   {evidence.baseline ? (
                     <p className="mt-1 text-sm font-medium text-foreground leading-relaxed">
                       {formatBaselineLabel(evidence.baseline.type)}:{" "}

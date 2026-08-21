@@ -120,7 +120,7 @@ export function InsightCard({
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-border/70 bg-muted/30 p-4 text-sm text-muted-foreground">
-            برای این Insight اثر عددی قابل اتکا موجود نیست.
+            فعلاً عدد قابل اعتمادی برای این پیشنهاد نداریم.
           </div>
         )}
 

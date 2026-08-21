@@ -50,9 +50,9 @@ function periodKey(period: { from: string; to: string }): string {
 
 function coverageLabel(quality: ActionCenterPayload["merchant"]["dataCoverage"]["quality"]): string {
   const labels = {
-    sufficient: "پوشش کافی",
-    limited: "پوشش محدود",
-    insufficient: "پوشش ناکافی",
+    sufficient: "داده کافی",
+    limited: "داده محدود",
+    insufficient: "داده ناکافی",
   } as const
   return labels[quality]
 }
@@ -110,7 +110,7 @@ function HeadlineMetric({
 function noMerchantError(): ArtifactError {
   return {
     code: "INSUFFICIENT_DATA",
-    messageFa: "برای هیچ پذیرنده‌ای گزارش آماده نشده است. Artifact تحلیل را دوباره تولید کنید.",
+    messageFa: "در حال حاضر گزارشی برای هیچ فروشگاهی آماده نیست. لطفاً بعداً دوباره تلاش کنید.",
     recoverable: true,
   }
 }
@@ -241,7 +241,7 @@ function ResolvedActionCenter({
             ) : null}
           </div>
           <h1 id="action-center-title" className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            ۳ اقدام کلیدی برای افزایش فروش <span className="text-primary">{payload.merchant.merchantKey}</span>
+            ۳ اقدام کلیدی برای افزایش فروش <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             مهم‌ترین فرصت‌های رشد و جلوگیری از ریزش مالی کسب‌وکار شما؛ همراه با اثر ریالی شفاف، گام عملی بعدی و مدرک دقیق محاسبه.
@@ -268,12 +268,12 @@ function ResolvedActionCenter({
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">وضعیت کلیدی این دوره</span>
           <h2 id="headline-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            {headlineInsight?.titleFa ? localizePersianText(headlineInsight.titleFa) : "خلاصه قابل اتکا برای این دوره موجود نیست"}
+            {headlineInsight?.titleFa ? localizePersianText(headlineInsight.titleFa) : "هنوز خلاصه‌ای برای این دوره محاسبه نشده است"}
           </h2>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
             {headlineInsight?.findingFa
               ? localizePersianText(headlineInsight.findingFa)
-              : "برای این انتخاب هنوز Insight دارای مدرک کافی تولید نشده است."}
+              : "برای این انتخاب هنوز نتیجه‌ای با داده کافی محاسبه نشده است."}
           </p>
         </div>
         {payload.headlineMetrics.length > 0 ? (
