@@ -97,10 +97,12 @@ function formatPeriod(value: string): string {
 
 function EvidenceButton({
   label,
+  displayLabel,
   evidenceId,
   onRequest,
 }: {
   label: string
+  displayLabel?: string
   evidenceId: string
   onRequest: (evidenceId: string) => void
 }) {
@@ -113,7 +115,7 @@ function EvidenceButton({
       onClick={() => onRequest(evidenceId)}
     >
       <Calculator aria-hidden="true" data-icon="inline-start" />
-      {label}
+      {displayLabel ?? label}
     </Button>
   )
 }
@@ -212,6 +214,7 @@ function MetricEvidenceRow({
       </div>
       <EvidenceButton
         label={`روش محاسبه ${label}`}
+        displayLabel="روش محاسبه"
         evidenceId={evidenceId}
         onRequest={onEvidenceRequest}
       />
@@ -228,10 +231,12 @@ function SegmentRow({
 }) {
   const [, band = segment.key] = segment.key.split("|", 2)
   return (
-    <div className="grid gap-3 rounded-xl border border-border/50 bg-muted/30 p-3.5 sm:grid-cols-[1fr_auto_auto] sm:items-center hover:bg-muted/50 transition-colors">
-      <div>
-        <p className="font-semibold text-foreground">{bandLabels[band] ?? band}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+    <div className="grid gap-3 rounded-xl border border-border/50 bg-muted/30 p-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center hover:bg-muted/50 transition-colors">
+      <div className="min-w-0">
+        <p className="truncate font-semibold text-foreground" title={bandLabels[band] ?? band}>
+          {bandLabels[band] ?? band}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground" title={`${faInteger.format(segment.sessions)} سفارش در این بازه مبلغی`}>
           {faInteger.format(segment.sessions)} سفارش در این بازه مبلغی
         </p>
       </div>
@@ -252,6 +257,7 @@ function SegmentRow({
         )}
         <EvidenceButton
           label={`روش محاسبه بازه ${bandLabels[band] ?? band}`}
+          displayLabel="روش محاسبه"
           evidenceId={segment.evidenceId}
           onRequest={onEvidenceRequest}
         />
