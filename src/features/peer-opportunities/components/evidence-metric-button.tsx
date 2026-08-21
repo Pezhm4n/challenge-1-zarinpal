@@ -24,14 +24,15 @@ export function EvidenceMetricButton({
     <button
       type="button"
       className={cn(
-        "inline-flex min-h-11 items-center gap-1.5 rounded-md px-1.5 text-start underline decoration-dotted underline-offset-4 outline-none transition-colors hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
+        "inline-flex min-h-9 items-center gap-1.5 rounded-full px-2 text-start underline decoration-dotted underline-offset-4 outline-none transition-all hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2",
         className,
       )}
       aria-label={ariaLabel}
       onClick={() => onEvidenceRequest(evidenceId)}
     >
       {children}
-      <Calculator aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+      <Calculator aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground group-hover:text-primary" />
     </button>
   );
 }
+

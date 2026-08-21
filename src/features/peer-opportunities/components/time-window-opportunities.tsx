@@ -1,6 +1,7 @@
 import { Calculator, Clock3, TrendingDown, TrendingUp } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import type { EvidenceReference, TimeWindow } from "../types";
 
 const weekdays: Record<number, string> = {
@@ -67,19 +68,19 @@ export function TimeWindowOpportunities({
   );
 
   return (
-    <section aria-labelledby="timing-title" className="grid gap-4">
+    <section aria-labelledby="timing-title" className="grid gap-5">
       <header className="grid gap-1">
-        <p className="text-sm font-medium text-muted-foreground">فرصت‌های زمانی</p>
-        <h2 id="timing-title" className="text-xl font-semibold">
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">فرصت‌های زمانی</span>
+        <h2 id="timing-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           زمان‌های مناسب برای بررسی
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           این الگوها نشان می‌دهند کدام زمان‌ها را بررسی کنید؛ علت قطعی را نشان
           نمی‌دهند.
         </p>
       </header>
 
-      <div className="grid gap-3 md:grid-cols-2">
+      <div className="grid gap-4 md:grid-cols-2">
         {ranked.map((window) => {
           const positive = window.liftVsBaselinePct >= 0;
           const evidence =
@@ -87,23 +88,23 @@ export function TimeWindowOpportunities({
           return (
             <article
               key={`${window.weekday}-${window.hour}`}
-              className="grid min-w-0 gap-4 rounded-xl border bg-card p-4 sm:grid-cols-[minmax(0,1fr)_minmax(9.5rem,auto)] sm:items-center"
+              className="grid min-w-0 gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center"
             >
-              <div className="flex min-w-0 items-start gap-3">
-                <div className="grid size-10 place-items-center rounded-lg bg-muted">
+              <div className="flex min-w-0 items-start gap-3.5">
+                <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
                   <Clock3 aria-hidden="true" className="size-5" />
                 </div>
-                <div className="grid min-w-0 flex-1 gap-2">
-                  <h3 className="font-medium leading-6">
+                <div className="grid min-w-0 flex-1 gap-1.5">
+                  <h3 className="text-base font-bold leading-6 text-foreground">
                     {weekdays[window.weekday] ?? `روز ${window.weekday}`}، ساعت{" "}
                     <bdi dir="ltr" className="tabular-nums">
                       {numberFormatter.format(window.hour)}
                     </bdi>
                   </h3>
-                  <div className="grid gap-1 text-xs leading-5 text-muted-foreground">
+                  <div className="grid gap-0.5 text-xs leading-5 text-muted-foreground">
                     <p>
                       تعداد پرداخت‌های یکتا:{" "}
-                      <bdi dir="ltr" className="tabular-nums">
+                      <bdi dir="ltr" className="tabular-nums font-semibold text-foreground">
                         {numberFormatter.format(window.sessions)}
                       </bdi>
                     </p>
@@ -114,16 +115,19 @@ export function TimeWindowOpportunities({
               <div
                 className={
                   positive
-                    ? "grid gap-3 border-t pt-3 text-start text-sm font-semibold sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
-                    : "grid gap-3 border-t pt-3 text-start text-sm font-semibold text-destructive sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
+                    ? "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
+                    : "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold text-destructive sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
                 }
               >
                 <span className="grid gap-1">
-                  <span className="inline-flex items-center gap-1">
+                  <span className={cn(
+                    "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold w-fit",
+                    positive ? "bg-success/10 text-success-foreground" : "bg-destructive/10 text-destructive"
+                  )}>
                     {positive ? (
-                      <TrendingUp aria-hidden="true" className="size-4" />
+                      <TrendingUp aria-hidden="true" className="size-3.5" />
                     ) : (
-                      <TrendingDown aria-hidden="true" className="size-4" />
+                      <TrendingDown aria-hidden="true" className="size-3.5" />
                     )}
                     <LiftSummary value={window.liftVsBaselinePct} />
                   </span>
@@ -138,11 +142,11 @@ export function TimeWindowOpportunities({
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="min-h-11 w-fit"
+                    className="min-h-9 w-fit text-xs font-medium"
                     onClick={() => onEvidenceRequest(evidence.id)}
                   >
                     <Calculator aria-hidden="true" data-icon="inline-start" />
-                    جزئیات محاسبهٔ این بازه
+                    جزئیات محاسبه
                   </Button>
                 ) : null}
               </div>

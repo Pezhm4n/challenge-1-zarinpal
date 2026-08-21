@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Table,
   TableBody,
@@ -31,9 +31,15 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
   }
 
   return (
-    <details className="group rounded-lg bg-muted/60 p-3">
-      <summary className="flex min-h-11 cursor-pointer items-center font-medium outline-none focus-visible:ring-2 focus-visible:ring-ring">
-        چطور محاسبه شد؟
+    <details className="group rounded-2xl border border-border/60 bg-muted/20 p-4 transition-all">
+      <summary className="flex min-h-10 cursor-pointer list-none items-center justify-between font-semibold text-foreground hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 marker:content-none [&::-webkit-details-marker]:hidden">
+        <span className="text-xs font-bold">چطور محاسبه شد؟</span>
+        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
+          نمایش جزئیات
+        </span>
+        <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
+          بستن جزئیات
+        </span>
       </summary>
       <div className="mt-4 flex flex-col gap-4 text-sm">
         <div className="flex flex-col gap-1">

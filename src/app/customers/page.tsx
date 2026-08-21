@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from "@/features/customer-growth/ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   CustomerGrowthArtifactError,
   getCustomerGrowthPayload,
@@ -41,12 +41,12 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
 
   if (!result.artifact || !result.payload) {
     return (
-      <main className="mx-auto flex min-h-screen w-full max-w-3xl items-center p-4 sm:p-6">
-        <Alert variant="destructive">
+      <div className="mx-auto flex min-h-[50vh] w-full max-w-3xl items-center p-4 sm:p-6">
+        <Alert variant="destructive" className="rounded-2xl">
           <AlertTitle>خطا در بارگذاری تحلیل مشتری</AlertTitle>
           <AlertDescription>{result.errorMessage}</AlertDescription>
         </Alert>
-      </main>
+      </div>
     )
   }
 
@@ -58,3 +58,4 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
     />
   )
 }
+

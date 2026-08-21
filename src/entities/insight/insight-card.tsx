@@ -23,7 +23,6 @@ import { cn } from "@/lib/utils"
 
 import { formatMetricValue, metricKindLabels } from "./metric-value"
 
-
 const confidenceLabels: Record<InsightSummary["confidence"], string> = {
   high: "اطمینان بالا",
   medium: "اطمینان متوسط",
@@ -35,27 +34,26 @@ const statusPresentation: Record<
   { label: string; className: string; icon: typeof CircleCheck }
 > = {
   opportunity: {
-    label: "فرصت",
-    className: "bg-success/10 text-success-foreground ring-success/20",
+    label: "فرصت رشد",
+    className: "bg-success/15 text-success-foreground border-success/30",
     icon: CircleCheck,
   },
   warning: {
     label: "نیازمند توجه",
-    className: "bg-destructive/10 text-destructive ring-destructive/20",
+    className: "bg-destructive/15 text-destructive border-destructive/30",
     icon: CircleAlert,
   },
   stable: {
     label: "پایدار",
-    className: "bg-info/10 text-info-foreground ring-info/20",
+    className: "bg-info/15 text-info-foreground border-info/30",
     icon: ShieldCheck,
   },
   "insufficient-data": {
     label: "داده ناکافی",
-    className: "bg-muted text-muted-foreground ring-border",
+    className: "bg-muted text-muted-foreground border-border",
     icon: CircleMinus,
   },
 }
-
 
 export function InsightCard({
   insight,
@@ -74,36 +72,38 @@ export function InsightCard({
   return (
     <Card
       className={cn(
-        "h-full gap-5",
-        featured && "border-primary/40 bg-card ring-primary/30",
+        "h-full gap-5 transition-all duration-200",
+        featured
+          ? "border-primary/40 bg-gradient-to-b from-card via-card to-primary/[0.02] shadow-sm ring-1 ring-primary/25"
+          : "hover:border-border hover:shadow-sm",
       )}
     >
-      <CardHeader className="gap-3">
+      <CardHeader className="gap-3.5">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="text-xs font-semibold text-muted-foreground">
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">
             اقدام {new Intl.NumberFormat("fa-IR").format(rank)}
           </span>
           <Badge
             variant="outline"
-            className={cn("ring-1", status.className)}
+            className={cn("gap-1.5 font-semibold", status.className)}
           >
             <StatusIcon aria-hidden="true" data-icon="inline-start" />
             {status.label}
           </Badge>
         </div>
-        <CardTitle className={cn(featured && "text-lg sm:text-xl")}>
+        <CardTitle className={cn(featured ? "text-xl sm:text-2xl" : "text-lg")}>
           <h3>{insight.titleFa}</h3>
         </CardTitle>
-        <CardDescription className="text-sm leading-7 text-foreground/80">
+        <CardDescription className="text-sm leading-relaxed text-foreground/80">
           {insight.findingFa}
         </CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-1 flex-col gap-5">
         {insight.impact ? (
-          <div className="rounded-lg bg-muted/70 p-4">
+          <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
-              <span className="text-xs text-muted-foreground">
+              <span className="text-xs font-medium text-muted-foreground">
                 {insight.impact.labelFa}
               </span>
               <Badge
@@ -113,29 +113,28 @@ export function InsightCard({
                 {metricKindLabels[insight.impact.kind]}
               </Badge>
             </div>
-            <p className="mt-2 break-words text-xl font-bold tabular-nums sm:text-2xl">
+            <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
               {formatMetricValue(insight.impact)}
             </p>
           </div>
         ) : (
-          <div className="rounded-lg bg-muted p-4 text-sm text-muted-foreground">
+          <div className="rounded-2xl border border-dashed border-border/70 bg-muted/30 p-4 text-sm text-muted-foreground">
             برای این Insight اثر عددی قابل اتکا موجود نیست.
           </div>
         )}
 
-        <div className="flex gap-3 rounded-lg border bg-card p-4">
-          <ArrowLeft
-            aria-hidden="true"
-            className="mt-1 size-4 shrink-0 text-info"
-          />
+        <div className="flex gap-3.5 rounded-2xl border border-primary/20 bg-primary/[0.04] p-4">
+          <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+            <ArrowLeft aria-hidden="true" className="size-4" />
+          </span>
           <div>
-            <p className="text-xs font-semibold text-info-foreground">اقدام پیشنهادی</p>
-            <p className="mt-1 text-sm leading-7">{insight.actionFa}</p>
+            <p className="text-xs font-bold text-primary">اقدام پیشنهادی</p>
+            <p className="mt-1 text-sm leading-relaxed font-medium text-foreground">{insight.actionFa}</p>
           </div>
         </div>
 
-        <div className="mt-auto flex items-start gap-2 border-t pt-4 text-xs leading-6 text-muted-foreground">
-          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
+        <div className="mt-auto flex items-start gap-2.5 border-t border-border/60 pt-4 text-xs leading-relaxed text-muted-foreground">
+          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
           <p>
             <span className="font-semibold text-foreground">
               {confidenceLabels[insight.confidence]}:
@@ -146,8 +145,8 @@ export function InsightCard({
 
         <div className="grid gap-2 sm:flex sm:flex-wrap">
           <Button
-            size="lg"
-            className="min-h-11 w-full sm:w-fit"
+            size="default"
+            className="min-h-10 w-full sm:w-fit font-medium"
             aria-label={`چطور ${insight.titleFa} محاسبه شد؟`}
             onClick={() => onEvidenceRequest(insight.evidenceId)}
           >
@@ -156,8 +155,8 @@ export function InsightCard({
           </Button>
           <Button
             variant="outline"
-            size="lg"
-            className="min-h-11 w-full sm:w-fit"
+            size="default"
+            className="min-h-10 w-full sm:w-fit"
             nativeButton={false}
             render={<Link href={insight.destination} />}
           >

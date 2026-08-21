@@ -68,21 +68,21 @@ function HeadlineMetric({
   const DirectionIcon = isPositive ? TrendingUp : isNegative ? TrendingDown : CircleMinus
 
   return (
-    <div className="flex min-w-0 flex-col rounded-lg border bg-card p-4">
-      <p className="text-xs leading-5 text-muted-foreground">{metric.value.labelFa}</p>
-      <p className="mt-2 break-words text-lg font-bold tabular-nums sm:text-xl">
+    <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm">
+      <p className="text-xs font-medium text-muted-foreground">{metric.value.labelFa}</p>
+      <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
         {formatMetricValue(metric.value)}
       </p>
       {change ? (
         <div
           className={cn(
-            "mt-3 flex items-center gap-1.5 text-xs font-medium",
-            isPositive && "text-success-foreground",
-            isNegative && "text-destructive",
-            !isPositive && !isNegative && "text-muted-foreground",
+            "mt-3 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+            isPositive && "bg-success/10 text-success-foreground",
+            isNegative && "bg-destructive/10 text-destructive",
+            !isPositive && !isNegative && "bg-muted text-muted-foreground",
           )}
         >
-          <DirectionIcon aria-hidden="true" className="size-4" />
+          <DirectionIcon aria-hidden="true" className="size-3.5" />
           <span>
             {isPositive ? "افزایش" : isNegative ? "کاهش" : "بدون تغییر"}: {formatMetricValue(change)}
           </span>
@@ -91,7 +91,7 @@ function HeadlineMetric({
       <Button
         variant="ghost"
         size="sm"
-        className="mt-auto min-h-11 w-full justify-start px-0 text-info-foreground"
+        className="mt-4 min-h-9 w-full justify-start text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary"
         aria-label={`چطور ${metric.value.labelFa} محاسبه شد؟`}
         onClick={() => onEvidenceRequest(metric.evidenceId)}
       >
@@ -212,32 +212,32 @@ function ResolvedActionCenter({
     evidenceResolution?.success === false ? evidenceResolution.error : null
 
   return (
-    <div className="grid gap-6 lg:gap-8">
+    <div className="grid gap-8 lg:gap-10">
       <section
         aria-labelledby="action-center-title"
-        className="grid gap-5 rounded-xl border bg-card p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end"
+        className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end"
       >
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="gap-1.5 font-semibold">
               <CircleGauge aria-hidden="true" data-icon="inline-start" />
               مرکز اقدام
             </Badge>
-            <Badge variant="outline">
+            <Badge variant="outline" className="gap-1.5 font-semibold">
               <Database aria-hidden="true" data-icon="inline-start" />
               {coverageLabel(payload.merchant.dataCoverage.quality)}
             </Badge>
             {showDevelopmentFixture ? (
-              <Badge variant="outline" className="border-dashed">
+              <Badge variant="outline" className="gap-1.5 border-dashed font-semibold text-primary">
                 <FlaskConical aria-hidden="true" data-icon="inline-start" />
                 Fixture توسعه
               </Badge>
             ) : null}
           </div>
-          <h1 id="action-center-title" className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
-            سه اقدام مهم برای {payload.merchant.merchantKey}
+          <h1 id="action-center-title" className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            سه اقدام مهم برای <span className="text-primary">{payload.merchant.merchantKey}</span>
           </h1>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+          <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             ابتدا مهم‌ترین فرصت را بررسی کنید. اثر مالی، اقدام بعدی و سطح اطمینان هر تحلیل جدا نمایش داده شده است.
           </p>
         </div>
@@ -260,11 +260,11 @@ function ResolvedActionCenter({
 
       <section aria-labelledby="headline-title" className="grid gap-4">
         <div>
-          <p className="text-xs font-semibold text-info-foreground">خلاصه دوره</p>
-          <h2 id="headline-title" className="mt-1 text-xl font-bold sm:text-2xl">
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">خلاصه دوره</span>
+          <h2 id="headline-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             {headlineInsight?.titleFa ?? "خلاصه قابل اتکا برای این دوره موجود نیست"}
           </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+          <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
             {headlineInsight?.findingFa ??
               "برای این انتخاب هنوز Insight دارای مدرک کافی تولید نشده است."}
           </p>
@@ -282,10 +282,10 @@ function ResolvedActionCenter({
         ) : null}
       </section>
 
-      <section aria-labelledby="insights-title" className="grid gap-4">
+      <section aria-labelledby="insights-title" className="grid gap-5">
         <div>
-          <p className="text-xs font-semibold text-info-foreground">اولویت‌بندی اقدام‌ها</p>
-          <h2 id="insights-title" className="mt-1 text-xl font-bold sm:text-2xl">
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">اولویت‌بندی اقدام‌ها</span>
+          <h2 id="insights-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             از اقدام اول شروع کنید
           </h2>
         </div>
@@ -300,7 +300,7 @@ function ResolvedActionCenter({
           />
         ) : null}
         {insights.length > 1 ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             {insights.slice(1).map((insight, index) => (
               <InsightCard
                 key={insight.id}
@@ -313,11 +313,11 @@ function ResolvedActionCenter({
         ) : null}
       </section>
 
-      <Card className="gap-3 bg-secondary/50">
-        <CardHeader>
-          <CardTitle className="text-sm">مبنای این گزارش</CardTitle>
+      <Card className="gap-3 rounded-2xl border border-border/60 bg-muted/40 p-5 shadow-xs">
+        <CardHeader className="p-0">
+          <CardTitle className="text-sm font-bold text-foreground">مبنای این گزارش</CardTitle>
         </CardHeader>
-        <CardContent className="text-xs leading-6 text-muted-foreground">
+        <CardContent className="p-0 text-xs leading-relaxed text-muted-foreground">
           {new Intl.NumberFormat("fa-IR").format(payload.merchant.dataCoverage.sessions)} پرداخت یکتا بررسی شده است. مبلغ‌ها ریال‌اند و تلاش‌های مجدد پیش از محاسبه فروش روی هر پرداخت تجمیع شده‌اند.
         </CardContent>
       </Card>

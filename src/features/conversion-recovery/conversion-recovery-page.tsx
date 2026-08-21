@@ -8,7 +8,6 @@ import {
   ChartNoAxesColumnDecreasing,
   CheckCircle2,
   CircleAlert,
-  CircleGauge,
   Database,
   FlaskConical,
   RefreshCcw,
@@ -111,7 +110,7 @@ function EvidenceButton({
     <Button
       variant="ghost"
       size="sm"
-      className="min-h-11 justify-start"
+      className="min-h-9 w-full justify-start text-xs font-medium text-primary hover:bg-primary/10 hover:text-primary"
       aria-label={`مشاهده ${label}`}
       onClick={() => onRequest(evidenceId)}
     >
@@ -136,31 +135,37 @@ function FunnelStageCard({
   return (
     <Card
       size="sm"
-      className={cn("relative h-full", isPrimaryDrop && "ring-destructive/40")}
+      className={cn(
+        "relative flex h-full flex-col rounded-2xl border border-border/70 bg-card shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm",
+        isPrimaryDrop && "border-destructive/40 shadow-xs ring-1 ring-destructive/25",
+      )}
     >
-      <CardHeader>
-        <div className="flex items-center justify-between gap-3">
-          <Badge variant={isPrimaryDrop ? "destructive" : "secondary"}>
+      <CardHeader className="gap-2">
+        <div className="flex items-center justify-between gap-2">
+          <Badge variant={isPrimaryDrop ? "destructive" : "secondary"} className="font-semibold">
             مرحله {faInteger.format(index + 1)}
           </Badge>
           {stage.rateFromPrevious !== null ? (
-            <span className="text-xs tabular-nums text-muted-foreground">
+            <span className={cn(
+              "rounded-full px-2.5 py-0.5 text-xs font-semibold tabular-nums",
+              isPrimaryDrop ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
+            )}>
               عبور {faPercent.format(stage.rateFromPrevious)}٪
             </span>
           ) : null}
         </div>
-        <CardTitle>
+        <CardTitle className="text-base font-bold text-foreground">
           <h3>{stageLabels[stage.stage]}</h3>
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-xs leading-relaxed">
           {stage.stage === "verified"
             ? "فقط try_status = Verified"
-            : "Session یکتا؛ Retry دوباره شمرده نمی‌شود"}
+            : "Session یکتا؛ بدون Double-count"}
         </CardDescription>
       </CardHeader>
-      <CardContent className="flex flex-col gap-4">
+      <CardContent className="flex flex-col gap-3.5">
         <div>
-          <p className="text-2xl font-bold tabular-nums">
+          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
             {faInteger.format(stage.count)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -170,18 +175,18 @@ function FunnelStageCard({
         <div
           role="img"
           aria-label={`${stageLabels[stage.stage]}: ${faPercent.format(displayRate)} درصد از مرحله قبل`}
-          className="h-2 overflow-hidden rounded-full bg-muted"
+          className="h-2.5 overflow-hidden rounded-full bg-muted/80"
         >
           <div
             className={cn(
-              "h-full rounded-full",
+              "h-full rounded-full transition-all duration-500",
               isPrimaryDrop ? "bg-destructive" : "bg-primary",
             )}
-            style={{ inlineSize: `${Math.max(displayRate, 3)}%` }}
+            style={{ inlineSize: `${Math.max(displayRate, 4)}%` }}
           />
         </div>
       </CardContent>
-      <CardFooter className="grid grid-cols-2 gap-1 bg-muted/30 sm:grid-cols-1 xl:grid-cols-2">
+      <CardFooter className="mt-auto grid grid-cols-2 gap-1 rounded-b-2xl border-t border-border/50 bg-muted/25 p-2 sm:grid-cols-1 xl:grid-cols-2">
         <EvidenceButton
           label="مدرک تعداد"
           evidenceId={stage.evidenceIds.count}
@@ -218,10 +223,10 @@ function MetricEvidenceRow({
   onEvidenceRequest: (evidenceId: string) => void
 }) {
   return (
-    <div className="grid gap-2 rounded-lg bg-muted/60 p-3 sm:grid-cols-[1fr_auto] sm:items-center">
+    <div className="grid gap-2 rounded-xl border border-border/50 bg-muted/30 p-3.5 sm:grid-cols-[1fr_auto] sm:items-center">
       <div>
-        <p className="text-xs text-muted-foreground">{label}</p>
-        <p className="mt-1 font-bold tabular-nums">{value}</p>
+        <p className="text-xs font-medium text-muted-foreground">{label}</p>
+        <p className="mt-1 text-base font-bold tabular-nums text-foreground">{value}</p>
       </div>
       <EvidenceButton
         label={`مدرک ${label}`}
@@ -241,27 +246,27 @@ function SegmentRow({
 }) {
   const [, band = segment.key] = segment.key.split("|", 2)
   return (
-    <div className="grid gap-3 rounded-lg border p-3 sm:grid-cols-[1fr_auto_auto] sm:items-center">
+    <div className="grid gap-3 rounded-xl border border-border/50 bg-muted/30 p-3.5 sm:grid-cols-[1fr_auto_auto] sm:items-center hover:bg-muted/50 transition-colors">
       <div>
-        <p className="font-medium">{bandLabels[band] ?? band}</p>
-        <p className="mt-1 text-xs text-muted-foreground">
+        <p className="font-semibold text-foreground">{bandLabels[band] ?? band}</p>
+        <p className="mt-0.5 text-xs text-muted-foreground">
           {faInteger.format(segment.sessions)} Session attempted
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {segment.quality === "sufficient" && segment.verifyPct !== null ? (
           <>
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="font-semibold">
               Verified: {faPercent.format(segment.verifyPct)}٪
             </Badge>
             {segment.peerOrBaselinePct !== null ? (
-              <Badge variant="outline">
-                خط مبنای مبلغ: {faPercent.format(segment.peerOrBaselinePct)}٪
+              <Badge variant="outline" className="font-semibold">
+                خط مبنا: {faPercent.format(segment.peerOrBaselinePct)}٪
               </Badge>
             ) : null}
           </>
         ) : (
-          <Badge variant="outline">نمونه ناکافی؛ بدون رتبه‌بندی</Badge>
+          <Badge variant="outline" className="text-muted-foreground">نمونه ناکافی</Badge>
         )}
       </div>
       <EvidenceButton
@@ -327,26 +332,26 @@ export function ConversionRecoveryPage({
   }
 
   return (
-    <div className="grid gap-6 lg:gap-8">
-      <header className="grid gap-5 rounded-xl border bg-card p-4 sm:p-6 lg:grid-cols-[1fr_auto] lg:items-end">
+    <div className="grid gap-8 lg:gap-10">
+      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
-            <Badge variant="secondary">
+            <Badge variant="secondary" className="gap-1.5 font-semibold">
               <Route aria-hidden="true" data-icon="inline-start" />
               تشخیص مسیر پرداخت
             </Badge>
-            <Badge variant="outline">
+            <Badge variant="outline" className="gap-1.5 font-semibold">
               <Database aria-hidden="true" data-icon="inline-start" />
               داده قطعی Session-level
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-bold tracking-tight sm:text-3xl">
-            بازیابی Conversion برای {payload.selection.merchantKey}
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            بازیابی Conversion برای <span className="text-primary">{payload.selection.merchantKey}</span>
           </h1>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
+          <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             افت فروش را از درخواست پرداخت تا Verified دنبال کنید؛ هر عدد مدرک، فرمول و Session نمونه دارد.
           </p>
-          <p className="mt-3 text-xs text-muted-foreground">
+          <p className="mt-3 text-xs font-medium text-muted-foreground">
             دوره {formatPeriod(payload.selection.period.from)} تا {formatPeriod(payload.selection.period.to)}؛ مقایسه با {payload.selection.comparison ? `${formatPeriod(payload.selection.comparison.from)} تا ${formatPeriod(payload.selection.comparison.to)}` : "بدون دوره مبنا"}
           </p>
         </div>
@@ -357,59 +362,64 @@ export function ConversionRecoveryPage({
       </header>
 
       {insight ? (
-        <Card className="ring-primary/30">
-          <CardHeader className="gap-3">
+        <Card className="border-primary/40 bg-gradient-to-b from-card via-card to-primary/[0.02] shadow-sm ring-1 ring-primary/25">
+          <CardHeader className="gap-3.5">
             <div className="flex flex-wrap items-center gap-2">
-              <Badge variant={insight.status === "opportunity" ? "default" : "outline"}>
-                <CircleGauge aria-hidden="true" data-icon="inline-start" />
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">
                 ریشه افت
-              </Badge>
-              <Badge variant="outline">
+              </span>
+              <Badge variant="outline" className="font-semibold">
                 اطمینان {confidenceLabels[insight.confidence]}
               </Badge>
             </div>
-            <CardTitle className="text-xl sm:text-2xl">
+            <CardTitle className="text-xl font-bold tracking-tight sm:text-2xl">
               <h2>{insight.titleFa}</h2>
             </CardTitle>
-            <CardDescription className="max-w-4xl text-sm leading-7 text-foreground/80 sm:text-base">
+            <CardDescription className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
               {localizeEmbeddedNumbers(insight.findingFa)}
             </CardDescription>
           </CardHeader>
-          <CardContent className="grid gap-4 lg:grid-cols-[1fr_18rem]">
-            <div className="flex items-start gap-3 rounded-lg border bg-card p-4">
-              <Target aria-hidden="true" className="mt-1 size-5 shrink-0 text-info" />
+          <CardContent className="grid gap-5 lg:grid-cols-[1fr_20rem]">
+            <div className="flex items-start gap-3.5 rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+                <Target aria-hidden="true" className="size-4" />
+              </span>
               <div>
-                <p className="text-xs font-semibold text-info-foreground">اقدام بعدی</p>
-                <p className="mt-1 text-sm leading-7">{insight.actionFa}</p>
-                <p className="mt-2 text-xs leading-6 text-muted-foreground">
+                <p className="text-xs font-bold text-primary">اقدام بعدی</p>
+                <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{insight.actionFa}</p>
+                <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
                   {insight.confidenceReasonFa}
                 </p>
               </div>
             </div>
-            <div className="rounded-lg bg-muted/70 p-4">
-              <p className="text-xs text-muted-foreground">پتانسیل برآوردی و غیرتضمینی</p>
-              <p className="mt-2 text-2xl font-bold tabular-nums">
+            <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
+              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی و غیرتضمینی</p>
+              <p className="mt-2 text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                 {scenario ? formatCompactRial(scenario.estimatedVolumeRial) : "داده ناکافی"}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 {scenario
                   ? `حدود ${faInteger.format(scenario.estimatedOrders)} سفارش؛ ادعای علّی نیست`
                   : "Recommendation عددی ساخته نشده است"}
               </p>
             </div>
           </CardContent>
-          <CardFooter className="flex flex-wrap gap-2">
-            <EvidenceButton
-              label="مدرک Insight"
-              evidenceId={insight.evidenceId}
-              onRequest={handleEvidenceRequest}
-            />
-            {scenario ? (
+          <CardFooter className="flex flex-wrap gap-2 rounded-b-2xl border-t border-border/50 bg-muted/20 p-4">
+            <div className="w-full sm:w-auto">
               <EvidenceButton
-                label="مدرک سفارش برآوردی"
-                evidenceId={scenario.evidenceIds.orders}
+                label="مدرک Insight"
+                evidenceId={insight.evidenceId}
                 onRequest={handleEvidenceRequest}
               />
+            </div>
+            {scenario ? (
+              <div className="w-full sm:w-auto">
+                <EvidenceButton
+                  label="مدرک سفارش برآوردی"
+                  evidenceId={scenario.evidenceIds.orders}
+                  onRequest={handleEvidenceRequest}
+                />
+              </div>
             ) : null}
           </CardFooter>
         </Card>
@@ -423,17 +433,17 @@ export function ConversionRecoveryPage({
         </Alert>
       )}
 
-      <section aria-labelledby="payment-rail-title" className="grid gap-4">
+      <section aria-labelledby="payment-rail-title" className="grid gap-5">
         <div>
-          <p className="text-xs font-semibold text-info-foreground">ریل تشخیصی</p>
-          <h2 id="payment-rail-title" className="mt-1 text-xl font-bold sm:text-2xl">
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">ریل تشخیصی</span>
+          <h2 id="payment-rail-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             افت در کدام مرحله رخ داده است؟
           </h2>
-          <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+          <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
             مقدار هر Stage یک‌بار در سطح Session جمع شده است. کوتاه‌ترین نرخ عبور، محل اصلی ریزش را نشان می‌دهد.
           </p>
         </div>
-        <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {payload.funnel.map((stage, index) => (
             <FunnelStageCard
               key={stage.stage}
@@ -446,18 +456,20 @@ export function ConversionRecoveryPage({
         </div>
       </section>
 
-      <section aria-labelledby="diagnosis-title" className="grid gap-4">
+      <section aria-labelledby="diagnosis-title" className="grid gap-5">
         <div>
-          <p className="text-xs font-semibold text-info-foreground">دو اهرم قابل پیگیری</p>
-          <h2 id="diagnosis-title" className="mt-1 text-xl font-bold sm:text-2xl">
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">دو اهرم قابل پیگیری</span>
+          <h2 id="diagnosis-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             قبل از تلاش و بعد از خطای اول
           </h2>
         </div>
-        <div className="grid gap-4 lg:grid-cols-2">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BanknoteArrowDown aria-hidden="true" className="size-5" />
+        <div className="grid gap-5 lg:grid-cols-2">
+          <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
+            <CardHeader className="gap-1.5">
+              <CardTitle className="flex items-center gap-2.5 text-lg font-bold text-foreground">
+                <span className="flex size-8 items-center justify-center rounded-xl bg-muted text-foreground">
+                  <BanknoteArrowDown aria-hidden="true" className="size-4" />
+                </span>
                 <h3>NoAttempt</h3>
               </CardTitle>
               <CardDescription>
@@ -486,10 +498,12 @@ export function ConversionRecoveryPage({
             </CardContent>
           </Card>
 
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <RefreshCcw aria-hidden="true" className="size-5" />
+          <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
+            <CardHeader className="gap-1.5">
+              <CardTitle className="flex items-center gap-2.5 text-lg font-bold text-foreground">
+                <span className="flex size-8 items-center justify-center rounded-xl bg-muted text-foreground">
+                  <RefreshCcw aria-hidden="true" className="size-4" />
+                </span>
                 <h3>بازیابی پس از تلاش اول</h3>
               </CardTitle>
               <CardDescription>
@@ -520,7 +534,7 @@ export function ConversionRecoveryPage({
         </div>
       </section>
 
-      <Alert>
+      <Alert className="rounded-2xl">
         <FlaskConical aria-hidden="true" />
         <AlertTitle>سناریو، اثر علّی یا تضمین فروش نیست</AlertTitle>
         <AlertDescription>
@@ -528,43 +542,43 @@ export function ConversionRecoveryPage({
         </AlertDescription>
       </Alert>
 
-      <section aria-labelledby="psp-title" className="grid gap-4">
+      <section aria-labelledby="psp-title" className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <p className="text-xs font-semibold text-info-foreground">کنترل متغیر مخدوش‌کننده</p>
-            <h2 id="psp-title" className="mt-1 text-xl font-bold sm:text-2xl">
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">کنترل متغیر مخدوش‌کننده</span>
+            <h2 id="psp-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
               PSP بعد از کنترل مبلغ و حجم نمونه
             </h2>
-            <p className="mt-2 max-w-3xl text-sm leading-7 text-muted-foreground">
+            <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
               نرخ هر PSP فقط در همان Quartile مبلغ مقایسه می‌شود؛ زیر ۱۰۰ Session کلی یا ۲۵ Session در cell، رتبه و پیشنهاد نمایش داده نمی‌شود.
             </p>
           </div>
-          <Badge variant="outline">
+          <Badge variant="outline" className="font-semibold gap-1.5">
             <ShieldCheck aria-hidden="true" data-icon="inline-start" />
             بدون Winner label
           </Badge>
         </div>
 
         {pspGroups.length > 0 ? (
-          <div className="grid gap-4 lg:grid-cols-2">
+          <div className="grid gap-5 lg:grid-cols-2">
             {pspGroups.map(([psp, segments]) => (
-            <Card key={psp} size="sm">
-              <CardHeader>
-                <CardTitle>
-                  <h3 dir="ltr">{psp}</h3>
+            <Card key={psp} size="sm" className="rounded-2xl border border-border/70 bg-card shadow-xs">
+              <CardHeader className="gap-1.5">
+                <CardTitle className="text-base font-bold">
+                  <h3 dir="ltr" className="font-mono">{psp}</h3>
                 </CardTitle>
                 <CardDescription>
                   مقایسه توصیفی؛ PSP به‌عنوان علت موفقیت معرفی نمی‌شود.
                 </CardDescription>
                 <CardAction>
-                  <Badge variant={segments.every((segment) => segment.quality === "insufficient-data") ? "outline" : "secondary"}>
+                  <Badge variant={segments.every((segment) => segment.quality === "insufficient-data") ? "outline" : "secondary"} className="font-semibold">
                     {segments.every((segment) => segment.quality === "insufficient-data")
                       ? "نمونه ناکافی"
                       : "نمونه کنترل‌شده"}
                   </Badge>
                 </CardAction>
               </CardHeader>
-              <CardContent className="grid gap-2">
+              <CardContent className="grid gap-2.5">
                 {segments.map((segment) => (
                   <SegmentRow
                     key={segment.key}
@@ -577,7 +591,7 @@ export function ConversionRecoveryPage({
             ))}
           </div>
         ) : (
-          <Alert>
+          <Alert className="rounded-2xl">
             <CircleAlert aria-hidden="true" />
             <AlertTitle>داده PSP برای مقایسه موجود نیست</AlertTitle>
             <AlertDescription>
@@ -587,37 +601,37 @@ export function ConversionRecoveryPage({
         )}
       </section>
 
-      <Card size="sm">
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <ChartNoAxesColumnDecreasing aria-hidden="true" className="size-5" />
+      <Card size="sm" className="rounded-2xl border border-border/60 bg-muted/40 p-5 shadow-xs">
+        <CardHeader className="p-0 gap-1">
+          <CardTitle className="flex items-center gap-2 text-base font-bold text-foreground">
+            <ChartNoAxesColumnDecreasing aria-hidden="true" className="size-5 text-primary" />
             <h2>قواعد خواندن این گزارش</h2>
           </CardTitle>
           <CardDescription>
             عددها از Attempt خام به Session یکتا تبدیل شده‌اند.
           </CardDescription>
         </CardHeader>
-        <CardContent className="grid gap-3 text-sm leading-7 text-muted-foreground sm:grid-cols-3">
-          <div className="flex items-start gap-2">
-            <CheckCircle2 aria-hidden="true" className="mt-1 size-4 shrink-0 text-success" />
+        <CardContent className="mt-4 grid gap-3 p-0 text-xs leading-relaxed text-muted-foreground sm:grid-cols-3">
+          <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
+            <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success" />
             <p>فروش و مبلغ موفق فقط با Verified محاسبه شده‌اند.</p>
           </div>
-          <div className="flex items-start gap-2">
-            <CircleAlert aria-hidden="true" className="mt-1 size-4 shrink-0 text-destructive" />
+          <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
+            <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-destructive" />
             <p>Paid و Reversed به‌تنهایی فروش موفق نیستند.</p>
           </div>
-          <div className="flex items-start gap-2">
-            <ArrowLeft aria-hidden="true" className="mt-1 size-4 shrink-0 text-info" />
+          <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
+            <ArrowLeft aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
             <p>اقدام پیشنهادی باید در دوره بعد با همین فرمول سنجیده شود.</p>
           </div>
         </CardContent>
       </Card>
 
-      <footer className="flex flex-col gap-1 pb-4 text-xs text-muted-foreground sm:flex-row sm:justify-between">
+      <footer className="flex flex-col gap-1 pb-4 text-xs font-medium text-muted-foreground sm:flex-row sm:justify-between">
         <span>
           تولید Artifact: {formatPeriod(artifact.generatedAt.slice(0, 10))}
         </span>
-        <span dir="ltr">Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…</span>
+        <span dir="ltr" className="font-mono">Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…</span>
       </footer>
 
       <RecoveryEvidenceSheet

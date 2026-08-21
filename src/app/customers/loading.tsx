@@ -1,30 +1,31 @@
-import { Card, CardContent, CardHeader } from "@/features/customer-growth/ui/card"
-import { Skeleton } from "@/features/customer-growth/ui/skeleton"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function CustomersLoading() {
   return (
-    <main
+    <div
       aria-busy="true"
       aria-label="در حال بارگذاری تحلیل مشتری"
-      className="mx-auto flex min-h-screen w-full max-w-6xl flex-col gap-6 p-4 sm:p-6 lg:p-8"
+      className="grid gap-8 lg:gap-10"
     >
-      <div className="flex flex-col gap-3">
-        <Skeleton className="h-4 w-20" />
-        <Skeleton className="h-9 w-64 max-w-full" />
-        <Skeleton className="h-5 w-96 max-w-full" />
+      <div className="grid gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">
+        <Skeleton className="h-5 w-24 rounded-full" />
+        <Skeleton className="h-9 w-64 max-w-full rounded-xl" />
+        <Skeleton className="h-5 w-96 max-w-full rounded-lg" />
       </div>
-      <Card>
-        <CardHeader>
-          <Skeleton className="h-6 w-56 max-w-full" />
-          <Skeleton className="h-4 w-full" />
+      <Card className="rounded-2xl">
+        <CardHeader className="gap-2">
+          <Skeleton className="h-6 w-56 max-w-full rounded-lg" />
+          <Skeleton className="h-4 w-full rounded-lg" />
         </CardHeader>
         <CardContent className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-28 w-full" />
-          <Skeleton className="h-28 w-full" />
+          <Skeleton className="h-28 w-full rounded-2xl" />
+          <Skeleton className="h-28 w-full rounded-2xl" />
+          <Skeleton className="h-28 w-full rounded-2xl" />
         </CardContent>
       </Card>
-      <Skeleton className="h-80 w-full" />
-    </main>
+      <Skeleton className="h-80 w-full rounded-2xl" />
+    </div>
   )
 }
+

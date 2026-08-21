@@ -245,7 +245,7 @@ export function EvidenceSheet({
           />
         ) : (
           <>
-            <SheetHeader className="gap-2 border-b pe-14 text-start">
+            <SheetHeader className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start sm:p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge
                   variant={evidence.result?.kind === "estimate" ? "default" : "secondary"}
@@ -256,16 +256,16 @@ export function EvidenceSheet({
                 </Badge>
                 <Badge variant="outline">{grainLabels[evidence.grain]}</Badge>
               </div>
-              <SheetTitle className="text-xl font-bold">{evidence.titleFa}</SheetTitle>
-              <SheetDescription className="leading-6">
+              <SheetTitle className="text-xl font-bold tracking-tight">{evidence.titleFa}</SheetTitle>
+              <SheetDescription className="text-sm leading-relaxed">
                 {evidence.explanationFa}
               </SheetDescription>
             </SheetHeader>
 
-            <div className="grid gap-5 p-4 sm:p-6">
-              <div className="rounded-lg bg-muted/70 p-4">
-                <p className="text-xs text-muted-foreground">نتیجه محاسبه</p>
-                <p className="mt-2 break-words text-xl font-bold tabular-nums">
+            <div className="grid gap-5 p-5 sm:p-6">
+              <div className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5">
+                <p className="text-xs font-medium text-muted-foreground">نتیجه محاسبه</p>
+                <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result
                     ? formatMetricValue(evidence.result)
                     : "قابل محاسبه نیست"}
@@ -290,9 +290,9 @@ export function EvidenceSheet({
               ))}
 
               <EvidenceSection title="فرمول و بازه">
-                <dl className="grid gap-3">
+                <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
                   <KeyValue label="شناسه فرمول">
-                    <code dir="ltr" className="inline-block rounded bg-muted px-1.5 py-0.5 text-xs">
+                    <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono">
                       {evidence.formulaId}
                     </code>
                   </KeyValue>
@@ -318,7 +318,7 @@ export function EvidenceSheet({
                     </AlertDescription>
                   </Alert>
                 ) : null}
-                <dl className="grid gap-3">
+                <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
                   <KeyValue label="صورت">
                     {evidence.numerator
                       ? `${evidence.numerator.labelFa}: ${numberFormatter.format(evidence.numerator.value)}`
@@ -341,29 +341,29 @@ export function EvidenceSheet({
                 <EvidenceList items={evidence.limitations} emptyLabel="محدودیتی ثبت نشده است." />
               </EvidenceSection>
 
-              <details className="group rounded-xl border bg-muted/20">
-                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-3 p-4 text-sm font-semibold text-foreground marker:content-none [&::-webkit-details-marker]:hidden">
-                  <span>جزئیات فنی و نمونه داده</span>
-                  <span className="text-xs font-normal text-muted-foreground group-open:hidden">
-                    برای بررسی بیشتر باز کنید
+              <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
+                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold text-foreground hover:bg-muted/40 marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span className="text-sm font-bold">جزئیات فنی و نمونه داده</span>
+                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
+                    بررسی بیشتر
                   </span>
-                  <span className="hidden text-xs font-normal text-muted-foreground group-open:inline">
+                  <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
                     بستن جزئیات
                   </span>
                 </summary>
 
-                <div className="grid gap-5 px-4 pb-4 sm:px-5 sm:pb-5">
+                <div className="grid gap-5 border-t border-border/50 p-4 sm:p-5">
                   <EvidenceSection title="منبع و فیلترها">
-                    <p className="text-sm leading-6 text-muted-foreground">
+                    <p className="text-sm leading-relaxed text-muted-foreground">
                       منبع نشان می‌دهد عدد از کدام ستون‌ها ساخته شده و فیلترها مشخص می‌کنند چه داده‌هایی وارد محاسبه شده‌اند.
                     </p>
                     <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                      <Database aria-hidden="true" className="mt-1 size-4 shrink-0" />
+                      <Database aria-hidden="true" className="mt-1 size-4 shrink-0 text-muted-foreground" />
                       <p>سطح محاسبه: {grainLabels[evidence.grain]}</p>
                     </div>
-                    <div className="flex flex-wrap gap-2" dir="ltr">
+                    <div className="flex flex-wrap gap-1.5" dir="ltr">
                       {evidence.sourceColumns.map((column) => (
-                        <code key={column} className="rounded bg-muted px-2 py-1 text-xs">
+                        <code key={column} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono">
                           {column}
                         </code>
                       ))}
@@ -372,7 +372,7 @@ export function EvidenceSheet({
                       <dl className="grid gap-2">
                         {evidence.filters.map((filter, index) => (
                           <KeyValue key={`${filter.field}-${index}`} label={`فیلتر ${numberFormatter.format(index + 1)}`}>
-                            <code dir="ltr" className="text-xs">
+                            <code dir="ltr" className="text-xs font-mono">
                               {filter.field} {filter.operator} {formatFilterValue(filter.value)}
                             </code>
                           </KeyValue>
@@ -385,12 +385,12 @@ export function EvidenceSheet({
 
                   <EvidenceSection title="کنترل‌ها و فرض‌ها">
                     <div className="grid gap-4 sm:grid-cols-2">
-                      <div className="grid content-start gap-2">
-                        <p className="text-xs font-semibold">کنترل‌های مقایسه</p>
+                      <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                        <p className="text-xs font-bold text-foreground">کنترل‌های مقایسه</p>
                         <EvidenceList items={evidence.controls} emptyLabel="کنترلی ثبت نشده است." />
                       </div>
-                      <div className="grid content-start gap-2">
-                        <p className="text-xs font-semibold">فرض‌ها</p>
+                      <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                        <p className="text-xs font-bold text-foreground">فرض‌ها</p>
                         <EvidenceList items={evidence.assumptions} emptyLabel="فرض اضافه‌ای ثبت نشده است." />
                       </div>
                     </div>
@@ -405,8 +405,8 @@ export function EvidenceSheet({
                     <SampleRows rows={evidence.sampleRows} />
                   </EvidenceSection>
 
-                  <p className="break-all border-t pt-4 text-xs text-muted-foreground">
-                    شناسه نسخه داده: <span dir="ltr">{evidence.datasetFingerprint}</span>
+                  <p className="break-all border-t border-border/50 pt-4 text-xs text-muted-foreground">
+                    شناسه نسخه داده: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
                   </p>
                 </div>
               </details>

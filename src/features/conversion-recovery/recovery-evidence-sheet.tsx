@@ -193,25 +193,25 @@ export function RecoveryEvidenceSheet({
           </>
         ) : (
           <>
-            <SheetHeader className="gap-2 border-b pe-14 text-start">
+            <SheetHeader className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start sm:p-6">
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={evidence.result?.kind === "estimate" ? "default" : "secondary"}>
                   {evidence.result ? kindLabels[evidence.result.kind] : "داده ناکافی"}
                 </Badge>
                 <Badge variant="outline">{grainLabels[evidence.grain]}</Badge>
               </div>
-              <SheetTitle className="text-xl font-bold">
+              <SheetTitle className="text-xl font-bold tracking-tight">
                 {evidence.titleFa}
               </SheetTitle>
-              <SheetDescription className="leading-6">
+              <SheetDescription className="text-sm leading-relaxed">
                 {evidence.explanationFa}
               </SheetDescription>
             </SheetHeader>
 
-            <div className="grid gap-5 p-4 sm:p-6">
-              <div className="rounded-lg bg-muted/70 p-4">
-                <p className="text-xs text-muted-foreground">نتیجه محاسبه</p>
-                <p className="mt-2 break-words text-xl font-bold tabular-nums">
+            <div className="grid gap-5 p-5 sm:p-6">
+              <div className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5">
+                <p className="text-xs font-medium text-muted-foreground">نتیجه محاسبه</p>
+                <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result ? formatMetric(evidence.result) : "قابل محاسبه نیست"}
                 </p>
               </div>
@@ -224,6 +224,7 @@ export function RecoveryEvidenceSheet({
                 <Alert
                   key={note.code}
                   variant={note.severity === "warning" ? "destructive" : "default"}
+                  className="rounded-2xl"
                 >
                   {note.severity === "warning" ? (
                     <CircleAlert aria-hidden="true" />
@@ -237,7 +238,7 @@ export function RecoveryEvidenceSheet({
                   </AlertTitle>
                   <AlertDescription>
                     <p>{note.messageFa}</p>
-                    <code dir="ltr" className="mt-2 block text-xs">
+                    <code dir="ltr" className="mt-2 block text-xs font-mono">
                       {matchingCodes.join(" / ")}
                     </code>
                   </AlertDescription>
@@ -246,9 +247,9 @@ export function RecoveryEvidenceSheet({
               })}
 
               <EvidenceSection title="فرمول و بازه">
-                <dl className="grid gap-3">
+                <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
                   <KeyValue label="Formula ID">
-                    <code dir="ltr" className="rounded bg-muted px-1.5 py-0.5 text-xs">
+                    <code dir="ltr" className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono">
                       {evidence.formulaId}
                     </code>
                   </KeyValue>
@@ -266,7 +267,7 @@ export function RecoveryEvidenceSheet({
 
               <EvidenceSection title="صورت، مخرج و خط مبنا">
                 {!evidence.numerator || !evidence.denominator ? (
-                  <Alert>
+                  <Alert className="rounded-2xl">
                     <Sigma aria-hidden="true" />
                     <AlertTitle>همه عملوندها برای این نوع عدد لازم نیستند</AlertTitle>
                     <AlertDescription>
@@ -274,7 +275,7 @@ export function RecoveryEvidenceSheet({
                     </AlertDescription>
                   </Alert>
                 ) : null}
-                <dl className="grid gap-3">
+                <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
                   <KeyValue label="صورت">
                     {evidence.numerator
                       ? `${evidence.numerator.labelFa}: ${numberFormatter.format(evidence.numerator.value)}`
@@ -295,12 +296,12 @@ export function RecoveryEvidenceSheet({
 
               <EvidenceSection title="منبع و فیلترها">
                 <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Database aria-hidden="true" />
+                  <Database aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
                   <p>Grain محاسبه: {grainLabels[evidence.grain]}</p>
                 </div>
-                <div className="flex flex-wrap gap-2" dir="ltr">
+                <div className="flex flex-wrap gap-1.5" dir="ltr">
                   {evidence.sourceColumns.map((column) => (
-                    <code key={column} className="rounded bg-muted px-2 py-1 text-xs">
+                    <code key={column} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono">
                       {column}
                     </code>
                   ))}
@@ -311,7 +312,7 @@ export function RecoveryEvidenceSheet({
                       key={`${filter.field}-${index}`}
                       label={`فیلتر ${numberFormatter.format(index + 1)}`}
                     >
-                      <code dir="ltr" className="text-xs">
+                      <code dir="ltr" className="text-xs font-mono">
                         {filter.field} {filter.operator} {formatFilterValue(filter.value)}
                       </code>
                     </KeyValue>
@@ -320,17 +321,17 @@ export function RecoveryEvidenceSheet({
               </EvidenceSection>
 
               <EvidenceSection title="کنترل‌ها، فرض‌ها و محدودیت‌ها">
-                <div className="grid gap-5 sm:grid-cols-3">
-                  <div className="grid content-start gap-2">
-                    <p className="text-xs font-semibold">کنترل‌ها</p>
+                <div className="grid gap-4 sm:grid-cols-3">
+                  <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                    <p className="text-xs font-bold text-foreground">کنترل‌ها</p>
                     <EvidenceList items={evidence.controls} empty="کنترلی ثبت نشده است." />
                   </div>
-                  <div className="grid content-start gap-2">
-                    <p className="text-xs font-semibold">فرض‌ها</p>
+                  <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                    <p className="text-xs font-bold text-foreground">فرض‌ها</p>
                     <EvidenceList items={evidence.assumptions} empty="فرض اضافه‌ای ثبت نشده است." />
                   </div>
-                  <div className="grid content-start gap-2">
-                    <p className="text-xs font-semibold">محدودیت‌ها</p>
+                  <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                    <p className="text-xs font-bold text-foreground">محدودیت‌ها</p>
                     <EvidenceList items={evidence.limitations} empty="محدودیتی ثبت نشده است." />
                   </div>
                 </div>
@@ -338,7 +339,7 @@ export function RecoveryEvidenceSheet({
 
               <EvidenceSection title="نمونه Sessionهای Mask‌شده">
                 {evidence.sampleRows.length === 0 ? (
-                  <Alert>
+                  <Alert className="rounded-2xl">
                     <CircleAlert aria-hidden="true" />
                     <AlertTitle>نمونه امنی ثبت نشده است</AlertTitle>
                     <AlertDescription>
@@ -354,8 +355,8 @@ export function RecoveryEvidenceSheet({
                 )}
               </EvidenceSection>
 
-              <p className="break-all border-t pt-4 text-xs text-muted-foreground">
-                Dataset fingerprint: <span dir="ltr">{evidence.datasetFingerprint}</span>
+              <p className="break-all border-t border-border/50 pt-4 text-xs font-medium text-muted-foreground">
+                Dataset fingerprint: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
               </p>
             </div>
           </>

@@ -3,6 +3,7 @@
 import { useRef, useState } from "react";
 import { ArrowLeft, BadgeCheck, Calculator, Database } from "lucide-react";
 
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import type { ArtifactError, EvidenceRecord } from "@/contracts";
 import { EvidenceSheet } from "@/entities/evidence/evidence-sheet";
@@ -98,64 +99,71 @@ export function PeerOpportunitiesPage({
     evidenceResolution?.success === false ? evidenceResolution.error : null;
 
   return (
-    <main className="min-h-screen bg-muted/30">
-      <div className="mx-auto grid w-full max-w-6xl gap-8 px-4 py-6 sm:px-6 lg:px-8 lg:py-10">
-        <header className="grid gap-5">
-          <div className="flex flex-wrap items-center justify-between gap-3">
-            <div className="grid gap-1">
-              <p className="text-sm font-medium text-muted-foreground">نبض زرین / فرصت‌ها</p>
-              <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">
-                فرصت‌های رشد پذیرنده <bdi dir="ltr">{payload.selection.merchantKey}</bdi>
-              </h1>
-            </div>
-            <div className="rounded-lg border bg-card px-3 py-2 text-xs text-muted-foreground">
-              {payload.selection.comparison ? (
-                <span>
-                  {formatDate(payload.selection.comparison.from)} تا {formatDate(payload.selection.period.to)}
-                </span>
-              ) : (
-                <span>{formatDate(payload.selection.period.from)} تا {formatDate(payload.selection.period.to)}</span>
-              )}
-            </div>
+    <div className="grid gap-8 lg:gap-10">
+      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
+        <div className="min-w-0">
+          <div className="flex flex-wrap items-center gap-2">
+            <Badge variant="secondary" className="gap-1.5 font-semibold">
+              <BadgeCheck aria-hidden="true" className="size-3.5" />
+              تحلیل هم‌صنفان و فرصت‌ها
+            </Badge>
+            <Badge variant="outline" className="gap-1.5 font-semibold">
+              <Database aria-hidden="true" className="size-3.5" />
+              کل داده‌های معتبر چالش
+            </Badge>
           </div>
-
-          <div className="flex items-start gap-3 rounded-xl border bg-card p-4">
-            <Database aria-hidden="true" className="mt-0.5 size-5 shrink-0 text-muted-foreground" />
-            <div className="grid gap-1">
-              <p className="text-sm font-medium">تحلیل بر پایهٔ کل داده‌های چالش</p>
-              <p className="text-sm text-muted-foreground">
-                تلاش‌های تکراری هر پرداخت پیش از محاسبه، روی پرداخت یکتا تجمیع شده‌اند.
-              </p>
-            </div>
-          </div>
-        </header>
-
-        {primaryInsight ? (
-          <section className="grid gap-4 rounded-2xl border bg-card p-5 shadow-sm sm:p-6">
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <span className="inline-flex w-fit items-center gap-1.5 rounded-md bg-primary px-2.5 py-1 text-xs font-medium text-primary-foreground">
-                <BadgeCheck aria-hidden="true" className="size-4" />
-                {confidenceLabels[primaryInsight.confidence]}
+          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+            فرصت‌های رشد برای <span className="text-primary"><bdi dir="ltr">{payload.selection.merchantKey}</bdi></span>
+          </h1>
+          <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+            تلاش‌های تکراری هر پرداخت پیش از محاسبه، روی پرداخت یکتا تجمیع شده‌اند.
+          </p>
+          <p className="mt-3 text-xs font-medium text-muted-foreground">
+            {payload.selection.comparison ? (
+              <span>
+                دوره: {formatDate(payload.selection.comparison.from)} تا {formatDate(payload.selection.period.to)}
               </span>
-              <span className="text-xs text-muted-foreground">اولویت {primaryInsight.priority}</span>
+            ) : (
+              <span>دوره: {formatDate(payload.selection.period.from)} تا {formatDate(payload.selection.period.to)}</span>
+            )}
+          </p>
+        </div>
+      </header>
+
+      {primaryInsight ? (
+        <section className="grid gap-5 rounded-2xl border border-primary/40 bg-gradient-to-b from-card via-card to-primary/[0.02] p-6 shadow-sm ring-1 ring-primary/25 sm:p-7">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">
+                فرصت کلیدی
+              </span>
+              <Badge variant="outline" className="font-semibold">
+                {confidenceLabels[primaryInsight.confidence]}
+              </Badge>
             </div>
-            <div className="grid gap-2">
-              <h2 className="text-xl font-semibold sm:text-2xl">{primaryInsight.titleFa}</h2>
-              <p className="max-w-3xl text-sm leading-7 text-muted-foreground sm:text-base">
-                {primaryInsight.findingFa}
-              </p>
+            <span className="text-xs font-medium text-muted-foreground">اولویت {primaryInsight.priority}</span>
+          </div>
+          <div className="grid gap-2">
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{primaryInsight.titleFa}</h2>
+            <p className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
+              {primaryInsight.findingFa}
+            </p>
+          </div>
+          <div className="flex items-start gap-3.5 rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5">
+            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-primary/10 text-primary">
+              <ArrowLeft aria-hidden="true" className="size-4" />
+            </span>
+            <div>
+              <p className="text-xs font-bold text-primary">اقدام پیشنهادی</p>
+              <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{primaryInsight.actionFa}</p>
             </div>
-            <div className="flex items-start gap-2 rounded-lg bg-muted p-3 text-sm">
-              <ArrowLeft aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
-              <p>
-                <span className="font-medium">اقدام پیشنهادی: </span>
-                {primaryInsight.actionFa}
-              </p>
-            </div>
+          </div>
+          <div className="pt-2">
             <Button
               type="button"
               variant="outline"
-              className="min-h-11 w-fit"
+              size="default"
+              className="min-h-10 w-fit"
               aria-label={
                 primaryInsight?.feature === "growth"
                   ? primaryEvidenceLabel
@@ -168,32 +176,31 @@ export function PeerOpportunitiesPage({
                 ? primaryEvidenceLabel
                 : `مشاهدهٔ مدرک ${primaryEvidenceLabel}`}
             </Button>
-          </section>
-        ) : null}
+          </div>
+        </section>
+      ) : null}
 
-        <GrowthDecomposition
-          items={payload.decomposition}
+      <GrowthDecomposition
+        items={payload.decomposition}
+        evidenceByScope={evidenceByScope}
+        onEvidenceRequest={handleEvidenceRequest}
+      />
+
+      <div className="grid gap-6">
+        <PeerPosition
+          benchmarks={payload.peerBenchmarks}
           evidenceByScope={evidenceByScope}
           onEvidenceRequest={handleEvidenceRequest}
         />
-
-        <div className="grid gap-4">
-          <PeerPosition
-            benchmarks={payload.peerBenchmarks}
-            evidenceByScope={evidenceByScope}
-            onEvidenceRequest={handleEvidenceRequest}
-          />
-          <FairComparisonNote benchmarks={payload.peerBenchmarks} />
-        </div>
-
-        <TimeWindowOpportunities
-          windows={payload.timeWindows}
-          evidenceByScope={evidenceReferences}
-          onEvidenceRequest={handleEvidenceRequest}
-          emptyMessage={timingInsight?.findingFa}
-        />
-
+        <FairComparisonNote benchmarks={payload.peerBenchmarks} />
       </div>
+
+      <TimeWindowOpportunities
+        windows={payload.timeWindows}
+        evidenceByScope={evidenceReferences}
+        onEvidenceRequest={handleEvidenceRequest}
+        emptyMessage={timingInsight?.findingFa}
+      />
 
       <EvidenceSheet
         evidence={selectedEvidence}
@@ -201,6 +208,6 @@ export function PeerOpportunitiesPage({
         open={evidenceResolution !== null}
         onOpenChange={handleEvidenceOpenChange}
       />
-    </main>
+    </div>
   );
 }

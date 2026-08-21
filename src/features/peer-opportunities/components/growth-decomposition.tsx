@@ -1,5 +1,6 @@
 import { ArrowDown, ArrowUp, CircleAlert, Minus } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import type { DecompositionItem, Driver } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
@@ -124,18 +125,18 @@ export function GrowthDecomposition({
   );
 
   return (
-    <section aria-labelledby="decomposition-title" className="grid gap-4">
+    <section aria-labelledby="decomposition-title" className="grid gap-5">
       <header className="grid gap-1">
-        <p className="text-sm font-medium text-muted-foreground">تغییر فروش موفق</p>
-        <h2 id="decomposition-title" className="text-xl font-semibold">
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">عامل‌های رشد</span>
+        <h2 id="decomposition-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
           فروش موفق چرا تغییر کرد؟
         </h2>
-        <p className="text-sm text-muted-foreground">
+        <p className="text-sm leading-relaxed text-muted-foreground">
           سهم هر عامل جداگانه محاسبه شده تا اثر یک تغییر، دوبار شمرده نشود.
         </p>
       </header>
 
-      <div className="grid gap-3 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-3">
         {items.map((item) => {
           const isNegative = item.contributionRial < 0;
           const evidenceId = evidenceByScope[`growth:${item.driver}`];
@@ -146,11 +147,11 @@ export function GrowthDecomposition({
           return (
             <article
               key={item.driver}
-              className="grid gap-4 rounded-xl border bg-card p-4 shadow-sm"
+              className="grid gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
-                  <h3 className="font-medium">{driverLabels[item.driver]}</h3>
+                  <h3 className="text-base font-bold text-foreground">{driverLabels[item.driver]}</h3>
                   <p className="text-xs text-muted-foreground">
                     از <DriverValue item={item} value={item.previous} />
                     {" "}به <DriverValue item={item} value={item.current} />
@@ -159,25 +160,23 @@ export function GrowthDecomposition({
                 <div
                   className={
                     isNegative
-                      ? "text-sm font-medium text-destructive"
-                      : "text-sm font-medium text-foreground"
+                      ? "inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive"
+                      : "inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success-foreground"
                   }
                 >
-                  <span className="inline-flex items-center gap-1">
-                    <DirectionIcon value={item.contributionRial} />
-                    <ChangeSummary value={item.changePct} />
-                  </span>
+                  <DirectionIcon value={item.contributionRial} />
+                  <ChangeSummary value={item.changePct} />
                 </div>
               </div>
 
-              <div className="grid gap-2">
+              <div className="grid gap-2.5">
                 <div
                   aria-label={`سهم ${driverLabels[item.driver]} از تغییر حجم موفق`}
-                  className="h-2 overflow-hidden rounded-full bg-muted"
+                  className="h-2.5 overflow-hidden rounded-full bg-muted"
                   role="img"
                 >
                   <div
-                    className={isNegative ? "h-full bg-destructive" : "h-full bg-primary"}
+                    className={cn("h-full rounded-full transition-all duration-500", isNegative ? "bg-destructive" : "bg-primary")}
                     style={{ width }}
                   />
                 </div>
@@ -187,8 +186,8 @@ export function GrowthDecomposition({
                   onEvidenceRequest={onEvidenceRequest}
                   className={
                     isNegative
-                      ? "-my-2 w-fit font-semibold text-destructive"
-                      : "-my-2 w-fit font-semibold text-foreground"
+                      ? "w-fit text-sm font-bold text-destructive hover:underline"
+                      : "w-fit text-sm font-bold text-foreground hover:text-primary hover:underline"
                   }
                 >
                   <span>
