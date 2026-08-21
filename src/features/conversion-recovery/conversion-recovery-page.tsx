@@ -53,10 +53,16 @@ const faPercent = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
 })
 const stageLabels: Record<FunnelStage["stage"], string> = {
-  session: "درخواست پرداخت",
-  attempted: "شروع پرداخت",
-  "in-bank": "ورود به بانک",
-  verified: "پرداخت موفق",
+  session: "ایجاد سفارش",
+  attempted: "ورود به درگاه",
+  "in-bank": "ورود اطلاعات کارت",
+  verified: "تایید و پرداخت موفق",
+}
+const stageDescriptions: Record<FunnelStage["stage"], string> = {
+  session: "کل درخواست‌های پرداخت ایجادشده",
+  attempted: "مشتریانی که وارد صفحه درگاه شدند",
+  "in-bank": "مشتریانی که اطلاعات کارت را وارد کردند",
+  verified: "تراکنش‌های تایید و تسویه‌شده نهایی",
 }
 const bandLabels: Record<string, string> = {
   low: "مبلغ پایین",
@@ -150,9 +156,7 @@ function FunnelStageCard({
           <h3>{stageLabels[stage.stage]}</h3>
         </CardTitle>
         <CardDescription className="text-xs leading-relaxed">
-          {stage.stage === "verified"
-            ? "فقط try_status = Verified"
-            : "Session یکتا؛ بدون Double-count"}
+          {stageDescriptions[stage.stage]}
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-3.5">
@@ -178,26 +182,12 @@ function FunnelStageCard({
           />
         </div>
       </CardContent>
-      <CardFooter className="mt-auto grid grid-cols-2 gap-1 rounded-b-2xl border-t border-border/50 bg-muted/25 p-2 sm:grid-cols-1 xl:grid-cols-2">
+      <CardFooter className="mt-auto border-t border-border/50 bg-muted/20 p-3">
         <EvidenceButton
-          label="مدرک تعداد"
+          label={`روش محاسبه مرحله ${stageLabels[stage.stage]}`}
           evidenceId={stage.evidenceIds.count}
           onRequest={onEvidenceRequest}
         />
-        <EvidenceButton
-          label="مدرک مبلغ"
-          evidenceId={stage.evidenceIds.amount}
-          onRequest={onEvidenceRequest}
-        />
-        {stage.evidenceIds.rate ? (
-          <div className="col-span-2 sm:col-span-1 xl:col-span-2">
-            <EvidenceButton
-              label="مدرک نرخ عبور"
-              evidenceId={stage.evidenceIds.rate}
-              onRequest={onEvidenceRequest}
-            />
-          </div>
-        ) : null}
       </CardFooter>
     </Card>
   )
@@ -221,7 +211,7 @@ function MetricEvidenceRow({
         <p className="mt-1 text-base font-bold tabular-nums text-foreground">{value}</p>
       </div>
       <EvidenceButton
-        label={`مدرک ${label}`}
+        label={`روش محاسبه ${label}`}
         evidenceId={evidenceId}
         onRequest={onEvidenceRequest}
       />
@@ -242,30 +232,30 @@ function SegmentRow({
       <div>
         <p className="font-semibold text-foreground">{bandLabels[band] ?? band}</p>
         <p className="mt-0.5 text-xs text-muted-foreground">
-          {faInteger.format(segment.sessions)} Session attempted
+          {faInteger.format(segment.sessions)} سفارش در این بازه مبلغی
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {segment.quality === "sufficient" && segment.verifyPct !== null ? (
           <>
             <Badge variant="secondary" className="font-semibold">
-              Verified: {faPercent.format(segment.verifyPct)}٪
+              موفقیت: {faPercent.format(segment.verifyPct)}٪
             </Badge>
             {segment.peerOrBaselinePct !== null ? (
               <Badge variant="outline" className="font-semibold">
-                خط مبنا: {faPercent.format(segment.peerOrBaselinePct)}٪
+                میانگین بازار: {faPercent.format(segment.peerOrBaselinePct)}٪
               </Badge>
             ) : null}
           </>
         ) : (
           <Badge variant="outline" className="text-muted-foreground">نمونه ناکافی</Badge>
         )}
+        <EvidenceButton
+          label={`روش محاسبه بازه ${bandLabels[band] ?? band}`}
+          evidenceId={segment.evidenceId}
+          onRequest={onEvidenceRequest}
+        />
       </div>
-      <EvidenceButton
-        label="مدرک سگمنت"
-        evidenceId={segment.evidenceId}
-        onRequest={onEvidenceRequest}
-      />
     </div>
   )
 }
@@ -330,18 +320,18 @@ export function ConversionRecoveryPage({
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
               <Route aria-hidden="true" data-icon="inline-start" />
-              تشخیص مسیر پرداخت
+              مسیر پرداخت خریداران
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <Database aria-hidden="true" data-icon="inline-start" />
-              داده قطعی Session-level
+              داده قطعی سفارش‌ها
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            بازیابی Conversion برای <span className="text-primary">{payload.selection.merchantKey}</span>
+            نجات فروش و رفع موانع پرداخت برای <span className="text-primary">{payload.selection.merchantKey}</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            افت فروش را از درخواست پرداخت تا Verified دنبال کنید؛ هر عدد مدرک، فرمول و Session نمونه دارد.
+            رهگیری مرحله‌به‌مرحله فرآیند خرید، کشف دلایل انصراف مشتریان و پتانسیل افزایش درآمد با برطرف کردن موانع پرداخت.
           </p>
           <p className="mt-3 text-xs font-medium text-muted-foreground">
             دوره {formatPersianPeriod(payload.selection.period)}؛ مقایسه با {payload.selection.comparison ? formatPersianPeriod(payload.selection.comparison) : "بدون دوره مبنا"}
@@ -385,21 +375,21 @@ export function ConversionRecoveryPage({
               </div>
             </div>
             <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
-              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی و غیرتضمینی</p>
+              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی نجات فروش (تخمینی)</p>
               <p className="mt-2 text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                 {scenario ? formatCompactRial(scenario.estimatedVolumeRial) : "داده ناکافی"}
               </p>
               <p className="mt-1.5 text-xs text-muted-foreground">
                 {scenario
-                  ? `حدود ${faInteger.format(scenario.estimatedOrders)} سفارش؛ ادعای علّی نیست`
-                  : "Recommendation عددی ساخته نشده است"}
+                  ? `حدود ${faInteger.format(scenario.estimatedOrders)} سفارش بازیافتی؛ ادعای تضمین قطعی نیست`
+                  : "پیشنهاد عددی ساخته نشده است"}
               </p>
             </div>
           </CardContent>
           <CardFooter className="flex flex-wrap gap-2 rounded-b-2xl border-t border-border/50 bg-muted/20 p-4">
             <div className="w-full sm:w-auto">
               <EvidenceButton
-                label="مدرک Insight"
+                label="روش محاسبه ریشه افت فروش"
                 evidenceId={insight.evidenceId}
                 onRequest={handleEvidenceRequest}
               />
@@ -407,7 +397,7 @@ export function ConversionRecoveryPage({
             {scenario ? (
               <div className="w-full sm:w-auto">
                 <EvidenceButton
-                  label="مدرک سفارش برآوردی"
+                  label="روش محاسبه سفارش‌های قابل بازیابی"
                   evidenceId={scenario.evidenceIds.orders}
                   onRequest={handleEvidenceRequest}
                 />
@@ -418,21 +408,21 @@ export function ConversionRecoveryPage({
       ) : (
         <Alert>
           <CircleAlert aria-hidden="true" />
-          <AlertTitle>Insight اولویت‌دار ساخته نشد</AlertTitle>
+          <AlertTitle>فرصت اولویت‌دار ثبت نشد</AlertTitle>
           <AlertDescription>
-            داده این دوره برای پیشنهاد عددی کافی نیست. Funnel و Evidenceهای موجود را بررسی کنید؛ هیچ اثر یا Recommendation جعلی نمایش داده نمی‌شود.
+            داده‌های این دوره برای ساخت پیشنهاد عددی کافی نیست. مسیر پرداخت و مدارک موجود را بررسی کنید؛ هیچ عدد یا پیشنهاد غیرقابل اتکایی نمایش داده نمی‌شود.
           </AlertDescription>
         </Alert>
       )}
 
       <section aria-labelledby="payment-rail-title" className="grid gap-5">
         <div>
-          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">ریل تشخیصی</span>
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">قیف ۴ مرحله‌ای پرداخت</span>
           <h2 id="payment-rail-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            افت در کدام مرحله رخ داده است؟
+            مشتریان در کدام مرحله از خرید منصرف می‌شوند؟
           </h2>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            مقدار هر Stage یک‌بار در سطح Session جمع شده است. کوتاه‌ترین نرخ عبور، محل اصلی ریزش را نشان می‌دهد.
+            بررسی نرخ عبور خریداران از شروع سفارش تا تسویه نهایی؛ کارت قرمز نشان‌دهنده بیشترین ریزش مشتری در این دوره است.
           </p>
         </div>
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
@@ -468,24 +458,24 @@ export function ConversionRecoveryPage({
                 </div>
               </CardTitle>
               <CardDescription>
-                Sessionهایی که هیچ تلاش پرداختی را شروع نکرده‌اند؛ مهم‌ترین شکاف این دوره.
+                خریدارانی که سفارش را ثبت کردند اما وارد درگاه بانک نشدند؛ بزرگ‌ترین پتانسیل افزایش فروش شما.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3">
               <MetricEvidenceRow
-                label="Session بدون تلاش"
+                label="سفارش‌های بدون ورود به درگاه"
                 value={faInteger.format(payload.noAttempt.sessions)}
                 evidenceId={payload.noAttempt.evidenceIds.sessions}
                 onEvidenceRequest={handleEvidenceRequest}
               />
               <MetricEvidenceRow
-                label="سهم از همه Sessionها"
+                label="درصد کل خریداران منصرف‌شده"
                 value={payload.noAttempt.sharePct === null ? "داده ناکافی" : `${faPercent.format(payload.noAttempt.sharePct)}٪`}
                 evidenceId={payload.noAttempt.evidenceIds.share}
                 onEvidenceRequest={handleEvidenceRequest}
               />
               <MetricEvidenceRow
-                label="مبلغ درخواستی درگیر"
+                label="مبلغ فروش از دست‌رفته"
                 value={formatCompactRial(payload.noAttempt.requestedAmountRial)}
                 evidenceId={payload.noAttempt.evidenceIds.amount}
                 onEvidenceRequest={handleEvidenceRequest}
@@ -505,24 +495,24 @@ export function ConversionRecoveryPage({
                 </div>
               </CardTitle>
               <CardDescription>
-                صورت فقط Sessionهای first-try-non-verified است؛ recovered زیرمجموعه همان denominator است.
+                خریدارانی که بار اول با خطای درگاه مواجه شدند اما با تلاش مجدد خریدشان با موفقیت انجام شد.
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-3">
               <MetricEvidenceRow
-                label="واجد بازیابی"
+                label="خریداران مواجه با خطای اول"
                 value={faInteger.format(payload.retry.firstTryNonVerifiedSessions)}
                 evidenceId={payload.retry.evidenceIds.eligible}
                 onEvidenceRequest={handleEvidenceRequest}
               />
               <MetricEvidenceRow
-                label="بازیابی‌شده"
+                label="خریداران نجات‌یافته با تلاش مجدد"
                 value={faInteger.format(payload.retry.recoveredSessions)}
                 evidenceId={payload.retry.evidenceIds.recovered}
                 onEvidenceRequest={handleEvidenceRequest}
               />
               <MetricEvidenceRow
-                label="نرخ بازیابی"
+                label="درصد موفقیت در تلاش دوباره"
                 value={payload.retry.recoveryPct === null ? "داده ناکافی" : `${faPercent.format(payload.retry.recoveryPct)}٪`}
                 evidenceId={payload.retry.evidenceIds.rate}
                 onEvidenceRequest={handleEvidenceRequest}

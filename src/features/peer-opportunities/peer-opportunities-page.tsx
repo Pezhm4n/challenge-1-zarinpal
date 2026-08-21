@@ -65,11 +65,11 @@ export function PeerOpportunitiesPage({
   );
   const primaryEvidenceLabel =
     primaryInsight?.feature === "growth"
-      ? "جمع کل تغییر فروش موفق"
+      ? "روش محاسبه تغییر فروش"
       : primaryInsight?.feature === "peers"
-        ? "جایگاه در گروه هم‌صنف"
+        ? "روش محاسبه جایگاه در گروه هم‌صنف"
         : primaryInsight?.feature === "timing"
-          ? "فرصت‌های زمانی"
+          ? "روش محاسبه فرصت‌های زمانی"
           : primaryInsight?.titleFa;
 
   function handleEvidenceRequest(evidenceId: string) {
@@ -108,10 +108,10 @@ export function PeerOpportunitiesPage({
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            فرصت‌های رشد برای <span className="text-primary"><bdi dir="ltr">{payload.selection.merchantKey}</bdi></span>
+            فرصت‌های رشد و مقایسه با بازار برای <span className="text-primary"><bdi dir="ltr">{payload.selection.merchantKey}</bdi></span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            تلاش‌های تکراری هر پرداخت پیش از محاسبه، روی پرداخت یکتا تجمیع شده‌اند.
+            کشف راه‌های افزایش فروش، سنجش رتبه در میان هم‌صنفان و شناسایی ساعات طلایی خرید مشتریان.
           </p>
           <p className="mt-3 text-xs font-medium text-muted-foreground">
             {payload.selection.comparison ? (
@@ -159,17 +159,11 @@ export function PeerOpportunitiesPage({
               variant="outline"
               size="default"
               className="min-h-10 w-fit"
-              aria-label={
-                primaryInsight?.feature === "growth"
-                  ? primaryEvidenceLabel
-                  : `مشاهده مدرک ${primaryEvidenceLabel}`
-              }
+              aria-label={`مشاهده ${primaryEvidenceLabel}`}
               onClick={() => handleEvidenceRequest(primaryInsight.evidenceId)}
             >
               <Calculator aria-hidden="true" data-icon="inline-start" />
-              {primaryInsight?.feature === "growth"
-                ? primaryEvidenceLabel
-                : `مشاهدهٔ مدرک ${primaryEvidenceLabel}`}
+              <span>مشاهده {primaryEvidenceLabel}</span>
             </Button>
           </div>
         </section>

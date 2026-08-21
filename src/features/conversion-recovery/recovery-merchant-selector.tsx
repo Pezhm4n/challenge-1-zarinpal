@@ -46,9 +46,9 @@ export function RecoveryMerchantSelector({
         <SelectTrigger
           aria-labelledby="recovery-merchant-label"
           aria-busy={isPending}
-          className="min-h-11 w-full bg-card"
+          className="min-h-11 w-full bg-card sm:w-56"
         >
-          <SelectValue />
+          <SelectValue>{merchantKey}</SelectValue>
         </SelectTrigger>
         <SelectContent align="start">
           <SelectGroup>

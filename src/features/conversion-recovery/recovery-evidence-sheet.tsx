@@ -4,7 +4,6 @@ import {
   CircleAlert,
   CircleHelp,
   Database,
-  Sigma,
 } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
@@ -20,6 +19,7 @@ import {
 import {
   formatPersianDate,
   formatPersianDateTime,
+  localizePersianText,
 } from "@/lib/persian-date"
 import type { EvidenceRecord, EvidenceSampleRow, MetricValue } from "./types"
 
@@ -27,11 +27,11 @@ const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
 })
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
-  attempt: "تلاش پرداخت",
-  session: "Session",
-  "merchant-period": "پذیرنده در بازه",
-  "merchant-card": "پذیرنده و کارت Mask‌شده",
-  "peer-group": "گروه همتا",
+  attempt: "سطح تحلیل: تلاش‌های پرداخت",
+  session: "سطح تحلیل: هر سفارش مستقل",
+  "merchant-period": "سطح تحلیل: کل دوره فروشگاه",
+  "merchant-card": "سطح تحلیل: خریداران دارای کارت بانکی",
+  "peer-group": "سطح تحلیل: گروه هم‌صنفان و بازار",
 }
 const unitLabels: Record<MetricValue["unit"], string> = {
   rial: "ریال",
@@ -41,9 +41,9 @@ const unitLabels: Record<MetricValue["unit"], string> = {
   seconds: "ثانیه",
 }
 const kindLabels: Record<MetricValue["kind"], string> = {
-  actual: "مقدار واقعی",
+  actual: "محاسبه قطعی",
   estimate: "برآورد سناریویی",
-  benchmark: "معیار مقایسه",
+  benchmark: "معیار بازار",
 }
 
 function formatMetric(metric: MetricValue): string {
@@ -74,7 +74,7 @@ function EvidenceSection({
 }) {
   return (
     <section className="grid gap-3 border-t pt-5">
-      <h3 className="text-sm font-bold">{title}</h3>
+      <h3 className="text-sm font-bold text-foreground">{title}</h3>
       {children}
     </section>
   )
@@ -88,15 +88,31 @@ function KeyValue({
   children: React.ReactNode
 }) {
   return (
-    <div className="grid gap-1 sm:grid-cols-[9rem_1fr] sm:gap-4">
-      <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="min-w-0 break-words text-sm">{children}</dd>
+    <div className="grid gap-1 sm:grid-cols-[10rem_1fr] sm:gap-4">
+      <dt className="text-xs font-semibold text-muted-foreground">{label}</dt>
+      <dd className="min-w-0 break-words text-sm font-medium text-foreground">{children}</dd>
     </div>
   )
 }
 
 function hasPersianChars(text: string): boolean {
   return /[\u0600-\u06FF]/.test(text)
+}
+
+const statusTranslations: Record<string, { fa: string; en: string }> = {
+  NoAttempt: { fa: "انصراف بدون تلاش", en: "NoAttempt" },
+  Verified: { fa: "پرداخت موفق", en: "Verified" },
+  Failed: { fa: "ناموفق", en: "Failed" },
+  Initiated: { fa: "شروع‌شده", en: "Initiated" },
+  Paid: { fa: "پرداخت در بانک", en: "Paid" },
+  Reversed: { fa: "برگشت‌خورده", en: "Reversed" },
+  Expired: { fa: "منقضی‌شده", en: "Expired" },
+}
+
+function formatStatus(status: string | null | undefined): string {
+  if (!status) return "کاربرد ندارد"
+  const tr = statusTranslations[status]
+  return tr ? `${tr.fa} (${tr.en})` : localizePersianText(status)
 }
 
 function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
@@ -106,7 +122,8 @@ function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
   return (
     <ul className="flex flex-col gap-2.5 text-xs sm:text-sm text-muted-foreground">
       {items.map((item, index) => {
-        const isPersian = hasPersianChars(item)
+        const localized = localizePersianText(item)
+        const isPersian = hasPersianChars(localized)
         return (
           <li
             key={`${item}-${index}`}
@@ -117,7 +134,7 @@ function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
               aria-hidden="true"
               className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/70"
             />
-            <span className="min-w-0 flex-1 break-words">{item}</span>
+            <span className="min-w-0 flex-1 break-words">{localized}</span>
           </li>
         )
       })}
@@ -127,37 +144,70 @@ function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
 
 function SampleValue({ value }: { value: string | number | null | undefined }) {
   if (value === null || value === undefined || value === "") {
-    return <span className="text-muted-foreground">ثبت نشده</span>
+    return <span className="text-muted-foreground">—</span>
   }
   return <>{typeof value === "number" ? numberFormatter.format(value) : value}</>
 }
 
 function SampleCard({ row, index }: { row: EvidenceSampleRow; index: number }) {
   return (
-    <div className="grid gap-3 rounded-lg border p-3">
+    <div className="grid gap-3 rounded-xl border p-3.5 bg-card">
       <p className="text-xs font-semibold text-muted-foreground">
         نمونه {numberFormatter.format(index + 1)}
       </p>
-      <dl className="grid gap-2">
-        <KeyValue label="Session">
-          <span dir="ltr">{row.sessionKey}</span>
+      <dl className="grid gap-2.5">
+        <KeyValue label="شناسه پرداخت">
+          <span dir="ltr" className="font-mono">{row.sessionKey}</span>
         </KeyValue>
         <KeyValue label="زمان">{formatPersianDateTime(row.createdAt)}</KeyValue>
         <KeyValue label="مبلغ">
           {numberFormatter.format(row.amountRial)} ریال
         </KeyValue>
-        <KeyValue label="وضعیت">
-          <SampleValue value={row.tryStatus ?? row.sessionStatus} />
+        <KeyValue label="وضعیت تلاش">
+          <span>{formatStatus(row.tryStatus ?? row.sessionStatus)}</span>
         </KeyValue>
-        <KeyValue label="PSP">
+        <KeyValue label="درگاه (PSP)">
           <SampleValue value={row.pspCode} />
         </KeyValue>
-        <KeyValue label="کارت Mask‌شده">
+        <KeyValue label="کارت خریدار">
           <SampleValue value={row.payerCardMasked} />
         </KeyValue>
       </dl>
     </div>
   )
+}
+
+const baselineLabels: Record<string, string> = {
+  "merchant-period-verification-rate": "میانگین نرخ پرداخت موفق در کل دوره",
+  "comparison-period-no-attempt-share": "سهم انصراف خریداران در دوره قبل",
+  "comparison-returning-share": "سهم خریداران بازگشتی در دوره قبل",
+  "same-category-peer-median-verificationRate": "میانه نرخ پرداخت موفق هم‌صنفان",
+  "same-category-peer-median-verifiedVolumeRial": "میانه فروش موفق هم‌صنفان",
+  "same-category-peer-median-averageVerifiedTicketRial": "میانه مبلغ خرید هم‌صنفان",
+  "previous-period-sessions": "تعداد سفارش‌ها در دوره قبل",
+  "previous-period-ticket": "میانگین مبلغ خرید در دوره قبل",
+  "previous-period-rate": "نرخ پرداخت موفق در دوره قبل",
+}
+
+function formatBaselineLabel(type: string): string {
+  if (baselineLabels[type]) return baselineLabels[type]
+  return localizePersianText(type)
+}
+
+const columnLabels: Record<string, string> = {
+  session_key: "شناسه پرداخت",
+  merchant_key: "کد فروشگاه",
+  category_id: "دسته‌بندی صنف",
+  amount_rial: "مبلغ سفارش",
+  amount: "مبلغ",
+  created_at: "زمان ثبت",
+  eventual_verified: "وضعیت پرداخت نهایی",
+  try_seq: "شماره تلاش",
+  try_status: "وضعیت تلاش",
+  session_status: "وضعیت سفارش",
+  payer_card_key: "شناسه کارت خریدار",
+  psp_code: "کد درگاه (PSP)",
+  evidence_scope: "محدوده تحلیل",
 }
 
 export function RecoveryEvidenceSheet({
@@ -180,7 +230,7 @@ export function RecoveryEvidenceSheet({
       <SheetContent
         side="left"
         className="data-[side=left]:w-full data-[side=left]:max-w-none data-[side=left]:sm:max-w-2xl gap-0 overflow-y-auto"
-        aria-label="مدرک محاسبه تحلیل بازیابی"
+        aria-label="مدرک و روش محاسبه"
         aria-modal="true"
       >
         {!evidence ? (
@@ -188,7 +238,7 @@ export function RecoveryEvidenceSheet({
             <SheetHeader className="pe-14 text-start">
               <SheetTitle>مدرک محاسبه پیدا نشد</SheetTitle>
               <SheetDescription>
-                Artifact باید دوباره تولید و بررسی شود.
+                جزئیات فنی این بخش در دسترس نیست.
               </SheetDescription>
             </SheetHeader>
             <div className="px-4 pb-6">
@@ -211,163 +261,202 @@ export function RecoveryEvidenceSheet({
                 <Badge variant="outline">{grainLabels[evidence.grain]}</Badge>
               </div>
               <SheetTitle className="text-xl font-bold tracking-tight">
-                {evidence.titleFa}
+                {localizePersianText(evidence.titleFa)}
               </SheetTitle>
-              <SheetDescription className="text-sm leading-relaxed">
-                {evidence.explanationFa}
+              <SheetDescription className="text-sm leading-relaxed text-muted-foreground">
+                {localizePersianText(evidence.explanationFa)}
               </SheetDescription>
             </SheetHeader>
 
             <div className="grid gap-5 p-5 sm:p-6">
               <div className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5">
-                <p className="text-xs font-medium text-muted-foreground">نتیجه محاسبه</p>
+                <p className="text-xs font-semibold text-muted-foreground">نتیجه نهایی محاسبه</p>
                 <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result ? formatMetric(evidence.result) : "قابل محاسبه نیست"}
                 </p>
               </div>
 
               {visibleQualityNotes?.map((note) => {
-                const matchingCodes = evidence.dataQuality
-                  .filter((candidate) => candidate.messageFa === note.messageFa)
-                  .map((candidate) => candidate.code)
                 return (
-                <Alert
-                  key={note.code}
-                  variant={note.severity === "warning" ? "destructive" : "default"}
-                  className="rounded-2xl"
-                >
-                  {note.severity === "warning" ? (
-                    <CircleAlert aria-hidden="true" />
-                  ) : (
-                    <CircleHelp aria-hidden="true" />
-                  )}
-                  <AlertTitle>
-                    {note.severity === "warning"
-                      ? "محدودیت کیفیت داده"
-                      : "یادداشت تحلیل"}
-                  </AlertTitle>
-                  <AlertDescription>
-                    <p>{note.messageFa}</p>
-                    <code dir="ltr" className="mt-2 block text-xs font-mono">
-                      {matchingCodes.join(" / ")}
-                    </code>
-                  </AlertDescription>
-                </Alert>
+                  <Alert
+                    key={note.code}
+                    variant={note.severity === "warning" ? "destructive" : "default"}
+                    className="rounded-2xl"
+                  >
+                    {note.severity === "warning" ? (
+                      <CircleAlert aria-hidden="true" />
+                    ) : (
+                      <CircleHelp aria-hidden="true" />
+                    )}
+                    <AlertTitle>
+                      {note.severity === "warning"
+                        ? "محدودیت داده"
+                        : "یادداشت تحلیلی"}
+                    </AlertTitle>
+                    <AlertDescription className="text-sm leading-relaxed">
+                      <p>{localizePersianText(note.messageFa)}</p>
+                    </AlertDescription>
+                  </Alert>
                 )
               })}
 
-              <EvidenceSection title="فرمول و بازه">
+              <EvidenceSection title="روش محاسبه و بازه زمانی">
                 <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
-                  <KeyValue label="Formula ID">
-                    <code dir="ltr" className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono">
+                  <KeyValue label="روش محاسبه">{localizePersianText(evidence.formulaFa)}</KeyValue>
+                  <KeyValue label="بازه زمانی تحلیل">
+                    {formatDate(evidence.period.from)} تا {formatDate(evidence.period.to)}
+                  </KeyValue>
+                  <KeyValue label="بازه زمانی مبنای مقایسه">
+                    {evidence.comparisonPeriod
+                      ? `${formatDate(evidence.comparisonPeriod.from)} تا ${formatDate(evidence.comparisonPeriod.to)}`
+                      : "مستقل از دوره مقایسه"}
+                  </KeyValue>
+                  <KeyValue label="شناسه فنی فرمول">
+                    <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono text-muted-foreground">
                       {evidence.formulaId}
                     </code>
                   </KeyValue>
-                  <KeyValue label="فرمول">{evidence.formulaFa}</KeyValue>
-                  <KeyValue label="بازه تحلیل">
-                    {formatDate(evidence.period.from)} تا {formatDate(evidence.period.to)}
-                  </KeyValue>
-                  <KeyValue label="بازه مقایسه">
-                    {evidence.comparisonPeriod
-                      ? `${formatDate(evidence.comparisonPeriod.from)} تا ${formatDate(evidence.comparisonPeriod.to)}`
-                      : "ثبت نشده"}
-                  </KeyValue>
                 </dl>
               </EvidenceSection>
 
-              <EvidenceSection title="صورت، مخرج و خط مبنا">
-                {!evidence.numerator || !evidence.denominator ? (
-                  <Alert className="rounded-2xl">
-                    <Sigma aria-hidden="true" />
-                    <AlertTitle>همه عملوندها برای این نوع عدد لازم نیستند</AlertTitle>
-                    <AlertDescription>
-                      در Count یا Sum مستقیم، فرمول و فیلترهای Session منبع ردیابی هستند.
-                    </AlertDescription>
-                  </Alert>
-                ) : null}
-                <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
-                  <KeyValue label="صورت">
-                    {evidence.numerator
-                      ? `${evidence.numerator.labelFa}: ${numberFormatter.format(evidence.numerator.value)}`
-                      : "ثبت نشده"}
-                  </KeyValue>
-                  <KeyValue label="مخرج">
-                    {evidence.denominator
-                      ? `${evidence.denominator.labelFa}: ${numberFormatter.format(evidence.denominator.value)}`
-                      : "ثبت نشده"}
-                  </KeyValue>
-                  <KeyValue label="Baseline">
-                    {evidence.baseline
-                      ? `${evidence.baseline.type}، مقدار ${numberFormatter.format(evidence.baseline.value)}، نمونه ${numberFormatter.format(evidence.baseline.sampleSize)}`
-                      : "ثبت نشده"}
-                  </KeyValue>
-                </dl>
-              </EvidenceSection>
-
-              <EvidenceSection title="منبع و فیلترها">
-                <div className="flex items-start gap-2 text-sm text-muted-foreground">
-                  <Database aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
-                  <p>Grain محاسبه: {grainLabels[evidence.grain]}</p>
-                </div>
-                <div className="flex flex-wrap gap-1.5" dir="ltr">
-                  {evidence.sourceColumns.map((column) => (
-                    <code key={column} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono">
-                      {column}
-                    </code>
-                  ))}
-                </div>
-                <dl className="grid gap-2">
-                  {evidence.filters.map((filter, index) => (
-                    <KeyValue
-                      key={`${filter.field}-${index}`}
-                      label={`فیلتر ${numberFormatter.format(index + 1)}`}
-                    >
-                      <code dir="ltr" className="text-xs font-mono">
-                        {filter.field} {filter.operator} {formatFilterValue(filter.value)}
-                      </code>
-                    </KeyValue>
-                  ))}
-                </dl>
-              </EvidenceSection>
-
-              <EvidenceSection title="کنترل‌ها، فرض‌ها و محدودیت‌ها">
-                <div className="grid gap-4 sm:grid-cols-3">
-                  <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                    <p className="text-xs font-bold text-foreground">کنترل‌ها</p>
-                    <EvidenceList items={evidence.controls} empty="کنترلی ثبت نشده است." />
+              <EvidenceSection title="اجزای محاسبه و مقایسه">
+                {evidence.numerator && evidence.denominator ? (
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-border/60 bg-card p-4">
+                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (تعداد / مقدار جزء)</p>
+                      <p className="mt-1 text-sm font-bold text-foreground">
+                        {localizePersianText(evidence.numerator.labelFa)}
+                      </p>
+                      <p className="mt-1 text-xl font-extrabold tabular-nums text-primary">
+                        {numberFormatter.format(evidence.numerator.value)}
+                      </p>
+                    </div>
+                    <div className="rounded-2xl border border-border/60 bg-card p-4">
+                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل جامعه آماری)</p>
+                      <p className="mt-1 text-sm font-bold text-foreground">
+                        {localizePersianText(evidence.denominator.labelFa)}
+                      </p>
+                      <p className="mt-1 text-xl font-extrabold tabular-nums text-foreground">
+                        {numberFormatter.format(evidence.denominator.value)}
+                      </p>
+                    </div>
                   </div>
-                  <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                    <p className="text-xs font-bold text-foreground">فرض‌ها</p>
-                    <EvidenceList items={evidence.assumptions} empty="فرض اضافه‌ای ثبت نشده است." />
-                  </div>
-                  <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                    <p className="text-xs font-bold text-foreground">محدودیت‌ها</p>
-                    <EvidenceList items={evidence.limitations} empty="محدودیتی ثبت نشده است." />
-                  </div>
-                </div>
-              </EvidenceSection>
-
-              <EvidenceSection title="نمونه Sessionهای Mask‌شده">
-                {evidence.sampleRows.length === 0 ? (
-                  <Alert className="rounded-2xl">
-                    <CircleAlert aria-hidden="true" />
-                    <AlertTitle>نمونه امنی ثبت نشده است</AlertTitle>
-                    <AlertDescription>
-                      نتیجه و کیفیت تحلیل حفظ شده‌اند؛ Sample آماری محسوب نمی‌شود.
-                    </AlertDescription>
-                  </Alert>
                 ) : (
-                  <div className="grid gap-3">
-                    {evidence.sampleRows.map((row, index) => (
-                      <SampleCard key={`${row.sessionKey}-${index}`} row={row} index={index} />
-                    ))}
+                  <div className="rounded-2xl border border-border/60 bg-card p-4 text-xs leading-relaxed text-muted-foreground">
+                    این شاخص به صورت مستقیم بر اساس فرمول محاسباتی بالا و فیلترهای مشخص‌شده در این دوره اندازه‌گیری شده است.
                   </div>
                 )}
+
+                <div className="rounded-2xl border border-border/60 bg-card p-4">
+                  <p className="text-xs font-semibold text-muted-foreground">خط مبنای مقایسه</p>
+                  {evidence.baseline ? (
+                    <p className="mt-1 text-sm font-medium text-foreground leading-relaxed">
+                      {formatBaselineLabel(evidence.baseline.type)}:{" "}
+                      <span className="font-bold tabular-nums text-primary">
+                        {numberFormatter.format(evidence.baseline.value)}٪
+                      </span>{" "}
+                      <span className="text-xs text-muted-foreground">
+                        (بر اساس {numberFormatter.format(evidence.baseline.sampleSize)} سفارش در دوره قبل)
+                      </span>
+                    </p>
+                  ) : (
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      برای این نوع تحلیل، مقایسه دوره‌ای مستقیم کاربرد ندارد.
+                    </p>
+                  )}
+                </div>
               </EvidenceSection>
 
-              <p className="break-all border-t border-border/50 pt-4 text-xs font-medium text-muted-foreground">
-                Dataset fingerprint: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
-              </p>
+              <EvidenceSection title="ملاحظات و محدودیت‌ها">
+                <div className="rounded-2xl border border-border/60 bg-card p-4">
+                  <EvidenceList items={evidence.limitations} empty="محدودیت خاصی ثبت نشده است." />
+                </div>
+              </EvidenceSection>
+
+              <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
+                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold text-foreground hover:bg-muted/40 marker:content-none [&::-webkit-details-marker]:hidden">
+                  <span className="text-sm font-bold">مشاهده فیلترها، ستون‌های داده و نمونه پرداخت‌ها</span>
+                  <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
+                    بررسی بیشتر
+                  </span>
+                  <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
+                    بستن جزئیات
+                  </span>
+                </summary>
+
+                <div className="grid gap-5 border-t border-border/50 p-4 sm:p-5">
+                  <EvidenceSection title="شرایط و فرض‌های تحلیل">
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                        <p className="text-xs font-bold text-foreground">شرایط کنترل‌شده</p>
+                        <EvidenceList items={evidence.controls} empty="شرط کنترلی خاصی ثبت نشده است." />
+                      </div>
+                      <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
+                        <p className="text-xs font-bold text-foreground">فرض‌های آماری</p>
+                        <EvidenceList items={evidence.assumptions} empty="فرض اضافه‌ای ثبت نشده است." />
+                      </div>
+                    </div>
+                  </EvidenceSection>
+
+                  <EvidenceSection title="ستون‌ها و فیلترهای داده">
+                    <p className="text-xs leading-relaxed text-muted-foreground">
+                      این شاخص از روی ستون‌های زیر در جدول پرداخت‌ها و با اعمال فیلترهای زیر محاسبه شده است:
+                    </p>
+                    <div className="flex items-start gap-2 text-xs text-muted-foreground">
+                      <Database aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+                      <p>{grainLabels[evidence.grain]}</p>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5" dir="rtl">
+                      {evidence.sourceColumns.map((column) => (
+                        <span key={column} className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground">
+                          {columnLabels[column] ?? column}
+                        </span>
+                      ))}
+                    </div>
+                    {evidence.filters.length > 0 ? (
+                      <div className="grid gap-2 rounded-xl bg-card border border-border/50 p-3">
+                        {evidence.filters.map((filter, index) => (
+                          <div
+                            key={`${filter.field}-${index}`}
+                            className="flex flex-wrap items-center justify-between gap-2 text-xs"
+                          >
+                            <span className="font-medium text-muted-foreground">
+                              فیلتر {numberFormatter.format(index + 1)} ({columnLabels[filter.field] ?? filter.field})
+                            </span>
+                            <span className="rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
+                              {columnLabels[filter.field] ?? filter.field} {filter.operator === "=" ? "برابر با" : filter.operator === ">=" ? "بزرگتر یا مساوی با" : filter.operator} {localizePersianText(formatFilterValue(filter.value))}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">فیلتر اضافه‌ای اعمال نشده است.</p>
+                    )}
+                  </EvidenceSection>
+
+                  <EvidenceSection title="نمونه سفارش‌های بررسی‌شده">
+                    {evidence.sampleRows.length === 0 ? (
+                      <Alert className="rounded-2xl">
+                        <CircleAlert aria-hidden="true" />
+                        <AlertTitle>نمونه داده</AlertTitle>
+                        <AlertDescription>
+                          برای این شاخص آماری، ردیف‌های نمونه جداگانه ذخیره نشده است و عدد بر اساس کل سفارش‌های دوره به دست آمده است.
+                        </AlertDescription>
+                      </Alert>
+                    ) : (
+                      <div className="grid gap-3">
+                        {evidence.sampleRows.map((row, index) => (
+                          <SampleCard key={`${row.sessionKey}-${index}`} row={row} index={index} />
+                        ))}
+                      </div>
+                    )}
+                  </EvidenceSection>
+
+                  <p className="break-all border-t border-border/50 pt-4 text-xs font-medium text-muted-foreground">
+                    شناسه نسخه داده (Fingerprint): <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
+                  </p>
+                </div>
+              </details>
             </div>
           </>
         )}

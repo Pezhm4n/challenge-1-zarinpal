@@ -11,7 +11,7 @@ import {
   SelectLabel,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "./ui/select"
 
 type MerchantSelectorProps = {
   merchantKey: string
@@ -54,7 +54,7 @@ export function MerchantSelector({
           aria-busy={isPending}
           className="min-h-11 w-full"
         >
-          <SelectValue />
+          <SelectValue>{merchantKey}</SelectValue>
         </SelectTrigger>
         <SelectContent align="start">
           <SelectGroup>

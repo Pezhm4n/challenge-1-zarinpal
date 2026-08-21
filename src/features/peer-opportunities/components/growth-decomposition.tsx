@@ -5,9 +5,9 @@ import type { DecompositionItem, Driver } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const driverLabels: Record<Driver, string> = {
-  traffic: "تعداد پرداخت‌های یکتا",
-  conversion: "نرخ پرداخت موفق",
-  ticket: "میانگین مبلغ پرداخت موفق",
+  traffic: "تعداد خریداران (ترافیک سفارش)",
+  conversion: "درصد پرداخت موفق (نرخ تبدیل)",
+  ticket: "میانگین مبلغ هر خرید (سبد خرید)",
 };
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
@@ -127,12 +127,12 @@ export function GrowthDecomposition({
   return (
     <section aria-labelledby="decomposition-title" className="grid gap-5">
       <header className="grid gap-1">
-        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">عامل‌های رشد</span>
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">عامل‌های اصلی رشد</span>
         <h2 id="decomposition-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-          فروش موفق چرا تغییر کرد؟
+          فروش شما از چه راه‌هایی تغییر کرده است؟
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          سهم هر عامل جداگانه محاسبه شده تا اثر یک تغییر، دوبار شمرده نشود.
+          تفکیک سهم ۳ عامل کلیدی (تعداد خریداران، درصد خرید موفق، و مبلغ خرید)؛ سهم هر عامل جداگانه سنجیده شده است.
         </p>
       </header>
 
@@ -174,7 +174,7 @@ export function GrowthDecomposition({
                   <span className="font-semibold text-muted-foreground">اثر مستقیم بر فروش:</span>
                   <EvidenceMetricButton
                     evidenceId={evidenceId}
-                    ariaLabel={`مشاهده مدرک اثر ${driverLabels[item.driver]} بر فروش`}
+                    ariaLabel={`مشاهده روش محاسبه سهم ${driverLabels[item.driver]} در فروش`}
                     onEvidenceRequest={onEvidenceRequest}
                     className={
                       isNegative
@@ -188,7 +188,7 @@ export function GrowthDecomposition({
                   </EvidenceMetricButton>
                 </div>
                 <div
-                  aria-label={`سهم ${driverLabels[item.driver]} از تغییر حجم موفق`}
+                  aria-label={`سهم ${driverLabels[item.driver]} از تغییر مبلغ فروش`}
                   className="h-2.5 overflow-hidden rounded-full bg-muted/80"
                   role="img"
                 >

@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card, CardContent, CardHeader } from "@/features/customer-growth/ui/card"
+import { Skeleton } from "@/features/customer-growth/ui/skeleton"
 
 export default function CustomersLoading() {
   return (

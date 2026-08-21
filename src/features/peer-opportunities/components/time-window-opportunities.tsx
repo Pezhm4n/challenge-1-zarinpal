@@ -70,13 +70,12 @@ export function TimeWindowOpportunities({
   return (
     <section aria-labelledby="timing-title" className="grid gap-5">
       <header className="grid gap-1">
-        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">فرصت‌های زمانی</span>
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">ساعات طلایی خرید</span>
         <h2 id="timing-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-          زمان‌های مناسب برای بررسی
+          ساعت‌ها و روزهای مناسب برای بیشترین فروش
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          این الگوها نشان می‌دهند کدام زمان‌ها را بررسی کنید؛ علت قطعی را نشان
-          نمی‌دهند.
+          پنجره‌های زمانی پرفروش که خریداران بیشترین تمایل به خرید موفق را در صنف شما داشته‌اند.
         </p>
       </header>
 
@@ -103,7 +102,7 @@ export function TimeWindowOpportunities({
                   </h3>
                   <div className="grid gap-0.5 text-xs leading-5 text-muted-foreground">
                     <p>
-                      تعداد پرداخت‌های یکتا:{" "}
+                      تعداد کل خریداران:{" "}
                       <bdi dir="ltr" className="tabular-nums font-semibold text-foreground">
                         {numberFormatter.format(window.sessions)}
                       </bdi>

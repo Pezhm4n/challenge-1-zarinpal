@@ -5,8 +5,8 @@ import {
   UsersRoundIcon,
 } from "lucide-react"
 
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { Badge } from "@/components/ui/badge"
+import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
+import { Badge } from "./ui/badge"
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "./ui/card"
 import {
   Table,
   TableBody,
@@ -220,6 +220,12 @@ type CustomerGrowthPageProps = {
   merchantKeys: string[]
 }
 
+const bucketLabels: Record<string, string> = {
+  "top-1": "خریدار اول (پرتراکنش‌ترین)",
+  "rank-2-5": "خریداران رتبه ۲ تا ۵",
+  other: "سایر خریداران",
+}
+
 export function CustomerGrowthPage({
   artifact,
   payload,
@@ -265,10 +271,10 @@ export function CustomerGrowthPage({
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            رشد و بازگشت مشتری برای <span className="text-primary">{payload.selection.merchantKey}</span>
+            رشد و وفاداری مشتریان برای <span className="text-primary">{payload.selection.merchantKey}</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            رفتار Cardهای ناشناس در همین پذیرنده؛ بدون بازیابی هویت یا اطلاعات تماس.
+            تحلیل رفتار خرید و تکرار مراجعه مشتریان بر اساس کارت‌های بانکی ناشناس؛ کاملاً امن و بدون افشای هویت خریداران.
           </p>
           <p className="mt-3 text-xs font-medium text-muted-foreground">
             دوره: {formatPersianPeriod(payload.selection.period)}
@@ -325,7 +331,7 @@ export function CustomerGrowthPage({
         <Alert className="rounded-2xl">
           <ShieldCheckIcon />
           <AlertTitle>پوشش و حریم خصوصی داده</AlertTitle>
-          <AlertDescription>{qualityNote.messageFa}</AlertDescription>
+          <AlertDescription>{localizePersianText(qualityNote.messageFa)}</AlertDescription>
         </Alert>
       ) : null}
 
@@ -333,16 +339,16 @@ export function CustomerGrowthPage({
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">ترکیب پایگاه مشتریان</span>
           <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl" id="customer-mix-title">
-            ترکیب مشتریان فعال
+            ترکیب خریداران شما در این دوره
           </h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
           <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
-                <h3>Card فعال</h3>
+                <h3>کل خریداران فعال</h3>
               </CardTitle>
-              <CardDescription className="text-xs">خرید موفق دارای شناسه در این دوره</CardDescription>
+              <CardDescription className="text-xs">کارت‌های بانکی خریداران با خرید موفق در این دوره</CardDescription>
             </CardHeader>
             <CardContent className="p-0 mt-3">
               <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
@@ -353,9 +359,9 @@ export function CustomerGrowthPage({
           <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
-                <h3>Card جدید</h3>
+                <h3>خریداران جدید</h3>
               </CardTitle>
-              <CardDescription className="text-xs">اولین خرید موفق در همین دوره</CardDescription>
+              <CardDescription className="text-xs">خریدارانی که برای اولین بار از شما خرید کرده‌اند</CardDescription>
             </CardHeader>
             <CardContent className="p-0 mt-3">
               <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
@@ -366,11 +372,11 @@ export function CustomerGrowthPage({
           <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
-                <h3>Card بازگشتی</h3>
+                <h3>خریداران بازگشتی</h3>
               </CardTitle>
               <CardDescription className="text-xs">
                 {comparisonShare == null
-                  ? "سابقه خرید پیش از این دوره"
+                  ? "خریدارانی با سابقه خرید قبلی از شما"
                   : `دوره قبل: ${faPercent.format(comparisonShare)}٪`}
               </CardDescription>
             </CardHeader>
@@ -381,7 +387,7 @@ export function CustomerGrowthPage({
                   : `${faPercent.format(payload.returningSharePct)}٪`}
               </p>
               <p className="mt-1 text-xs text-muted-foreground">
-                {faInteger.format(payload.returningCards)} Card از {faInteger.format(payload.activeCards)} Card
+                {faInteger.format(payload.returningCards)} خریدار از {faInteger.format(payload.activeCards)} خریدار فعال
               </p>
             </CardContent>
           </Card>
@@ -392,17 +398,17 @@ export function CustomerGrowthPage({
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">وفاداری و تکرار</span>
           <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl" id="repeat-title">
-            خرید تکراری
+            تکرار خرید و مشتریان وفادار
           </h2>
         </div>
         <div className="grid gap-5 lg:grid-cols-2">
           <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
             <CardHeader className="gap-1.5">
               <CardTitle className="text-base font-bold text-foreground">
-                <h3>نرخ زوج‌های تکرارشونده</h3>
+                <h3>درصد خریداران دارای خرید مجدد</h3>
               </CardTitle>
               <CardDescription className="text-xs">
-                Cardهایی که تا پایان دوره حداقل دو Session موفق داشته‌اند.
+                خریدارانی که حداقل دو بار در این دوره از شما خرید موفق داشته‌اند.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
@@ -417,10 +423,10 @@ export function CustomerGrowthPage({
           <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
             <CardHeader className="gap-1.5">
               <CardTitle className="text-base font-bold text-foreground">
-                <h3>سهم مبلغ Cardهای بازگشتی</h3>
+                <h3>سهم فروش از مشتریان وفادار</h3>
               </CardTitle>
               <CardDescription className="text-xs">
-                سهم حجم موفق دوره از Cardهایی که قبلاً دیده شده‌اند.
+                درصد کل مبلغ فروش حاصل از مشتریانی که سابقه خرید قبلی داشته‌اند.
               </CardDescription>
             </CardHeader>
             <CardContent className="flex flex-col gap-4">
@@ -440,10 +446,10 @@ export function CustomerGrowthPage({
       <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
         <CardHeader className="gap-1.5">
           <CardTitle className="text-lg font-bold text-foreground">
-            <h2>تمرکز مبلغ بین Cardهای ناشناس</h2>
+            <h2>تمرکز درآمد: چند درصد فروش وابسته به مشتریان پرخرید است؟</h2>
           </CardTitle>
           <CardDescription className="text-xs">
-            Bucketها هم‌پوشانی ندارند و فقط وابستگی مبلغ را نشان می‌دهند.
+            بررسی توزیع درآمد بین دسته‌های خریداران؛ آیا فروشگاه شما وابسته به تعداد محدودی مشتری پرخرید است؟
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
@@ -451,13 +457,13 @@ export function CustomerGrowthPage({
             payload.concentration.map((bucket) => (
               <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3.5" key={bucket.bucket}>
                 <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-semibold text-foreground">{bucket.bucket}</span>
+                  <span className="font-semibold text-foreground">{bucketLabels[bucket.bucket] ?? bucket.bucket}</span>
                   <span className="tabular-nums font-bold text-foreground">
                     {faPercent.format(bucket.revenueSharePct)}٪ مبلغ
                   </span>
                 </div>
                 <div
-                  aria-label={`${bucket.bucket}: ${faPercent.format(bucket.revenueSharePct)} درصد مبلغ`}
+                  aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.revenueSharePct)} درصد مبلغ`}
                   className="h-2.5 overflow-hidden rounded-full bg-muted"
                   role="img"
                 >
@@ -467,7 +473,7 @@ export function CustomerGrowthPage({
                   />
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  {faPercent.format(bucket.customerSharePct)}٪ از Cardهای فعال
+                  {faPercent.format(bucket.customerSharePct)}٪ از کل خریداران فعال
                 </p>
               </div>
             ))
@@ -476,7 +482,7 @@ export function CustomerGrowthPage({
               <AlertCircleIcon />
               <AlertTitle>داده کافی نیست</AlertTitle>
               <AlertDescription>
-                برای محاسبه تمرکز مبلغ، خرید موفق دارای Card کافی وجود ندارد.
+                برای محاسبه تمرکز مبلغ، خرید موفق دارای کارت بانکی کافی وجود ندارد.
               </AlertDescription>
             </Alert>
           )}

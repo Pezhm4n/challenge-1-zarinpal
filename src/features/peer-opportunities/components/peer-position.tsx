@@ -4,9 +4,9 @@ import type { PeerBenchmark } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const labels: Record<string, { title: string; unit: "percent" | "rial" }> = {
-  verificationRate: { title: "نرخ پرداخت موفق", unit: "percent" },
-  verifiedVolumeRial: { title: "مبلغ پرداخت‌های موفق", unit: "rial" },
-  averageVerifiedTicketRial: { title: "میانگین مبلغ پرداخت موفق", unit: "rial" },
+  verificationRate: { title: "درصد پرداخت‌های موفق", unit: "percent" },
+  verifiedVolumeRial: { title: "مجموع مبلغ فروش موفق", unit: "rial" },
+  averageVerifiedTicketRial: { title: "میانگین مبلغ هر خرید", unit: "rial" },
 };
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
@@ -66,12 +66,12 @@ export function PeerPosition({
   return (
     <section aria-labelledby="peer-title" className="grid gap-5">
       <header className="grid gap-1">
-        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">جایگاه رقابتی</span>
+        <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">جایگاه در بازار</span>
         <h2 id="peer-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-          جایگاه شما میان کسب‌وکارهای مشابه
+          جایگاه و رتبه شما در میان فروشگاه‌های مشابه
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          ببینید عملکرد شما از چند درصدِ کسب‌وکارهای مشابه بالاتر است.
+          بررسی صدک و رتبه عملکرد کسب‌وکار شما در مقایسه با فروشگاه‌های هم‌صنف در بازار.
         </p>
       </header>
 
@@ -123,7 +123,7 @@ export function PeerPosition({
                       <span className="text-xs text-muted-foreground">بهتر از</span>
                       <EvidenceMetricButton
                         evidenceId={evidenceId}
-                        ariaLabel={`مشاهده مدرک جایگاه ${label.title}`}
+                        ariaLabel={`مشاهده روش محاسبه جایگاه ${label.title}`}
                         onEvidenceRequest={onEvidenceRequest}
                         className="text-2xl font-extrabold tracking-tight text-foreground hover:text-primary sm:text-3xl"
                       >

@@ -241,14 +241,14 @@ function ResolvedActionCenter({
             ) : null}
           </div>
           <h1 id="action-center-title" className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            سه اقدام مهم برای <span className="text-primary">{payload.merchant.merchantKey}</span>
+            ۳ اقدام کلیدی برای افزایش فروش <span className="text-primary">{payload.merchant.merchantKey}</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
-            ابتدا مهم‌ترین فرصت را بررسی کنید. اثر مالی، اقدام بعدی و سطح اطمینان هر تحلیل جدا نمایش داده شده است.
+            مهم‌ترین فرصت‌های رشد و جلوگیری از ریزش مالی کسب‌وکار شما؛ همراه با اثر ریالی شفاف، گام عملی بعدی و مدرک دقیق محاسبه.
           </p>
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:flex lg:items-end">
+        <div className="flex flex-col gap-3.5 sm:flex-row sm:items-end">
           <MerchantSelector
             value={merchantKey}
             options={merchantOptions}
@@ -266,7 +266,7 @@ function ResolvedActionCenter({
 
       <section aria-labelledby="headline-title" className="grid gap-4">
         <div>
-          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">خلاصه دوره</span>
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">وضعیت کلیدی این دوره</span>
           <h2 id="headline-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
             {headlineInsight?.titleFa ? localizePersianText(headlineInsight.titleFa) : "خلاصه قابل اتکا برای این دوره موجود نیست"}
           </h2>
@@ -291,9 +291,9 @@ function ResolvedActionCenter({
 
       <section aria-labelledby="insights-title" className="grid gap-5">
         <div>
-          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">اولویت‌بندی اقدام‌ها</span>
+          <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">برنامه اقدام پیشنهادی</span>
           <h2 id="insights-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            از اقدام اول شروع کنید
+            ۳ کاری که فروش شما را بیشتر می‌کند
           </h2>
         </div>
 
@@ -322,10 +322,10 @@ function ResolvedActionCenter({
 
       <Card className="gap-3 rounded-2xl border border-border/60 bg-muted/40 p-5 shadow-xs">
         <CardHeader className="p-0">
-          <CardTitle className="text-sm font-bold text-foreground">مبنای این گزارش</CardTitle>
+          <CardTitle className="text-sm font-bold text-foreground">مبنا و دقت این گزارش</CardTitle>
         </CardHeader>
         <CardContent className="p-0 text-xs leading-relaxed text-muted-foreground">
-          {new Intl.NumberFormat("fa-IR").format(payload.merchant.dataCoverage.sessions)} پرداخت یکتا بررسی شده است. مبلغ‌ها ریال‌اند و تلاش‌های مجدد پیش از محاسبه فروش روی هر پرداخت تجمیع شده‌اند.
+          بررسی دقیق {new Intl.NumberFormat("fa-IR").format(payload.merchant.dataCoverage.sessions)} سفارش پرداخت در این بازه زمانی؛ تمام مبالغ به ریال بوده و تلاش‌های مکرر خریداران برای جلوگیری از محاسبه تکراری تجمیع شده‌اند.
         </CardContent>
       </Card>
 
