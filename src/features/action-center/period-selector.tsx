@@ -29,7 +29,7 @@ export function PeriodSelector({
   return (
     <div className="flex flex-col gap-1.5 min-w-0">
       <label id="period-selector-label" className="text-xs font-semibold text-muted-foreground">
-        دوره تحلیل
+        بازه زمانی
       </label>
       <Select
         items={options}

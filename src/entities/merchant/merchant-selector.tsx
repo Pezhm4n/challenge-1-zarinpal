@@ -30,7 +30,7 @@ export function MerchantSelector({
   return (
     <div className="flex flex-col gap-1.5 min-w-0">
       <label id="merchant-selector-label" className="text-xs font-semibold text-muted-foreground">
-        پذیرنده انتخابی
+        فروشگاه
       </label>
       <Select
         items={options}

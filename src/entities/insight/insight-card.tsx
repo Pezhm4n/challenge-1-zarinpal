@@ -105,7 +105,7 @@ export function InsightCard({
           <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-medium text-muted-foreground">
-                {insight.impact.labelFa}
+                {localizePersianText(insight.impact.labelFa)}
               </span>
               <Badge
                 variant={insight.impact.kind === "estimate" ? "default" : "secondary"}

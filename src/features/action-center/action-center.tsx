@@ -72,8 +72,10 @@ function HeadlineMetric({
   return (
     <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm">
       <div className="flex items-center gap-1.5">
-        <p className="text-xs font-medium text-muted-foreground">{metric.value.labelFa}</p>
-        {metric.value.labelFa.includes("بدون شروع تلاش") ? <HelpTooltip term="NoAttempt" /> : null}
+        <p className="text-xs font-medium text-muted-foreground">{localizePersianText(metric.value.labelFa)}</p>
+        {metric.value.labelFa.includes("بدون شروع تلاش") || metric.value.labelFa.includes("بدون ورود به تلاش") ? (
+          <HelpTooltip term="NoAttempt" />
+        ) : null}
       </div>
       <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
         {formatMetricValue(metric.value)}
@@ -89,7 +91,7 @@ function HeadlineMetric({
         >
           <DirectionIcon aria-hidden="true" className="size-3.5" />
           <span>
-            {isPositive ? "افزایش" : isNegative ? "کاهش" : "بدون تغییر"}: {formatMetricValue(change)}
+            {isPositive ? "افزایش" : isNegative ? "کاهش" : "بدون تغییر"}: {formatMetricValue(change)} نسبت به دوره قبل
           </span>
         </div>
       ) : null}
@@ -97,7 +99,7 @@ function HeadlineMetric({
         variant="ghost"
         size="sm"
         className="mt-4 min-h-9 w-full justify-start text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary"
-        aria-label={`چطور ${metric.value.labelFa} محاسبه شد؟`}
+        aria-label={`چطور ${localizePersianText(metric.value.labelFa)} محاسبه شد؟`}
         onClick={() => onEvidenceRequest(metric.evidenceId)}
       >
         <Calculator aria-hidden="true" data-icon="inline-start" />
@@ -236,7 +238,7 @@ function ResolvedActionCenter({
             {showDevelopmentFixture ? (
               <Badge variant="outline" className="gap-1.5 border-dashed font-semibold text-primary">
                 <FlaskConical aria-hidden="true" data-icon="inline-start" />
-                Fixture توسعه
+                داده نمونه
               </Badge>
             ) : null}
           </div>
