@@ -1,6 +1,6 @@
 "use client"
 
-import { CircleAlert, CircleHelp, Database } from "lucide-react"
+import { CalendarDays, CircleAlert, CircleHelp, Database, Scale } from "lucide-react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -13,6 +13,8 @@ import {
 } from "@/components/ui/sheet"
 import type { ArtifactError, EvidenceRecord, EvidenceSampleRow } from "@/contracts"
 import { formatMetricValue, metricKindLabels } from "@/entities/insight/metric-value"
+import { BaselineComparison } from "./baseline-comparison"
+import { CalculationEquation } from "./calculation-equation"
 import {
   formatPersianDateTime,
   formatPersianPeriod,
@@ -242,23 +244,6 @@ function EvidenceUnavailable({ error }: { error: ArtifactError }) {
   )
 }
 
-const baselineLabels: Record<string, string> = {
-  "merchant-period-verification-rate": "میانگین نرخ پرداخت موفق در کل دوره",
-  "comparison-period-no-attempt-share": "سهم انصراف خریداران در دوره قبل",
-  "comparison-returning-share": "سهم خریداران بازگشتی در دوره قبل",
-  "same-category-peer-median-verificationRate": "میانه نرخ پرداخت موفق هم‌صنفان",
-  "same-category-peer-median-verifiedVolumeRial": "میانه فروش موفق هم‌صنفان",
-  "same-category-peer-median-averageVerifiedTicketRial": "میانه مبلغ خرید هم‌صنفان",
-  "previous-period-sessions": "تعداد سفارش‌ها در دوره قبل",
-  "previous-period-ticket": "میانگین مبلغ خرید در دوره قبل",
-  "previous-period-rate": "نرخ پرداخت موفق در دوره قبل",
-}
-
-function formatBaselineLabel(type: string): string {
-  if (baselineLabels[type]) return baselineLabels[type]
-  return localizePersianText(type)
-}
-
 const columnLabels: Record<string, string> = {
   session_key: "شناسه پرداخت",
   merchant_key: "کد فروشگاه",
@@ -326,14 +311,51 @@ export function EvidenceSheet({
             </SheetHeader>
 
             <div className="grid gap-5 p-5 sm:p-6">
-              <div className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5">
-                <p className="text-xs font-semibold text-muted-foreground">نتیجه نهایی محاسبه</p>
+              <section
+                aria-label="نتیجه و روش محاسبه"
+                className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5"
+              >
+                <p className="text-xs font-semibold text-muted-foreground">
+                  نتیجه نهایی محاسبه
+                </p>
                 <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result
                     ? formatMetricValue(evidence.result)
                     : "قابل محاسبه نیست"}
                 </p>
-              </div>
+
+                {operands?.complete &&
+                evidence.numerator &&
+                evidence.denominator &&
+                evidence.result ? (
+                  <div className="mt-5">
+                    <CalculationEquation
+                      numeratorLabel={localizePersianText(evidence.numerator.labelFa)}
+                      numeratorValue={numberFormatter.format(evidence.numerator.value)}
+                      denominatorLabel={localizePersianText(evidence.denominator.labelFa)}
+                      denominatorValue={numberFormatter.format(evidence.denominator.value)}
+                      resultDisplay={formatMetricValue(evidence.result)}
+                    />
+                  </div>
+                ) : evidence.result ? (
+                  <p className="mt-3 rounded-xl bg-background p-3 text-sm leading-relaxed text-muted-foreground">
+                    {localizePersianText(evidence.formulaFa)}
+                  </p>
+                ) : null}
+
+                <div className="mt-4 flex flex-wrap items-center gap-2 text-xs">
+                  <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+                    <CalendarDays aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+                    بازه تحلیل: {formatPeriod(evidence.period)}
+                  </span>
+                  {evidence.comparisonPeriod ? (
+                    <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+                      <Scale aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+                      مقایسه با دوره قبل: {formatPeriod(evidence.comparisonPeriod)}
+                    </span>
+                  ) : null}
+                </div>
+              </section>
 
               {evidence.dataQuality.map((note) => (
                 <Alert
@@ -352,72 +374,28 @@ export function EvidenceSheet({
                 </Alert>
               ))}
 
-              <EvidenceSection title="روش محاسبه و بازه زمانی">
-                <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
-                  <KeyValue label="روش محاسبه">{localizePersianText(evidence.formulaFa)}</KeyValue>
-                  <KeyValue label="بازه زمانی تحلیل">{formatPeriod(evidence.period)}</KeyValue>
-                  <KeyValue label="بازه زمانی مبنای مقایسه">
-                    {evidence.comparisonPeriod
-                      ? formatPeriod(evidence.comparisonPeriod)
-                      : "مستقل از دوره مقایسه"}
-                  </KeyValue>
-                  <KeyValue label="شناسه فنی فرمول">
-                    <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono text-muted-foreground">
-                      {evidence.formulaId}
-                    </code>
-                  </KeyValue>
-                </dl>
-              </EvidenceSection>
-
-              <EvidenceSection title="اجزای محاسبه و مقایسه">
-                {operands?.complete ? (
-                  <div className="grid gap-3 sm:grid-cols-2">
-                    <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (مقداری که اندازه می‌گیریم)</p>
-                      <p className="mt-1 text-sm font-bold text-foreground">
-                        {localizePersianText(evidence.numerator?.labelFa)}
-                      </p>
-                      <p className="mt-1 text-xl font-extrabold tabular-nums text-primary">
-                        {numberFormatter.format(evidence.numerator?.value ?? 0)}
-                      </p>
-                    </div>
-                    <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل موارد بررسی‌شده)</p>
-                      <p className="mt-1 text-sm font-bold text-foreground">
-                        {localizePersianText(evidence.denominator?.labelFa)}
-                      </p>
-                      <p className="mt-1 text-xl font-extrabold tabular-nums text-foreground">
-                        {numberFormatter.format(evidence.denominator?.value ?? 0)}
-                      </p>
-                    </div>
-                  </div>
+              <EvidenceSection title="این عدد در مقایسه با مبنایش">
+                {evidence.baseline ? (
+                  <BaselineComparison
+                    baseline={evidence.baseline}
+                    currentValue={
+                      evidence.result && Number.isFinite(evidence.result.value)
+                        ? evidence.result.value
+                        : null
+                    }
+                    currentDisplay={
+                      evidence.result ? formatMetricValue(evidence.result) : undefined
+                    }
+                    isRate={evidence.result?.unit === "percent"}
+                  />
                 ) : (
-                  <div className="rounded-2xl border border-border/60 bg-card p-4 text-xs leading-relaxed text-muted-foreground">
-                    این شاخص به صورت مستقیم بر اساس فرمول محاسباتی بالا و فیلترهای مشخص‌شده در این دوره اندازه‌گیری شده است.
-                  </div>
+                  <p className="rounded-2xl border border-border/60 bg-card p-4 text-sm leading-relaxed text-muted-foreground">
+                    برای این نوع تحلیل، مقایسه دوره‌ای مستقیم کاربرد ندارد.
+                  </p>
                 )}
-
-                <div className="rounded-2xl border border-border/60 bg-card p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">مبنای مقایسه</p>
-                  {evidence.baseline ? (
-                    <p className="mt-1 text-sm font-medium text-foreground leading-relaxed">
-                      {formatBaselineLabel(evidence.baseline.type)}:{" "}
-                      <span className="font-bold tabular-nums text-primary">
-                        {numberFormatter.format(evidence.baseline.value)}٪
-                      </span>{" "}
-                      <span className="text-xs text-muted-foreground">
-                        (بر اساس {numberFormatter.format(evidence.baseline.sampleSize)} سفارش در دوره قبل)
-                      </span>
-                    </p>
-                  ) : (
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      برای این نوع تحلیل، مقایسه دوره‌ای مستقیم کاربرد ندارد.
-                    </p>
-                  )}
-                </div>
               </EvidenceSection>
 
-              <EvidenceSection title="ملاحظات و محدودیت‌ها">
+              <EvidenceSection title="قبل از تصمیم، این نکات را بدانید">
                 <div className="rounded-2xl border border-border/60 bg-card p-4">
                   <EvidenceList items={evidence.limitations} emptyLabel="محدودیت خاصی ثبت نشده است." />
                 </div>
@@ -425,7 +403,7 @@ export function EvidenceSheet({
 
               <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
                 <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold text-foreground hover:bg-muted/40 marker:content-none [&::-webkit-details-marker]:hidden">
-                  <span className="text-sm font-bold">مشاهده فیلترها، ستون‌های داده و نمونه پرداخت‌ها</span>
+                  <span className="text-sm font-bold">جزئیات فنی برای راستی‌آزمایی محاسبه</span>
                   <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
                     بررسی بیشتر
                   </span>
@@ -435,6 +413,19 @@ export function EvidenceSheet({
                 </summary>
 
                 <div className="grid gap-5 border-t border-border/50 p-4 sm:p-5">
+                  <EvidenceSection title="فرمول و شناسه فنی محاسبه">
+                    <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
+                      <KeyValue label="روش محاسبه (فنی)">
+                        {localizePersianText(evidence.formulaFa)}
+                      </KeyValue>
+                      <KeyValue label="شناسه فنی فرمول">
+                        <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono text-muted-foreground">
+                          {evidence.formulaId}
+                        </code>
+                      </KeyValue>
+                    </dl>
+                  </EvidenceSection>
+
                   <EvidenceSection title="شرایط و فرض‌های تحلیل">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
