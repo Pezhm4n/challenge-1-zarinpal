@@ -245,7 +245,7 @@ def build_artifact(
     growth_evidence_result = _metric_value(
         current.verified_volume_rial - previous.verified_volume_rial,
         "rial",
-        "تغییر حجم موفق",
+        "تغییر فروش شما",
         "actual",
         0,
     )
@@ -544,7 +544,7 @@ def build_artifact(
             "explanationFa": "اثر هر عامل در همهٔ حالت‌های ممکنِ ترکیب تغییرات محاسبه شده تا سهم‌ها دوباره‌شماری نشوند.",
             "grain": "merchant-period",
             "filters": [{"field": "merchant_key", "operator": "=", "value": target_key}],
-            "formulaFa": "فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
+            "formulaFa": "تغییر فروش موفق = فروش موفق دوره جاری − فروش موفق دوره مقایسه؛ هر فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
             "result": growth_evidence_result,
             **growth_operands,
             "controls": ["دوره‌های هم‌اندازه", "هر پرداخت یکتا فقط یک‌بار شمرده شده است", "تفکیک سهم عوامل بدون دوباره‌شماری"],

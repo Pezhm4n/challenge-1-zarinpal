@@ -67,7 +67,7 @@
               "value": "M275"
             }
           ],
-          "formulaFa": "فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
+          "formulaFa": "تغییر فروش موفق = فروش موفق دوره جاری − فروش موفق دوره مقایسه؛ هر فروش موفق = پرداخت‌های یکتا × نرخ پرداخت موفق × میانگین مبلغ پرداخت موفق",
           "formulaId": "growth.revenue_decomposition.v1",
           "grain": "merchant-period",
           "id": "peer-growth-decomposition-m275",
@@ -85,7 +85,7 @@
           "result": {
             "displayPrecision": 0,
             "kind": "actual",
-            "labelFa": "تغییر حجم موفق",
+            "labelFa": "تغییر فروش شما",
             "unit": "rial",
             "value": -3357260000
           },
@@ -123,7 +123,7 @@
             "created_at",
             "eventual_verified"
           ],
-          "titleFa": "تفکیک تغییر حجم موفق"
+          "titleFa": "تفکیک تغییر فروش شما"
         },
         {
           "assumptions": [
@@ -1566,7 +1566,7 @@
           "impact": {
             "displayPrecision": 0,
             "kind": "actual",
-            "labelFa": "تغییر حجم موفق",
+            "labelFa": "تغییر فروش شما",
             "unit": "rial",
             "value": -3357260000
           },

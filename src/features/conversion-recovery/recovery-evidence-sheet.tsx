@@ -5,6 +5,7 @@ import {
   CircleHelp,
   Database,
 } from "lucide-react"
+import { useRef } from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +23,7 @@ import {
   localizePersianText,
 } from "@/lib/persian-date"
 import type { EvidenceRecord, EvidenceSampleRow, MetricValue } from "./types"
+import { useSheetScrollTop } from "@/entities/evidence/use-sheet-scroll-top"
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
@@ -224,10 +226,14 @@ export function RecoveryEvidenceSheet({
       notes.findIndex((candidate) => candidate.messageFa === note.messageFa) ===
       index,
   )
+  const contentRef = useSheetScrollTop(open, evidence?.id)
+  const headerRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
+        ref={contentRef}
+        initialFocus={headerRef}
         side="left"
         className="data-[side=left]:w-full data-[side=left]:max-w-none data-[side=left]:sm:max-w-2xl gap-0 overflow-y-auto"
         aria-label="مدرک و روش محاسبه"
@@ -253,7 +259,11 @@ export function RecoveryEvidenceSheet({
           </>
         ) : (
           <>
-            <SheetHeader className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start sm:p-6">
+            <SheetHeader
+              ref={headerRef}
+              tabIndex={-1}
+              className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start outline-none sm:p-6"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={evidence.result?.kind === "estimate" ? "default" : "secondary"}>
                   {evidence.result ? kindLabels[evidence.result.kind] : "داده ناکافی"}
@@ -312,7 +322,7 @@ export function RecoveryEvidenceSheet({
                       : "مستقل از دوره مقایسه"}
                   </KeyValue>
                   <KeyValue label="شناسه فنی فرمول">
-                    <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono text-muted-foreground">
+                    <code dir="ltr" className="inline-block max-w-full whitespace-normal rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono break-all text-muted-foreground">
                       {evidence.formulaId}
                     </code>
                   </KeyValue>

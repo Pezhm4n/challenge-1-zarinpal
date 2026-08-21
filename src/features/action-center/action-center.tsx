@@ -57,6 +57,13 @@ function coverageLabel(quality: ActionCenterPayload["merchant"]["dataCoverage"][
   return labels[quality]
 }
 
+function friendlyKpiTitle(labelFa: string): string {
+  if (labelFa.includes("تغییر حجم موفق")) return "تغییر فروش شما"
+  if (labelFa.includes("یکتا")) return "تعداد خریدهای شما"
+  if (labelFa.includes("بدون شروع تلاش")) return "سبدهای رهاشده پیش از پرداخت"
+  return labelFa
+}
+
 function HeadlineMetric({
   metric,
   onEvidenceRequest,
@@ -72,7 +79,7 @@ function HeadlineMetric({
   return (
     <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm">
       <div className="flex items-center justify-center gap-1.5 sm:justify-start">
-        <p className="text-xs font-medium text-muted-foreground">{localizePersianText(metric.value.labelFa)}</p>
+        <p className="text-xs font-medium text-muted-foreground">{localizePersianText(friendlyKpiTitle(metric.value.labelFa))}</p>
         {metric.value.labelFa.includes("بدون شروع تلاش") || metric.value.labelFa.includes("بدون ورود به تلاش") ? (
           <HelpTooltip term="NoAttempt" />
         ) : null}
@@ -99,7 +106,7 @@ function HeadlineMetric({
         variant="ghost"
         size="sm"
         className="mt-4 min-h-9 w-full justify-center text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary sm:justify-start"
-        aria-label={`چطور ${localizePersianText(metric.value.labelFa)} محاسبه شد؟`}
+        aria-label={`چطور ${localizePersianText(friendlyKpiTitle(metric.value.labelFa))} محاسبه شد؟`}
         onClick={() => onEvidenceRequest(metric.evidenceId)}
       >
         <Calculator aria-hidden="true" data-icon="inline-start" />

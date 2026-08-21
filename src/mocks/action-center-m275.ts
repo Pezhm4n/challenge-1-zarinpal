@@ -199,7 +199,7 @@ export const m275ActionCenterArtifact = {
           status: "warning",
           titleFa: "توقف قبل از ورود به پرداخت افزایش یافته است",
           findingFa:
-            "۱٬۲۵۷ Session از ۳٬۱۸۳ Session ژوئن وارد هیچ تلاش پرداختی نشده‌اند؛ سهم NoAttempt از ۱۰٫۹۹٪ به ۳۹٫۴۹٪ رسیده است.",
+            "۱٬۲۵۷ Session از ۳٬۱۸۳ Session ژوئن وارد هیچ تلاش پرداختی نشده‌اند؛ سهم سفارش‌هایی که بدون پرداخت رها شدند از ۱۰٫۹۹٪ به ۳۹٫۴۹٪ رسیده است.",
           actionFa:
             "لاگ‌های انتقال Checkout به درگاه و خطاهای سمت پذیرنده را برای Sessionهای NoAttempt بازبینی کنید.",
           impact: noAttemptShare,

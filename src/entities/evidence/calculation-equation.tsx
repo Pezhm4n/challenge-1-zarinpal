@@ -60,19 +60,63 @@ function EquationSymbol({ children }: { children: string }) {
   )
 }
 
+export type CalculationEquationMode = "divide" | "subtract" | "inputs"
+
+export function inferCalculationMode(
+  numeratorValue: number,
+  denominatorValue: number,
+  resultValue: number,
+): CalculationEquationMode {
+  const values = [numeratorValue, denominatorValue, resultValue]
+  if (!values.every((value) => Number.isFinite(value))) return "inputs"
+
+  const close = (a: number, b: number) =>
+    Math.abs(a - b) <= Math.max(Math.abs(a), Math.abs(b)) * 0.005 + 1e-9
+
+  if (close(numeratorValue - denominatorValue, resultValue)) return "subtract"
+  if (
+    denominatorValue !== 0 &&
+    (close(numeratorValue / denominatorValue, resultValue) ||
+      close((numeratorValue / denominatorValue) * 100, resultValue))
+  ) {
+    return "divide"
+  }
+  return "inputs"
+}
+
 export function CalculationEquation({
   numeratorLabel,
   numeratorValue,
   denominatorLabel,
   denominatorValue,
   resultDisplay,
+  mode = "divide",
 }: {
   numeratorLabel: string
   numeratorValue: string
   denominatorLabel: string
   denominatorValue: string
   resultDisplay: string
+  mode?: CalculationEquationMode
 }) {
+  if (mode === "inputs") {
+    return (
+      <div
+        dir="rtl"
+        role="group"
+        aria-label="مقادیر ورودی محاسبه این عدد"
+        className="grid gap-2 sm:grid-cols-3"
+      >
+        <OperandBox label={numeratorLabel} value={numeratorValue} tone="default" />
+        <OperandBox label={denominatorLabel} value={denominatorValue} tone="default" />
+        <OperandBox label="نتیجه" value={resultDisplay} tone="result" />
+        <p className="text-xs leading-relaxed text-muted-foreground sm:col-span-3">
+          نتیجه از تفکیک اثر تغییرِ این دو مقدار بر حسب ریال به‌دست آمده است؛ رابطهٔ این دو عدد تفاضل یا نسبت ساده نیست.
+        </p>
+      </div>
+    )
+  }
+
   return (
     <div
       dir="ltr"
@@ -81,7 +125,7 @@ export function CalculationEquation({
       className="flex flex-col gap-2 sm:flex-row sm:items-stretch sm:gap-x-2"
     >
       <OperandBox label={numeratorLabel} value={numeratorValue} tone="default" />
-      <EquationSymbol>÷</EquationSymbol>
+      <EquationSymbol>{mode === "subtract" ? "−" : "÷"}</EquationSymbol>
       <OperandBox
         label={denominatorLabel}
         value={denominatorValue}

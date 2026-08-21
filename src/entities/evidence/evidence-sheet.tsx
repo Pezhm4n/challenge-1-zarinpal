@@ -1,6 +1,7 @@
 "use client"
 
 import { CalendarDays, CircleAlert, CircleHelp, Database, Scale } from "lucide-react"
+import { useRef } from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +15,7 @@ import {
 import type { ArtifactError, EvidenceRecord, EvidenceSampleRow } from "@/contracts"
 import { formatMetricValue, metricKindLabels } from "@/entities/insight/metric-value"
 import { BaselineComparison } from "./baseline-comparison"
-import { CalculationEquation } from "./calculation-equation"
+import { CalculationEquation, inferCalculationMode } from "./calculation-equation"
 import {
   formatPersianDateTime,
   formatPersianPeriod,
@@ -24,6 +25,7 @@ import {
   hasSufficientEvidenceSample,
   inspectEvidenceOperands,
 } from "./model"
+import { useSheetScrollTop } from "./use-sheet-scroll-top"
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
@@ -272,10 +274,14 @@ export function EvidenceSheet({
   onOpenChange: (open: boolean) => void
 }) {
   const operands = evidence ? inspectEvidenceOperands(evidence) : null
+  const contentRef = useSheetScrollTop(open, evidence?.id)
+  const headerRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
+        ref={contentRef}
+        initialFocus={headerRef}
         side="left"
         className="data-[side=left]:w-full data-[side=left]:max-w-none data-[side=left]:sm:max-w-2xl gap-0 overflow-y-auto"
         aria-label="مدرک و روش محاسبه"
@@ -293,7 +299,11 @@ export function EvidenceSheet({
           />
         ) : (
           <>
-            <SheetHeader className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start sm:p-6">
+            <SheetHeader
+              ref={headerRef}
+              tabIndex={-1}
+              className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start outline-none sm:p-6"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge
                   variant={evidence.result?.kind === "estimate" ? "default" : "secondary"}
@@ -330,6 +340,11 @@ export function EvidenceSheet({
                 evidence.result ? (
                   <div className="mt-5">
                     <CalculationEquation
+                      mode={inferCalculationMode(
+                        evidence.numerator.value,
+                        evidence.denominator.value,
+                        evidence.result.value,
+                      )}
                       numeratorLabel={localizePersianText(evidence.numerator.labelFa)}
                       numeratorValue={numberFormatter.format(evidence.numerator.value)}
                       denominatorLabel={localizePersianText(evidence.denominator.labelFa)}
@@ -402,7 +417,7 @@ export function EvidenceSheet({
               </EvidenceSection>
 
               <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
-                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold text-foreground hover:bg-muted/40 marker:content-none [&::-webkit-details-marker]:hidden">
+                <summary className="flex min-h-12 cursor-pointer list-none flex-col items-center justify-center gap-2 p-4 text-center font-semibold text-foreground hover:bg-muted/40 marker:content-none sm:flex-row sm:justify-between sm:text-start [&::-webkit-details-marker]:hidden">
                   <span className="text-sm font-bold">جزئیات فنی برای راستی‌آزمایی محاسبه</span>
                   <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
                     بررسی بیشتر
@@ -419,7 +434,7 @@ export function EvidenceSheet({
                         {localizePersianText(evidence.formulaFa)}
                       </KeyValue>
                       <KeyValue label="شناسه فنی فرمول">
-                        <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono text-muted-foreground">
+                        <code dir="ltr" className="inline-block max-w-full whitespace-normal rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono break-all text-muted-foreground">
                           {evidence.formulaId}
                         </code>
                       </KeyValue>

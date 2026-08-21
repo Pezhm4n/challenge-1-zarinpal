@@ -14,7 +14,7 @@ import {
   localizePersianText,
 } from "@/lib/persian-date"
 import { BaselineComparison } from "@/entities/evidence/baseline-comparison"
-import { CalculationEquation } from "@/entities/evidence/calculation-equation"
+import { CalculationEquation, inferCalculationMode } from "@/entities/evidence/calculation-equation"
 import type { EvidenceRecord, MetricValue } from "./types"
 
 const faNumber = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 2 })
@@ -100,6 +100,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
 
         {canShowEquation && numerator && denominator && result ? (
           <CalculationEquation
+            mode={inferCalculationMode(numerator.value, denominator.value, result.value ?? Number.NaN)}
             numeratorLabel={localizePersianText(numerator.labelFa)}
             numeratorValue={faNumber.format(numerator.value)}
             denominatorLabel={localizePersianText(denominator.labelFa)}
