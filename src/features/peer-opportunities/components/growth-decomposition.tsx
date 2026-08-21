@@ -5,9 +5,9 @@ import type { DecompositionItem, Driver } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const driverLabels: Record<Driver, string> = {
-  traffic: "تعداد خریداران (ترافیک سفارش)",
-  conversion: "درصد پرداخت موفق (نرخ تبدیل)",
-  ticket: "میانگین مبلغ هر خرید (سبد خرید)",
+  traffic: "تعداد خریداران",
+  conversion: "درصد پرداخت موفق",
+  ticket: "میانگین مبلغ هر خرید",
 };
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
@@ -25,7 +25,7 @@ function formatDriverValue(item: DecompositionItem, value: number) {
 }
 
 function DriverUnit({ driver }: { driver: Driver }) {
-  return <span>{driver === "conversion" ? "٪" : driver === "ticket" ? "ریال" : "پرداخت"}</span>;
+  return <span>{driver === "conversion" ? "٪" : driver === "ticket" ? "ریال" : "خریدار"}</span>;
 }
 
 function DriverValue({ item, value }: { item: DecompositionItem; value: number }) {
@@ -132,7 +132,7 @@ export function GrowthDecomposition({
           فروش شما از چه راه‌هایی تغییر کرده است؟
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          تفکیک سهم ۳ عامل کلیدی (تعداد خریداران، درصد خرید موفق، و مبلغ خرید)؛ سهم هر عامل جداگانه سنجیده شده است.
+          تفکیک سهم ۳ عامل کلیدی (تعداد خریداران، درصد خرید موفق، و مبلغ خرید)؛ تأثیر هر عامل جداگانه محاسبه شده است.
         </p>
       </header>
 
@@ -171,7 +171,7 @@ export function GrowthDecomposition({
 
               <div className="grid gap-2.5 pt-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-muted-foreground">اثر مستقیم بر فروش:</span>
+                  <span className="font-semibold text-muted-foreground">سهم در تغییر فروش:</span>
                   <EvidenceMetricButton
                     evidenceId={evidenceId}
                     ariaLabel={`مشاهده روش محاسبه سهم ${driverLabels[item.driver]} در فروش`}

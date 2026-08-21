@@ -104,11 +104,11 @@ export function PeerOpportunitiesPage({
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <Database aria-hidden="true" className="size-3.5" />
-              کل داده‌های معتبر چالش
+              بر پایه کل داده‌های ثبت‌شده
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            فرصت‌های رشد و مقایسه با بازار برای <span className="text-primary"><bdi dir="ltr">{payload.selection.merchantKey}</bdi></span>
+            فرصت‌های رشد و مقایسه با بازار برای <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             کشف راه‌های افزایش فروش، سنجش رتبه در میان هم‌صنفان و شناسایی ساعات طلایی خرید مشتریان.

@@ -55,7 +55,7 @@ export function TimeWindowOpportunities({
     return (
       <section className="grid gap-2 rounded-xl border bg-card p-4" aria-live="polite">
         <Clock3 aria-hidden="true" className="size-5 text-muted-foreground" />
-        <h2 className="font-medium">نمونه کافی برای بازه زمانی وجود ندارد</h2>
+        <h2 className="font-medium">نمونه کافی برای تحلیل ساعات خرید وجود ندارد</h2>
         <p className="text-sm text-muted-foreground">
           {emptyMessage ?? "فقط بازه‌هایی با حداقل ۲۵ پرداخت یکتا نمایش داده می‌شوند."}
         </p>
@@ -75,7 +75,7 @@ export function TimeWindowOpportunities({
           ساعت‌ها و روزهای مناسب برای بیشترین فروش
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          پنجره‌های زمانی پرفروش که خریداران بیشترین تمایل به خرید موفق را در صنف شما داشته‌اند.
+          روز و ساعت‌هایی که احتمال پرداخت موفق مشتریان در صنف شما بالاتر است.
         </p>
       </header>
 

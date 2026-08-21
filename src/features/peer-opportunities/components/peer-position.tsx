@@ -4,7 +4,7 @@ import type { PeerBenchmark } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const labels: Record<string, { title: string; unit: "percent" | "rial" }> = {
-  verificationRate: { title: "درصد پرداخت‌های موفق", unit: "percent" },
+  verificationRate: { title: "درصد پرداخت موفق", unit: "percent" },
   verifiedVolumeRial: { title: "مجموع مبلغ فروش موفق", unit: "rial" },
   averageVerifiedTicketRial: { title: "میانگین مبلغ هر خرید", unit: "rial" },
 };
@@ -56,8 +56,8 @@ export function PeerPosition({
           داده کافی برای مقایسه با هم‌صنفان وجود ندارد
         </h2>
         <p className="text-sm text-muted-foreground">
-          رتبه فقط زمانی نمایش داده می‌شود که پذیرنده و گروه هم‌صنف حداقل نمونهٔ
-          لازم را داشته باشند.
+          رتبه فقط زمانی نمایش داده می‌شود که فروشگاه شما و فروشگاه‌های
+          هم‌صنف حداقل نمونهٔ لازم را داشته باشند.
         </p>
       </section>
     );
