@@ -20,7 +20,7 @@ export function resolveEvidenceRecord(
       success: false,
       error: {
         code: "INVALID_SCHEMA",
-        messageFa: "مدرک این عدد پیدا نشد. گزارش باید دوباره تولید شود.",
+        messageFa: "جزئیات محاسبه این عدد پیدا نشد. لطفاً صفحه را دوباره باز کنید.",
         recoverable: false,
       },
     }

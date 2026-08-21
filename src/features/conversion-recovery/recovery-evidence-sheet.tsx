@@ -27,11 +27,11 @@ const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
 })
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
-  attempt: "سطح تحلیل: تلاش‌های پرداخت",
-  session: "سطح تحلیل: هر سفارش مستقل",
-  "merchant-period": "سطح تحلیل: کل دوره فروشگاه",
-  "merchant-card": "سطح تحلیل: خریداران دارای کارت بانکی",
-  "peer-group": "سطح تحلیل: گروه هم‌صنفان و بازار",
+  attempt: "محاسبه روی تلاش‌های پرداخت",
+  session: "محاسبه روی هر سفارش مستقل",
+  "merchant-period": "محاسبه روی کل دوره فروشگاه",
+  "merchant-card": "محاسبه روی خریداران دارای کارت بانکی",
+  "peer-group": "محاسبه روی فروشگاه‌های هم‌صنف",
 }
 const unitLabels: Record<MetricValue["unit"], string> = {
   rial: "ریال",
@@ -238,7 +238,7 @@ export function RecoveryEvidenceSheet({
             <SheetHeader className="pe-14 text-start">
               <SheetTitle>مدرک محاسبه پیدا نشد</SheetTitle>
               <SheetDescription>
-                جزئیات فنی این بخش در دسترس نیست.
+                جزئیات محاسبه این بخش در دسترس نیست.
               </SheetDescription>
             </SheetHeader>
             <div className="px-4 pb-6">
@@ -246,7 +246,7 @@ export function RecoveryEvidenceSheet({
                 <CircleAlert aria-hidden="true" />
                 <AlertTitle>گزارش ناقص است</AlertTitle>
                 <AlertDescription>
-                  جزئیات فنی داخلی نمایش داده نمی‌شود.
+                  جزئیات محاسبه نمایش داده نمی‌شود.
                 </AlertDescription>
               </Alert>
             </div>
@@ -323,7 +323,7 @@ export function RecoveryEvidenceSheet({
                 {evidence.numerator && evidence.denominator ? (
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (تعداد / مقدار جزء)</p>
+                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (مقداری که اندازه می‌گیریم)</p>
                       <p className="mt-1 text-sm font-bold text-foreground">
                         {localizePersianText(evidence.numerator.labelFa)}
                       </p>
@@ -388,12 +388,12 @@ export function RecoveryEvidenceSheet({
                   <EvidenceSection title="شرایط و فرض‌های تحلیل">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                        <p className="text-xs font-bold text-foreground">شرایط کنترل‌شده</p>
-                        <EvidenceList items={evidence.controls} empty="شرط کنترلی خاصی ثبت نشده است." />
+                          <p className="text-xs font-bold text-foreground">شرایط ثابت مقایسه</p>
+                          <EvidenceList items={evidence.controls} empty="شرطی ثبت نشده است." />
                       </div>
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                        <p className="text-xs font-bold text-foreground">فرض‌های آماری</p>
-                        <EvidenceList items={evidence.assumptions} empty="فرض اضافه‌ای ثبت نشده است." />
+                          <p className="text-xs font-bold text-foreground">فرض‌های محاسبه</p>
+                          <EvidenceList items={evidence.assumptions} empty="فرض خاصی ثبت نشده است." />
                       </div>
                     </div>
                   </EvidenceSection>
@@ -440,7 +440,7 @@ export function RecoveryEvidenceSheet({
                         <CircleAlert aria-hidden="true" />
                         <AlertTitle>نمونه داده</AlertTitle>
                         <AlertDescription>
-                          برای این شاخص آماری، ردیف‌های نمونه جداگانه ذخیره نشده است و عدد بر اساس کل سفارش‌های دوره به دست آمده است.
+                          برای این عدد نمونه جداگانه‌ای ذخیره نشده؛ عدد از مجموع همه سفارش‌های این دوره محاسبه شده است.
                         </AlertDescription>
                       </Alert>
                     ) : (

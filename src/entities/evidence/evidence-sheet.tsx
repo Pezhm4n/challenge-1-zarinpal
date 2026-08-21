@@ -28,11 +28,11 @@ const numberFormatter = new Intl.NumberFormat("fa-IR", {
 })
 
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
-  attempt: "سطح تحلیل: تلاش‌های پرداخت",
-  session: "سطح تحلیل: سفارش‌های مستقل",
-  "merchant-period": "سطح تحلیل: کل دوره فروشگاه",
-  "merchant-card": "سطح تحلیل: خریداران دارای کارت بانکی",
-  "peer-group": "سطح تحلیل: گروه هم‌صنفان و بازار",
+  attempt: "محاسبه روی تلاش‌های پرداخت",
+  session: "محاسبه روی سفارش‌های مستقل",
+  "merchant-period": "محاسبه روی کل دوره فروشگاه",
+  "merchant-card": "محاسبه روی خریداران دارای کارت بانکی",
+  "peer-group": "محاسبه روی فروشگاه‌های هم‌صنف",
 }
 
 function formatPeriod(period: EvidenceRecord["period"]): string {
@@ -229,7 +229,7 @@ function EvidenceUnavailable({ error }: { error: ArtifactError }) {
     <>
       <SheetHeader className="pe-14 text-start">
         <SheetTitle className="text-lg">مدرک محاسبه در دسترس نیست</SheetTitle>
-        <SheetDescription>جزئیات فنی این بخش در دسترس نیست.</SheetDescription>
+        <SheetDescription>جزئیات محاسبه این بخش در دسترس نیست.</SheetDescription>
       </SheetHeader>
       <div className="px-4 pb-6">
         <Alert variant="destructive">
@@ -301,7 +301,7 @@ export function EvidenceSheet({
             error={
               error ?? {
                 code: "INVALID_SCHEMA",
-                messageFa: "مدرک این عدد پیدا نشد. گزارش باید دوباره تولید شود.",
+                messageFa: "جزئیات محاسبه این عدد پیدا نشد. لطفاً صفحه را دوباره باز کنید.",
                 recoverable: false,
               }
             }
@@ -373,7 +373,7 @@ export function EvidenceSheet({
                 {operands?.complete ? (
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (تعداد / مقدار جزء)</p>
+                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (مقداری که اندازه می‌گیریم)</p>
                       <p className="mt-1 text-sm font-bold text-foreground">
                         {localizePersianText(evidence.numerator?.labelFa)}
                       </p>
@@ -438,12 +438,12 @@ export function EvidenceSheet({
                   <EvidenceSection title="شرایط و فرض‌های تحلیل">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                        <p className="text-xs font-bold text-foreground">شرایط کنترل‌شده</p>
-                        <EvidenceList items={evidence.controls} emptyLabel="شرط کنترلی خاصی ثبت نشده است." />
+                        <p className="text-xs font-bold text-foreground">شرایط ثابت مقایسه</p>
+                        <EvidenceList items={evidence.controls} emptyLabel="شرطی ثبت نشده است." />
                       </div>
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                        <p className="text-xs font-bold text-foreground">فرض‌های آماری</p>
-                        <EvidenceList items={evidence.assumptions} emptyLabel="فرض اضافه‌ای ثبت نشده است." />
+                        <p className="text-xs font-bold text-foreground">فرض‌های محاسبه</p>
+                        <EvidenceList items={evidence.assumptions} emptyLabel="فرض خاصی ثبت نشده است." />
                       </div>
                     </div>
                   </EvidenceSection>
