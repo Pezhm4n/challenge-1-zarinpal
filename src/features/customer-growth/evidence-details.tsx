@@ -120,20 +120,46 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
         ))}
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div>
-            <p className="font-medium">فرض‌ها</p>
-            <ul className="mt-2 flex list-inside list-disc flex-col gap-1 text-muted-foreground">
-              {evidence.assumptions.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
+          <div className="rounded-xl border border-border/50 bg-card p-3.5">
+            <p className="text-xs font-bold text-foreground">فرض‌ها</p>
+            <ul className="mt-2.5 flex flex-col gap-2.5 text-xs text-muted-foreground">
+              {evidence.assumptions.map((item, index) => {
+                const isPersian = /[\u0600-\u06FF]/.test(item)
+                return (
+                  <li
+                    key={`${item}-${index}`}
+                    dir={isPersian ? "rtl" : "ltr"}
+                    className="flex items-start gap-2 text-start leading-relaxed font-sans"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/70"
+                    />
+                    <span className="min-w-0 flex-1 break-words">{item}</span>
+                  </li>
+                )
+              })}
             </ul>
           </div>
-          <div>
-            <p className="font-medium">محدودیت‌ها</p>
-            <ul className="mt-2 flex list-inside list-disc flex-col gap-1 text-muted-foreground">
-              {evidence.limitations.map((item) => (
-                <li key={item}>{item}</li>
-              ))}
+          <div className="rounded-xl border border-border/50 bg-card p-3.5">
+            <p className="text-xs font-bold text-foreground">محدودیت‌ها</p>
+            <ul className="mt-2.5 flex flex-col gap-2.5 text-xs text-muted-foreground">
+              {evidence.limitations.map((item, index) => {
+                const isPersian = /[\u0600-\u06FF]/.test(item)
+                return (
+                  <li
+                    key={`${item}-${index}`}
+                    dir={isPersian ? "rtl" : "ltr"}
+                    className="flex items-start gap-2 text-start leading-relaxed font-sans"
+                  >
+                    <span
+                      aria-hidden="true"
+                      className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/70"
+                    />
+                    <span className="min-w-0 flex-1 break-words">{item}</span>
+                  </li>
+                )
+              })}
             </ul>
           </div>
         </div>

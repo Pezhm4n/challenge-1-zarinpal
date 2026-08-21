@@ -59,16 +59,33 @@ function EvidenceSection({
   )
 }
 
+function hasPersianChars(text: string): boolean {
+  return /[\u0600-\u06FF]/.test(text)
+}
+
 function EvidenceList({ items, emptyLabel }: { items: string[]; emptyLabel: string }) {
   if (items.length === 0) {
-    return <p className="text-sm text-muted-foreground">{emptyLabel}</p>
+    return <p className="text-xs text-muted-foreground">{emptyLabel}</p>
   }
 
   return (
-    <ul className="grid list-disc gap-2 pe-5 text-sm leading-6 text-muted-foreground">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
+    <ul className="flex flex-col gap-2.5 text-xs sm:text-sm text-muted-foreground">
+      {items.map((item, index) => {
+        const isPersian = hasPersianChars(item)
+        return (
+          <li
+            key={`${item}-${index}`}
+            dir={isPersian ? "rtl" : "ltr"}
+            className="flex items-start gap-2 text-start leading-relaxed font-sans"
+          >
+            <span
+              aria-hidden="true"
+              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/70"
+            />
+            <span className="min-w-0 flex-1 break-words">{item}</span>
+          </li>
+        )
+      })}
     </ul>
   )
 }
@@ -325,7 +342,9 @@ export function EvidenceSheet({
               </EvidenceSection>
 
               <EvidenceSection title="محدودیت‌ها">
-                <EvidenceList items={evidence.limitations} emptyLabel="محدودیتی ثبت نشده است." />
+                <div className="rounded-2xl border border-border/60 bg-card p-4">
+                  <EvidenceList items={evidence.limitations} emptyLabel="محدودیتی ثبت نشده است." />
+                </div>
               </EvidenceSection>
 
               <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
@@ -356,15 +375,21 @@ export function EvidenceSheet({
                       ))}
                     </div>
                     {evidence.filters.length > 0 ? (
-                      <dl className="grid gap-2">
+                      <div className="grid gap-2 rounded-xl bg-card border border-border/50 p-3">
                         {evidence.filters.map((filter, index) => (
-                          <KeyValue key={`${filter.field}-${index}`} label={`فیلتر ${numberFormatter.format(index + 1)}`}>
-                            <code dir="ltr" className="text-xs font-mono">
+                          <div
+                            key={`${filter.field}-${index}`}
+                            className="flex flex-wrap items-center justify-between gap-2 text-xs"
+                          >
+                            <span className="font-medium text-muted-foreground">
+                              فیلتر {numberFormatter.format(index + 1)}
+                            </span>
+                            <code dir="ltr" className="rounded-md bg-muted px-2.5 py-1 text-xs font-mono text-foreground">
                               {filter.field} {filter.operator} {formatFilterValue(filter.value)}
                             </code>
-                          </KeyValue>
+                          </div>
                         ))}
-                      </dl>
+                      </div>
                     ) : (
                       <p className="text-sm text-muted-foreground">فیلتر اضافه‌ای اعمال نشده است.</p>
                     )}

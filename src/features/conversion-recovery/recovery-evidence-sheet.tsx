@@ -95,15 +95,32 @@ function KeyValue({
   )
 }
 
+function hasPersianChars(text: string): boolean {
+  return /[\u0600-\u06FF]/.test(text)
+}
+
 function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
   if (items.length === 0) {
-    return <p className="text-sm text-muted-foreground">{empty}</p>
+    return <p className="text-xs text-muted-foreground">{empty}</p>
   }
   return (
-    <ul className="grid list-disc gap-2 pe-5 text-sm leading-6 text-muted-foreground">
-      {items.map((item) => (
-        <li key={item}>{item}</li>
-      ))}
+    <ul className="flex flex-col gap-2.5 text-xs sm:text-sm text-muted-foreground">
+      {items.map((item, index) => {
+        const isPersian = hasPersianChars(item)
+        return (
+          <li
+            key={`${item}-${index}`}
+            dir={isPersian ? "rtl" : "ltr"}
+            className="flex items-start gap-2 text-start leading-relaxed font-sans"
+          >
+            <span
+              aria-hidden="true"
+              className="mt-1.5 size-1.5 shrink-0 rounded-full bg-primary/70"
+            />
+            <span className="min-w-0 flex-1 break-words">{item}</span>
+          </li>
+        )
+      })}
     </ul>
   )
 }
