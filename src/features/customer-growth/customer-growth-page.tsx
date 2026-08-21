@@ -262,7 +262,7 @@ export function CustomerGrowthPage({
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
               <UsersRoundIcon aria-hidden="true" className="size-3.5" />
-              تحلیل مشتریان
+              مشتریان
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <ShieldCheckIcon aria-hidden="true" className="size-3.5" />

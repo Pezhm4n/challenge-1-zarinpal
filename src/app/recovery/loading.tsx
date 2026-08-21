@@ -6,7 +6,7 @@ export default function RecoveryLoading() {
   return (
     <div
       aria-busy="true"
-      aria-label="در حال بارگذاری تحلیل بازیابی"
+      aria-label="در حال بارگذاری گزارش نجات فروش"
       className="grid gap-8 lg:gap-10"
     >
       <div className="grid gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">

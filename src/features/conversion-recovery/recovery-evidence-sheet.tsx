@@ -100,7 +100,7 @@ function hasPersianChars(text: string): boolean {
 }
 
 const statusTranslations: Record<string, { fa: string; en: string }> = {
-  NoAttempt: { fa: "انصراف بدون تلاش", en: "NoAttempt" },
+  NoAttempt: { fa: "انصراف قبل از درگاه", en: "NoAttempt" },
   Verified: { fa: "پرداخت موفق", en: "Verified" },
   Failed: { fa: "ناموفق", en: "Failed" },
   Initiated: { fa: "شروع‌شده", en: "Initiated" },
