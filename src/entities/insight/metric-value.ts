@@ -22,6 +22,7 @@ export function formatMetricValue(metric: MetricValue): string {
     return "داده نامعتبر"
   }
 
+  const isNegative = metric.value < 0
   const formatted = new Intl.NumberFormat("fa-IR", {
     minimumFractionDigits: metric.displayPrecision,
     maximumFractionDigits: metric.displayPrecision,
@@ -29,5 +30,6 @@ export function formatMetricValue(metric: MetricValue): string {
   }).format(metric.value)
   const suffix = unitSuffix[metric.unit]
 
-  return suffix ? `${formatted} ${suffix}` : formatted
+  const isolated = isNegative ? `\u200E${formatted}\u200E` : formatted
+  return suffix ? `${isolated} ${suffix}` : isolated
 }

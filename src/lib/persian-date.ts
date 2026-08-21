@@ -125,3 +125,31 @@ export function formatActionCenterPeriodLabel(
   return periodText;
 }
 
+const persianDigits = "۰۱۲۳۴۵۶۷۸۹";
+
+/**
+ * Localizes embedded numbers (including negative numbers and percentages) in Persian text
+ * and enforces correct BiDi directional isolation so negative signs stay on the correct side in RTL.
+ */
+export function localizePersianText(text: string | undefined | null): string {
+  if (!text) return "";
+  return text.replace(/([+-]?\d+(?:,\d+)*(?:\.\d+)?)(%|٪)?/g, (_match, num, pct) => {
+    const isNegative = num.startsWith("-");
+    const isPositive = num.startsWith("+");
+    const cleanNum = num.replace(/^[+-]/, "");
+    const localized = cleanNum
+      .replace(/\d/g, (digit: string) => persianDigits[Number(digit)])
+      .replace(/\./g, "٫");
+    const pctSign = pct ? "٪" : "";
+
+    if (isNegative) {
+      return `\u200E-${localized}${pctSign}\u200E`;
+    }
+    if (isPositive) {
+      return `\u200E+${localized}${pctSign}\u200E`;
+    }
+    return `${localized}${pctSign}`;
+  });
+}
+
+
