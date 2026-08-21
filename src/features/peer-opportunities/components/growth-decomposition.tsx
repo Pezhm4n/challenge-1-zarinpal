@@ -169,31 +169,37 @@ export function GrowthDecomposition({
                 </div>
               </div>
 
-              <div className="grid gap-2.5">
+              <div className="grid gap-2.5 pt-1">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-semibold text-muted-foreground">اثر مستقیم بر فروش:</span>
+                  <EvidenceMetricButton
+                    evidenceId={evidenceId}
+                    ariaLabel={`مشاهده مدرک اثر ${driverLabels[item.driver]} بر فروش`}
+                    onEvidenceRequest={onEvidenceRequest}
+                    className={
+                      isNegative
+                        ? "text-xs font-bold text-destructive hover:underline"
+                        : "text-xs font-bold text-primary hover:underline"
+                    }
+                  >
+                    <span>
+                      <ImpactSummary value={item.contributionRial} />
+                    </span>
+                  </EvidenceMetricButton>
+                </div>
                 <div
                   aria-label={`سهم ${driverLabels[item.driver]} از تغییر حجم موفق`}
-                  className="h-2.5 overflow-hidden rounded-full bg-muted"
+                  className="h-2.5 overflow-hidden rounded-full bg-muted/80"
                   role="img"
                 >
                   <div
-                    className={cn("h-full rounded-full transition-all duration-500", isNegative ? "bg-destructive" : "bg-primary")}
+                    className={cn(
+                      "h-full rounded-full transition-all duration-500",
+                      isNegative ? "bg-destructive" : "bg-primary"
+                    )}
                     style={{ width }}
                   />
                 </div>
-                <EvidenceMetricButton
-                  evidenceId={evidenceId}
-                  ariaLabel={`مشاهده مدرک اثر ${driverLabels[item.driver]} بر فروش`}
-                  onEvidenceRequest={onEvidenceRequest}
-                  className={
-                    isNegative
-                      ? "w-fit text-sm font-bold text-destructive hover:underline"
-                      : "w-fit text-sm font-bold text-foreground hover:text-primary hover:underline"
-                  }
-                >
-                  <span>
-                    <ImpactSummary value={item.contributionRial} />
-                  </span>
-                </EvidenceMetricButton>
               </div>
             </article>
           );

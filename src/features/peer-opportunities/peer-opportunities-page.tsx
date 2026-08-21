@@ -12,7 +12,7 @@ import {
   type EvidenceResolution,
 } from "@/entities/evidence/model";
 
-import { formatPersianDate } from "@/lib/persian-date";
+import { formatPersianDate, localizePersianText } from "@/lib/persian-date";
 import { FairComparisonNote } from "./components/fair-comparison-note";
 import { GrowthDecomposition } from "./components/growth-decomposition";
 import { PeerPosition } from "./components/peer-position";
@@ -139,9 +139,9 @@ export function PeerOpportunitiesPage({
             <span className="text-xs font-medium text-muted-foreground">اولویت {primaryInsight.priority}</span>
           </div>
           <div className="grid gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{primaryInsight.titleFa}</h2>
+            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{localizePersianText(primaryInsight.titleFa)}</h2>
             <p className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
-              {primaryInsight.findingFa}
+              {localizePersianText(primaryInsight.findingFa)}
             </p>
           </div>
           <div className="flex items-start gap-3.5 rounded-2xl border border-primary/20 bg-primary/[0.04] p-4 sm:p-5">
@@ -150,7 +150,7 @@ export function PeerOpportunitiesPage({
             </span>
             <div>
               <p className="text-xs font-bold text-primary">اقدام پیشنهادی</p>
-              <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{primaryInsight.actionFa}</p>
+              <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{localizePersianText(primaryInsight.actionFa)}</p>
             </div>
           </div>
           <div className="pt-2">

@@ -28,7 +28,9 @@ import { cn } from "@/lib/utils"
 import {
   formatPersianMonth,
   formatPersianPeriod,
+  localizePersianText,
 } from "@/lib/persian-date"
+import { HelpTooltip } from "@/components/help-tooltip"
 import { EvidenceDetails } from "./evidence-details"
 import { MerchantSelector } from "./merchant-selector"
 import type {
@@ -133,8 +135,9 @@ function CohortSection({
   return (
     <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
       <CardHeader className="gap-1.5">
-        <CardTitle className="text-lg font-bold text-foreground">
-          <h2>Retention ماهانه Cohort</h2>
+        <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+          <h2>ماندگاری و بازگشت ماهانه مشتریان (Cohort Retention)</h2>
+          <HelpTooltip term="Cohort" />
         </CardTitle>
         <CardDescription className="text-xs leading-relaxed">
           هر ردیف Cardهایی است که اولین خرید موفقشان در همان ماه ثبت شده است؛ ۰٪ یعنی ماه سپری شده اما بازگشتی ثبت نشده و — یعنی ماه هنوز نرسیده است.
@@ -257,7 +260,8 @@ export function CustomerGrowthPage({
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <ShieldCheckIcon aria-hidden="true" className="size-3.5" />
-              Cardهای ناشناس و پوشانده‌شده
+              کارت‌های ناشناس مشتری (Card)
+              <HelpTooltip term="Card" icon="info" />
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
@@ -288,10 +292,10 @@ export function CustomerGrowthPage({
               </Badge>
             </div>
             <CardTitle className="text-xl font-bold tracking-tight sm:text-2xl">
-              <h2>{headline.titleFa}</h2>
+              <h2>{localizePersianText(headline.titleFa)}</h2>
             </CardTitle>
             <CardDescription className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
-              {headline.findingFa}
+              {localizePersianText(headline.findingFa)}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-5 md:grid-cols-[1fr_20rem]">
@@ -301,12 +305,12 @@ export function CustomerGrowthPage({
               </span>
               <div>
                 <p className="text-xs font-bold text-primary">اقدام بعدی</p>
-                <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{headline.actionFa}</p>
+                <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{localizePersianText(headline.actionFa)}</p>
               </div>
             </div>
             <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5 text-sm">
               <p className="text-xs font-medium text-muted-foreground">سطح اطمینان</p>
-              <p className="mt-2 text-sm font-semibold text-foreground leading-relaxed">{headline.confidenceReasonFa}</p>
+              <p className="mt-2 text-sm font-semibold text-foreground leading-relaxed">{localizePersianText(headline.confidenceReasonFa)}</p>
             </div>
           </CardContent>
           <CardFooter className="rounded-b-2xl border-t border-border/50 bg-muted/20 p-4">

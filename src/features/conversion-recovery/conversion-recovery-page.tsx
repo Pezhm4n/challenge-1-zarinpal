@@ -35,7 +35,9 @@ import { RecoveryMerchantSelector } from "./recovery-merchant-selector"
 import {
   formatPersianDate,
   formatPersianPeriod,
+  localizePersianText,
 } from "@/lib/persian-date"
+import { HelpTooltip } from "@/components/help-tooltip"
 import type {
   ConversionRecoveryArtifact,
   ConversionRecoveryPayload,
@@ -67,15 +69,7 @@ const confidenceLabels: Record<"low" | "medium" | "high", string> = {
   medium: "متوسط",
   high: "زیاد",
 }
-const persianDigits = "۰۱۲۳۴۵۶۷۸۹"
 
-function localizeEmbeddedNumbers(value: string): string {
-  return value.replace(/\d+(?:\.\d+)?/g, (number) =>
-    number
-      .replace(/\d/g, (digit) => persianDigits[Number(digit)])
-      .replace(".", "٫"),
-  )
-}
 
 function formatRial(value: number): string {
   return `${faInteger.format(value)} ریال`
@@ -371,10 +365,10 @@ export function ConversionRecoveryPage({
               </Badge>
             </div>
             <CardTitle className="text-xl font-bold tracking-tight sm:text-2xl">
-              <h2>{insight.titleFa}</h2>
+              <h2>{localizePersianText(insight.titleFa)}</h2>
             </CardTitle>
             <CardDescription className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
-              {localizeEmbeddedNumbers(insight.findingFa)}
+              {localizePersianText(insight.findingFa)}
             </CardDescription>
           </CardHeader>
           <CardContent className="grid gap-5 lg:grid-cols-[1fr_20rem]">
@@ -384,9 +378,9 @@ export function ConversionRecoveryPage({
               </span>
               <div>
                 <p className="text-xs font-bold text-primary">اقدام بعدی</p>
-                <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{insight.actionFa}</p>
+                <p className="mt-1 text-sm font-medium leading-relaxed text-foreground">{localizePersianText(insight.actionFa)}</p>
                 <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
-                  {insight.confidenceReasonFa}
+                  {localizePersianText(insight.confidenceReasonFa)}
                 </p>
               </div>
             </div>
@@ -468,7 +462,10 @@ export function ConversionRecoveryPage({
                 <span className="flex size-8 items-center justify-center rounded-xl bg-muted text-foreground">
                   <BanknoteArrowDown aria-hidden="true" className="size-4" />
                 </span>
-                <h3>NoAttempt</h3>
+                <div className="flex items-center gap-1.5">
+                  <h3>انصراف قبل از درگاه (NoAttempt)</h3>
+                  <HelpTooltip term="NoAttempt" />
+                </div>
               </CardTitle>
               <CardDescription>
                 Sessionهایی که هیچ تلاش پرداختی را شروع نکرده‌اند؛ مهم‌ترین شکاف این دوره.
@@ -502,7 +499,10 @@ export function ConversionRecoveryPage({
                 <span className="flex size-8 items-center justify-center rounded-xl bg-muted text-foreground">
                   <RefreshCcw aria-hidden="true" className="size-4" />
                 </span>
-                <h3>بازیابی پس از تلاش اول</h3>
+                <div className="flex items-center gap-1.5">
+                  <h3>بازیابی پس از تلاش اول (Retry)</h3>
+                  <HelpTooltip term="Retry" />
+                </div>
               </CardTitle>
               <CardDescription>
                 صورت فقط Sessionهای first-try-non-verified است؛ recovered زیرمجموعه همان denominator است.
@@ -544,8 +544,9 @@ export function ConversionRecoveryPage({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">کنترل متغیر مخدوش‌کننده</span>
-            <h2 id="psp-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-              PSP بعد از کنترل مبلغ و حجم نمونه
+            <h2 id="psp-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
+              <span>عملکرد درگاه‌های پرداخت (PSP)</span>
+              <HelpTooltip term="PSP" />
             </h2>
             <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
               نرخ هر PSP فقط در همان Quartile مبلغ مقایسه می‌شود؛ زیر ۱۰۰ Session کلی یا ۲۵ Session در cell، رتبه و پیشنهاد نمایش داده نمی‌شود.

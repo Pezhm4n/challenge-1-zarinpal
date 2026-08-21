@@ -34,7 +34,8 @@ import { formatMetricValue } from "@/entities/insight/metric-value"
 import { MerchantSelector } from "@/entities/merchant/merchant-selector"
 import { cn } from "@/lib/utils"
 
-import { formatActionCenterPeriodLabel } from "@/lib/persian-date"
+import { formatActionCenterPeriodLabel, localizePersianText } from "@/lib/persian-date"
+import { HelpTooltip } from "@/components/help-tooltip"
 import {
   ActionCenterEmptyState,
   ActionCenterErrorState,
@@ -70,7 +71,10 @@ function HeadlineMetric({
 
   return (
     <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm">
-      <p className="text-xs font-medium text-muted-foreground">{metric.value.labelFa}</p>
+      <div className="flex items-center gap-1.5">
+        <p className="text-xs font-medium text-muted-foreground">{metric.value.labelFa}</p>
+        {metric.value.labelFa.includes("بدون شروع تلاش") ? <HelpTooltip term="NoAttempt" /> : null}
+      </div>
       <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
         {formatMetricValue(metric.value)}
       </p>
@@ -264,11 +268,12 @@ function ResolvedActionCenter({
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">خلاصه دوره</span>
           <h2 id="headline-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
-            {headlineInsight?.titleFa ?? "خلاصه قابل اتکا برای این دوره موجود نیست"}
+            {headlineInsight?.titleFa ? localizePersianText(headlineInsight.titleFa) : "خلاصه قابل اتکا برای این دوره موجود نیست"}
           </h2>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-            {headlineInsight?.findingFa ??
-              "برای این انتخاب هنوز Insight دارای مدرک کافی تولید نشده است."}
+            {headlineInsight?.findingFa
+              ? localizePersianText(headlineInsight.findingFa)
+              : "برای این انتخاب هنوز Insight دارای مدرک کافی تولید نشده است."}
           </p>
         </div>
         {payload.headlineMetrics.length > 0 ? (

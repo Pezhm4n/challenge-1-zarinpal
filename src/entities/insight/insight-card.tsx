@@ -22,6 +22,7 @@ import type { InsightSummary } from "@/contracts"
 import { cn } from "@/lib/utils"
 
 import { formatMetricValue, metricKindLabels } from "./metric-value"
+import { localizePersianText } from "@/lib/persian-date"
 
 const confidenceLabels: Record<InsightSummary["confidence"], string> = {
   high: "اطمینان بالا",
@@ -92,10 +93,10 @@ export function InsightCard({
           </Badge>
         </div>
         <CardTitle className={cn(featured ? "text-xl sm:text-2xl" : "text-lg")}>
-          <h3>{insight.titleFa}</h3>
+          <h3>{localizePersianText(insight.titleFa)}</h3>
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed text-foreground/80">
-          {insight.findingFa}
+          {localizePersianText(insight.findingFa)}
         </CardDescription>
       </CardHeader>
 
@@ -129,7 +130,7 @@ export function InsightCard({
           </span>
           <div>
             <p className="text-xs font-bold text-primary">اقدام پیشنهادی</p>
-            <p className="mt-1 text-sm leading-relaxed font-medium text-foreground">{insight.actionFa}</p>
+            <p className="mt-1 text-sm leading-relaxed font-medium text-foreground">{localizePersianText(insight.actionFa)}</p>
           </div>
         </div>
 
@@ -139,7 +140,7 @@ export function InsightCard({
             <span className="font-semibold text-foreground">
               {confidenceLabels[insight.confidence]}:
             </span>{" "}
-            {insight.confidenceReasonFa}
+            {localizePersianText(insight.confidenceReasonFa)}
           </p>
         </div>
 

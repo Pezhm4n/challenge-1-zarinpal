@@ -118,41 +118,68 @@ export function PeerPosition({
               <div className="grid gap-3.5">
                 <div className="flex items-end justify-between gap-3">
                   <div className="grid gap-0.5">
-                    <span className="text-xs font-medium text-muted-foreground">عملکرد شما بهتر از</span>
-                    <EvidenceMetricButton
-                      evidenceId={evidenceId}
-                      ariaLabel={`مشاهده مدرک جایگاه ${label.title}`}
-                      onEvidenceRequest={onEvidenceRequest}
-                      className="text-2xl font-extrabold tracking-tight text-foreground hover:text-primary sm:text-3xl"
-                    >
-                      <PercentageValue value={benchmark.percentile} />
-                    </EvidenceMetricButton>
+                    <span className="text-xs font-semibold text-muted-foreground">صدک جایگاه در صنف</span>
+                    <div className="flex items-baseline gap-1.5">
+                      <span className="text-xs text-muted-foreground">بهتر از</span>
+                      <EvidenceMetricButton
+                        evidenceId={evidenceId}
+                        ariaLabel={`مشاهده مدرک جایگاه ${label.title}`}
+                        onEvidenceRequest={onEvidenceRequest}
+                        className="text-2xl font-extrabold tracking-tight text-foreground hover:text-primary sm:text-3xl"
+                      >
+                        <PercentageValue value={benchmark.percentile} />
+                      </EvidenceMetricButton>
+                    </div>
                   </div>
                   <p className="text-xs font-medium text-muted-foreground">
                     <bdi dir="ltr" className="tabular-nums font-bold text-foreground">{numberFormatter.format(benchmark.peerCount)}</bdi>
-                    {" "}کسب‌وکار مشابه
+                    {" "}کسب‌وکار هم‌صنف
                   </p>
                 </div>
-                <div
-                  aria-label={`جایگاه ${label.title}: بهتر از ${numberFormatter.format(benchmark.percentile)} درصد کسب‌وکارهای مشابه`}
-                  className="relative h-3 rounded-full bg-muted/80"
-                  dir="ltr"
-                  role="img"
-                >
+
+                <div className="grid gap-1.5 pt-1">
                   <div
-                    aria-hidden="true"
-                    className="absolute inset-y-0 left-1/2 w-0.5 bg-border/80"
-                  />
-                  <div
-                    aria-hidden="true"
-                    className="absolute top-1/2 size-4 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-card bg-primary shadow-xs ring-2 ring-primary/20"
-                    style={{ left: `${Math.max(3, Math.min(97, benchmark.percentile))}%` }}
-                  />
-                </div>
-                <div className="flex justify-between text-[11px] font-medium text-muted-foreground" dir="ltr">
-                  <bdi>۰</bdi>
-                  <span>میانه</span>
-                  <bdi>۱۰۰</bdi>
+                    aria-label={`جایگاه ${label.title}: بهتر از ${numberFormatter.format(benchmark.percentile)} درصد کسب‌وکارهای مشابه`}
+                    className="relative flex items-center h-6 w-full px-1"
+                    dir="ltr"
+                    role="img"
+                  >
+                    {/* Neutral continuous track line (no progress fill) */}
+                    <div className="h-1.5 w-full rounded-full bg-muted-foreground/20" />
+
+                    {/* Left 0% tick */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute left-1 top-1/2 h-2.5 w-0.5 -translate-y-1/2 bg-muted-foreground/40 rounded-full"
+                    />
+
+                    {/* Median 50% center tick */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute left-1/2 top-1/2 h-3.5 w-0.5 -translate-x-1/2 -translate-y-1/2 bg-muted-foreground/60 rounded-full"
+                    />
+
+                    {/* Right 100% tick */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute right-1 top-1/2 h-2.5 w-0.5 -translate-y-1/2 bg-muted-foreground/40 rounded-full"
+                    />
+
+                    {/* Position Pin Indicator on Axis */}
+                    <div
+                      aria-hidden="true"
+                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 pointer-events-none"
+                      style={{ left: `${Math.max(4, Math.min(96, benchmark.percentile))}%` }}
+                    >
+                      <span className="size-4 rounded-full border-2 border-card bg-primary shadow-md ring-3 ring-primary/25" />
+                    </div>
+                  </div>
+
+                  <div className="flex justify-between text-[11px] font-medium text-muted-foreground px-1" dir="ltr">
+                    <span className="text-muted-foreground">۰٪ (کمترین)</span>
+                    <span className="font-semibold text-foreground/75">میانه صنف (۵۰٪)</span>
+                    <span className="text-muted-foreground">۱۰۰٪ (بیشترین)</span>
+                  </div>
                 </div>
                 <dl className="grid grid-cols-2 gap-2 text-xs">
                   <div className="grid gap-1 rounded-xl bg-muted/30 border border-border/40 p-3">
