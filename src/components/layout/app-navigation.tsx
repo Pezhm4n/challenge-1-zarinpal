@@ -45,3 +45,45 @@ export function AppNavigation() {
   )
 }
 
+export function AppMobileTabBar() {
+  const pathname = usePathname()
+
+  return (
+    <nav
+      aria-label="منوی اصلی"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-border/70 bg-card/95 backdrop-blur-md lg:hidden"
+    >
+      <ul className="mx-auto grid max-w-lg grid-cols-4">
+        {navigationItems.map((item) => {
+          const Icon = item.icon
+          const isCurrent = pathname === item.href
+          return (
+            <li key={item.href}>
+              <Link
+                href={item.href}
+                aria-current={isCurrent ? "page" : undefined}
+                className={cn(
+                  "flex min-h-16 flex-col items-center justify-center gap-1 px-1 pt-2 pb-[calc(0.5rem+env(safe-area-inset-bottom))] text-[10px] leading-none transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-primary",
+                  isCurrent
+                    ? "font-semibold text-primary"
+                    : "font-medium text-muted-foreground hover:text-foreground active:scale-[0.98]",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex size-8 items-center justify-center rounded-full transition-colors duration-200",
+                    isCurrent && "bg-primary/10",
+                  )}
+                >
+                  <Icon aria-hidden="true" className="size-5 shrink-0" />
+                </span>
+                <span className="whitespace-nowrap">{item.label}</span>
+              </Link>
+            </li>
+          )
+        })}
+      </ul>
+    </nav>
+  )
+}
+

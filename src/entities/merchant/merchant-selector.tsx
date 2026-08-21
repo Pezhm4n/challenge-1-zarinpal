@@ -43,9 +43,7 @@ export function MerchantSelector({
           className="min-h-11 w-full bg-card sm:w-60"
           aria-labelledby="merchant-selector-label"
         >
-          <SelectValue>
-            {selectedOption ? `${selectedOption.label} (${selectedOption.description})` : undefined}
-          </SelectValue>
+          <SelectValue>{selectedOption?.label}</SelectValue>
         </SelectTrigger>
         <SelectContent align="start">
           {options.map((option) => (

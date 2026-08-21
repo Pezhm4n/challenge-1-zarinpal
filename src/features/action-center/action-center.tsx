@@ -34,7 +34,7 @@ import { formatMetricValue } from "@/entities/insight/metric-value"
 import { MerchantSelector } from "@/entities/merchant/merchant-selector"
 import { cn } from "@/lib/utils"
 
-import { formatActionCenterPeriodLabel, localizePersianText } from "@/lib/persian-date"
+import { formatActionCenterPeriodLabel, formatPersianPeriod, localizePersianText } from "@/lib/persian-date"
 import { HelpTooltip } from "@/components/help-tooltip"
 import {
   ActionCenterEmptyState,
@@ -71,19 +71,19 @@ function HeadlineMetric({
 
   return (
     <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm">
-      <div className="flex items-center gap-1.5">
+      <div className="flex items-center justify-center gap-1.5 sm:justify-start">
         <p className="text-xs font-medium text-muted-foreground">{localizePersianText(metric.value.labelFa)}</p>
         {metric.value.labelFa.includes("بدون شروع تلاش") || metric.value.labelFa.includes("بدون ورود به تلاش") ? (
           <HelpTooltip term="NoAttempt" />
         ) : null}
       </div>
-      <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
+      <p className="mt-2.5 break-words text-center text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl sm:text-start">
         {formatMetricValue(metric.value)}
       </p>
       {change ? (
         <div
           className={cn(
-            "mt-3 inline-flex w-fit items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+            "mx-auto mt-3 inline-flex max-w-full flex-wrap items-center justify-center gap-x-1.5 gap-y-0.5 rounded-full px-2.5 py-0.5 text-center text-xs font-semibold sm:mx-0 sm:justify-start sm:text-start",
             isPositive && "bg-success/10 text-success-foreground",
             isNegative && "bg-destructive/10 text-destructive",
             !isPositive && !isNegative && "bg-muted text-muted-foreground",
@@ -98,7 +98,7 @@ function HeadlineMetric({
       <Button
         variant="ghost"
         size="sm"
-        className="mt-4 min-h-9 w-full justify-start text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary"
+        className="mt-4 min-h-9 w-full justify-center text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary sm:justify-start"
         aria-label={`چطور ${localizePersianText(metric.value.labelFa)} محاسبه شد؟`}
         onClick={() => onEvidenceRequest(metric.evidenceId)}
       >
@@ -147,6 +147,7 @@ function ResolvedActionCenter({
   const periodOptions = availablePeriods.map((period) => ({
     value: periodKey(period),
     label: formatActionCenterPeriodLabel(period, merchantData?.dataCoverage),
+    triggerLabel: formatPersianPeriod(period),
   }))
   const selectedPeriod =
     availablePeriods.find((period) => periodKey(period) === selectedPeriodKey) ??
@@ -242,7 +243,7 @@ function ResolvedActionCenter({
               </Badge>
             ) : null}
           </div>
-          <h1 id="action-center-title" className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+          <h1 id="action-center-title" className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             ۳ اقدام کلیدی برای افزایش فروش <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -269,7 +270,7 @@ function ResolvedActionCenter({
       <section aria-labelledby="headline-title" className="grid gap-4">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">وضعیت کلیدی این دوره</span>
-          <h2 id="headline-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h2 id="headline-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
             {headlineInsight?.titleFa ? localizePersianText(headlineInsight.titleFa) : "هنوز خلاصه‌ای برای این دوره محاسبه نشده است"}
           </h2>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
@@ -294,7 +295,7 @@ function ResolvedActionCenter({
       <section aria-labelledby="insights-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">برنامه اقدام پیشنهادی</span>
-          <h2 id="insights-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h2 id="insights-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
             ۳ کاری که فروش شما را بیشتر می‌کند
           </h2>
         </div>

@@ -270,7 +270,7 @@ export function CustomerGrowthPage({
               <HelpTooltip term="Card" icon="info" />
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             رشد و وفاداری مشتریان برای <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -338,7 +338,7 @@ export function CustomerGrowthPage({
       <section aria-labelledby="customer-mix-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">ترکیب پایگاه مشتریان</span>
-          <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl" id="customer-mix-title">
+          <h2 className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl" id="customer-mix-title">
             ترکیب خریداران شما در این دوره
           </h2>
         </div>
@@ -397,7 +397,7 @@ export function CustomerGrowthPage({
       <section aria-labelledby="repeat-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">وفاداری و تکرار</span>
-          <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl" id="repeat-title">
+          <h2 className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl" id="repeat-title">
             تکرار خرید و مشتریان وفادار
           </h2>
         </div>

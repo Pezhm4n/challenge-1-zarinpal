@@ -12,6 +12,7 @@ import {
 export type PeriodOption = {
   value: string
   label: string
+  triggerLabel?: string
 }
 
 
@@ -42,7 +43,7 @@ export function PeriodSelector({
           className="min-h-11 w-full bg-card sm:w-72"
           aria-labelledby="period-selector-label"
         >
-          <SelectValue>{selectedOption?.label}</SelectValue>
+          <SelectValue>{selectedOption?.triggerLabel ?? selectedOption?.label}</SelectValue>
         </SelectTrigger>
         <SelectContent align="start">
           {options.map((option) => (

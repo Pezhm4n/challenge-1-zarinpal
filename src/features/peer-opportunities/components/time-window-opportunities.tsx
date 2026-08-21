@@ -71,7 +71,7 @@ export function TimeWindowOpportunities({
     <section aria-labelledby="timing-title" className="grid gap-5">
       <header className="grid gap-1">
         <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">ساعات طلایی خرید</span>
-        <h2 id="timing-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        <h2 id="timing-title" className="mt-1 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
           ساعت‌ها و روزهای مناسب برای بیشترین فروش
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">

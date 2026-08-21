@@ -271,7 +271,7 @@ export function RecoveryEvidenceSheet({
             <div className="grid gap-5 p-5 sm:p-6">
               <div className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5">
                 <p className="text-xs font-semibold text-muted-foreground">نتیجه نهایی محاسبه</p>
-                <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
+                <p className="mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result ? formatMetric(evidence.result) : "قابل محاسبه نیست"}
                 </p>
               </div>

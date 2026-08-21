@@ -161,7 +161,7 @@ function FunnelStageCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-3.5">
         <div>
-          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
+          <p className="text-xl font-extrabold tabular-nums tracking-tight text-foreground">
             {faInteger.format(stage.count)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -327,7 +327,7 @@ export function ConversionRecoveryPage({
               داده قطعی سفارش‌ها
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             نجات فروش و رفع موانع پرداخت برای <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -418,7 +418,7 @@ export function ConversionRecoveryPage({
       <section aria-labelledby="payment-rail-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">قیف ۴ مرحله‌ای پرداخت</span>
-          <h2 id="payment-rail-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h2 id="payment-rail-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
             مشتریان در کدام مرحله از خرید منصرف می‌شوند؟
           </h2>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
@@ -441,7 +441,7 @@ export function ConversionRecoveryPage({
       <section aria-labelledby="diagnosis-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">دو اهرم قابل پیگیری</span>
-          <h2 id="diagnosis-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h2 id="diagnosis-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
             قبل از تلاش و بعد از خطای اول
           </h2>
         </div>
@@ -534,7 +534,7 @@ export function ConversionRecoveryPage({
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">مقایسه منصفانه</span>
-            <h2 id="psp-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
+            <h2 id="psp-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
               <span>عملکرد درگاه‌های پرداخت (PSP)</span>
               <HelpTooltip term="PSP" />
             </h2>

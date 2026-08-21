@@ -107,7 +107,7 @@ export function PeerOpportunitiesPage({
               بر پایه کل داده‌های ثبت‌شده
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             فرصت‌های رشد و مقایسه با بازار برای <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
@@ -139,7 +139,7 @@ export function PeerOpportunitiesPage({
             <span className="text-xs font-medium text-muted-foreground">اولویت {primaryInsight.priority}</span>
           </div>
           <div className="grid gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{localizePersianText(primaryInsight.titleFa)}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-foreground sm:text-2xl">{localizePersianText(primaryInsight.titleFa)}</h2>
             <p className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
               {localizePersianText(primaryInsight.findingFa)}
             </p>
@@ -163,7 +163,7 @@ export function PeerOpportunitiesPage({
               onClick={() => handleEvidenceRequest(primaryInsight.evidenceId)}
             >
               <Calculator aria-hidden="true" data-icon="inline-start" />
-              <span>مشاهده {primaryEvidenceLabel}</span>
+              <span>چطور محاسبه شد؟</span>
             </Button>
           </div>
         </section>

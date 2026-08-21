@@ -92,7 +92,7 @@ export function InsightCard({
             {status.label}
           </Badge>
         </div>
-        <CardTitle className={cn(featured ? "text-xl sm:text-2xl" : "text-lg")}>
+        <CardTitle className={cn(featured ? "text-lg sm:text-2xl" : "text-base sm:text-lg")}>
           <h3>{localizePersianText(insight.titleFa)}</h3>
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed text-foreground/80">
@@ -114,7 +114,7 @@ export function InsightCard({
                 {metricKindLabels[insight.impact.kind]}
               </Badge>
             </div>
-            <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
+            <p className="mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
               {formatMetricValue(insight.impact)}
             </p>
           </div>

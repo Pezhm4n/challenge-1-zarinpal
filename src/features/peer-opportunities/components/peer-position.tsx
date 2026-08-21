@@ -67,7 +67,7 @@ export function PeerPosition({
     <section aria-labelledby="peer-title" className="grid gap-5">
       <header className="grid gap-1">
         <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">جایگاه در بازار</span>
-        <h2 id="peer-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        <h2 id="peer-title" className="mt-1 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
           جایگاه و رتبه شما در میان فروشگاه‌های مشابه
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
@@ -125,7 +125,7 @@ export function PeerPosition({
                         evidenceId={evidenceId}
                         ariaLabel={`مشاهده روش محاسبه جایگاه ${label.title}`}
                         onEvidenceRequest={onEvidenceRequest}
-                        className="text-2xl font-extrabold tracking-tight text-foreground hover:text-primary sm:text-3xl"
+                        className="text-xl font-extrabold tracking-tight text-foreground hover:text-primary sm:text-3xl"
                       >
                         <PercentageValue value={benchmark.percentile} />
                       </EvidenceMetricButton>
@@ -175,22 +175,22 @@ export function PeerPosition({
                     </div>
                   </div>
 
-                  <div className="flex justify-between text-[11px] font-medium text-muted-foreground px-1" dir="ltr">
+                  <div className="flex flex-wrap justify-between gap-x-3 gap-y-0.5 text-[11px] font-medium text-muted-foreground px-1" dir="ltr">
                     <span className="text-muted-foreground">۰٪ (کمترین)</span>
                     <span className="font-semibold text-foreground/75">میانه صنف (۵۰٪)</span>
                     <span className="text-muted-foreground">۱۰۰٪ (بیشترین)</span>
                   </div>
                 </div>
                 <dl className="grid grid-cols-2 gap-2 text-xs">
-                  <div className="grid gap-1 rounded-xl bg-muted/30 border border-border/40 p-3">
+                  <div className="grid min-w-0 gap-1 rounded-xl bg-muted/30 border border-border/40 p-3">
                     <dt className="text-muted-foreground">مقدار شما</dt>
-                    <dd className="font-bold text-foreground">
+                    <dd className="break-words font-bold text-foreground">
                       <MetricValue value={benchmark.merchantValue} unit={label.unit} />
                     </dd>
                   </div>
-                  <div className="grid gap-1 rounded-xl bg-muted/30 border border-border/40 p-3">
+                  <div className="grid min-w-0 gap-1 rounded-xl bg-muted/30 border border-border/40 p-3">
                     <dt className="text-muted-foreground">میانهٔ هم‌صنفان</dt>
-                    <dd className="font-bold text-foreground">
+                    <dd className="break-words font-bold text-foreground">
                       <MetricValue value={benchmark.peerMedian} unit={label.unit} />
                     </dd>
                   </div>

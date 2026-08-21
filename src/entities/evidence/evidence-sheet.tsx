@@ -318,7 +318,7 @@ export function EvidenceSheet({
                 <p className="text-xs font-semibold text-muted-foreground">
                   نتیجه نهایی محاسبه
                 </p>
-                <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
+                <p className="mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result
                     ? formatMetricValue(evidence.result)
                     : "قابل محاسبه نیست"}
