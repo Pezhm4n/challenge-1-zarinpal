@@ -6,6 +6,7 @@ import {
   CircleAlert,
   CircleCheck,
   CircleMinus,
+  Play,
   ShieldCheck,
 } from "lucide-react"
 
@@ -153,6 +154,7 @@ export function InsightCard({
           >
             <Calculator aria-hidden="true" data-icon="inline-start" />
             چطور محاسبه شد؟
+            <Play aria-hidden="true" data-icon="inline-end" className="rotate-90 fill-current" />
           </Button>
           <Button
             variant="outline"

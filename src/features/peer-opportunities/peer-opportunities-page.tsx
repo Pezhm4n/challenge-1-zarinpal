@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ArrowLeft, BadgeCheck, Calculator, Database } from "lucide-react";
+import { ArrowLeft, BadgeCheck, Calculator, Database, Play } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -169,6 +169,7 @@ export function PeerOpportunitiesPage({
             >
               <Calculator aria-hidden="true" data-icon="inline-start" />
               <span>چطور محاسبه شد؟</span>
+              <Play aria-hidden="true" data-icon="inline-end" className="rotate-90 fill-current" />
             </Button>
           </div>
         </section>

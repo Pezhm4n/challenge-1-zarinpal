@@ -4,7 +4,7 @@ import * as React from "react"
 import { Select as SelectPrimitive } from "@base-ui/react/select"
 
 import { cn } from "@/lib/utils"
-import { ChevronDownIcon, CheckIcon, ChevronUpIcon } from "lucide-react"
+import { ChevronDownIcon, CheckIcon, ChevronUpIcon, Play } from "lucide-react"
 
 const Select = SelectPrimitive.Root
 
@@ -43,7 +43,7 @@ function SelectTrigger({
       data-slot="select-trigger"
       data-size={size}
       className={cn(
-        "flex w-full items-center justify-between gap-2 rounded-full border border-border/80 bg-card py-2 pe-3.5 ps-4 text-sm font-medium whitespace-nowrap shadow-2xs transition-all outline-none select-none hover:border-border hover:bg-muted/30 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/30 data-placeholder:text-muted-foreground data-[size=default]:h-11 data-[size=sm]:h-9 data-[size=sm]:px-3 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer",
+        "flex w-full items-center justify-between gap-2 rounded-full border border-border/80 bg-card py-2 pe-3.5 ps-4 text-sm font-medium whitespace-nowrap shadow-2xs transition-all outline-none select-none hover:border-border hover:bg-muted/30 focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-2 aria-invalid:ring-destructive/30 data-placeholder:text-muted-foreground data-[size=default]:h-11 data-[size=sm]:h-9 data-[size=sm]:px-3 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-1.5 [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 cursor-pointer [&[data-popup-open]_[data-slot=select-trigger-icon]]:rotate-180",
         className
       )}
       {...props}
@@ -51,7 +51,10 @@ function SelectTrigger({
       {children}
       <SelectPrimitive.Icon
         render={
-          <ChevronDownIcon className="pointer-events-none size-4 text-muted-foreground transition-transform duration-200" />
+          <Play
+            data-slot="select-trigger-icon"
+            className="pointer-events-none size-3 rotate-90 fill-current text-muted-foreground transition-transform duration-200"
+          />
         }
       />
     </SelectPrimitive.Trigger>

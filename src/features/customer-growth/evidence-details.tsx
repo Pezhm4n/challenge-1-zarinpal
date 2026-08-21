@@ -7,7 +7,7 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table"
-import { CalendarDays, Scale } from "lucide-react"
+import { CalendarDays, Play, Scale } from "lucide-react"
 import {
   formatPersianDateTime,
   formatPersianPeriod,
@@ -86,11 +86,17 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
     <details className="group rounded-2xl border border-border/60 bg-muted/20 p-4 transition-all">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-semibold text-foreground hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 marker:content-none [&::-webkit-details-marker]:hidden">
         <span className="text-xs font-bold">چطور محاسبه شد؟</span>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
-          نمایش جزئیات
-        </span>
-        <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
-          بستن جزئیات
+        <span className="flex items-center gap-2">
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
+            نمایش جزئیات
+          </span>
+          <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
+            بستن جزئیات
+          </span>
+          <Play
+            aria-hidden="true"
+            className="size-3 rotate-90 fill-current text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+          />
         </span>
       </summary>
       <div className="mt-4 flex flex-col gap-4 text-sm">

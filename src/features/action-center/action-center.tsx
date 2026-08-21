@@ -7,6 +7,7 @@ import {
   CircleMinus,
   Database,
   FlaskConical,
+  Play,
   TrendingDown,
   TrendingUp,
 } from "lucide-react"
@@ -111,6 +112,7 @@ function HeadlineMetric({
       >
         <Calculator aria-hidden="true" data-icon="inline-start" />
         چطور محاسبه شد؟
+        <Play aria-hidden="true" data-icon="inline-end" className="rotate-90 fill-current" />
       </Button>
     </div>
   )

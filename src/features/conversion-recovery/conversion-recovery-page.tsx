@@ -108,7 +108,7 @@ function EvidenceButton({
     <Button
       variant="ghost"
       size="sm"
-      className="min-h-9 w-full justify-start text-xs font-medium text-primary hover:bg-primary/10 hover:text-primary"
+      className="min-h-9 w-full justify-start whitespace-normal text-xs font-medium text-primary hover:bg-primary/10 hover:text-primary"
       aria-label={`مشاهده ${label}`}
       onClick={() => onRequest(evidenceId)}
     >
