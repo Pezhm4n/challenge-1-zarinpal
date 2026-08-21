@@ -95,7 +95,9 @@ export function PeerOpportunitiesPage({
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
+      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -108,7 +110,10 @@ export function PeerOpportunitiesPage({
             </Badge>
           </div>
           <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
-            فرصت‌های رشد و مقایسه با بازار برای <span className="text-primary">فروشگاه شما</span>
+            <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
+              فرصت‌های رشد
+            </span>{" "}
+            و مقایسه با بازار برای فروشگاه شما
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             کشف راه‌های افزایش فروش، سنجش رتبه در میان هم‌صنفان و شناسایی ساعات طلایی خرید مشتریان.

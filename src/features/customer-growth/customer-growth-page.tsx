@@ -257,7 +257,9 @@ export function CustomerGrowthPage({
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
+      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -271,7 +273,10 @@ export function CustomerGrowthPage({
             </Badge>
           </div>
           <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
-            رشد و وفاداری مشتریان برای <span className="text-primary">فروشگاه شما</span>
+            <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
+              رشد و وفاداری مشتریان
+            </span>{" "}
+            برای فروشگاه شما
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             تحلیل رفتار خرید و تکرار مراجعه مشتریان بر اساس کارت‌های بانکی ناشناس؛ کاملاً امن و بدون افشای هویت خریداران.
@@ -280,10 +285,12 @@ export function CustomerGrowthPage({
             دوره: {formatPersianPeriod(payload.selection.period)}
           </p>
         </div>
-        <MerchantSelector
-          merchantKey={payload.selection.merchantKey}
-          merchantKeys={merchantKeys}
-        />
+        <div className="border-t border-border/50 pt-4">
+          <MerchantSelector
+            merchantKey={payload.selection.merchantKey}
+            merchantKeys={merchantKeys}
+          />
+        </div>
       </header>
 
       {headline ? (

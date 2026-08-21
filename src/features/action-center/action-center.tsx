@@ -231,8 +231,10 @@ function ResolvedActionCenter({
     <div className="grid gap-8 lg:gap-10">
       <section
         aria-labelledby="action-center-title"
-        className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end"
+        className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs"
       >
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -251,14 +253,17 @@ function ResolvedActionCenter({
             ) : null}
           </div>
           <h1 id="action-center-title" className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
-            ۳ اقدام کلیدی برای افزایش فروش <span className="text-primary">فروشگاه شما</span>
+            <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
+              ۳ اقدام کلیدی
+            </span>{" "}
+            برای افزایش فروش فروشگاه شما
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             مهم‌ترین فرصت‌های رشد و جلوگیری از ریزش مالی کسب‌وکار شما؛ همراه با اثر ریالی شفاف، گام عملی بعدی و مدرک دقیق محاسبه.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3.5 sm:flex-row sm:items-end">
+        <div className="flex flex-col gap-3.5 border-t border-border/50 pt-4 sm:flex-row sm:items-end">
           <MerchantSelector
             value={merchantKey}
             options={merchantOptions}
