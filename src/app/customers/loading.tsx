@@ -6,26 +6,25 @@ export default function CustomersLoading() {
     <div
       aria-busy="true"
       aria-label="در حال بارگذاری گزارش مشتریان"
-      className="grid gap-8 lg:gap-10"
+      className="grid min-w-0 gap-8 lg:gap-10"
     >
-      <div className="grid gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">
-        <Skeleton className="h-5 w-24 rounded-full" />
-        <Skeleton className="h-9 w-64 max-w-full rounded-xl" />
-        <Skeleton className="h-5 w-96 max-w-full rounded-lg" />
+      <div className="grid min-w-0 gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">
+        <Skeleton className="h-5 w-24 max-w-full rounded-full" />
+        <Skeleton className="h-9 w-full max-w-md rounded-xl" />
+        <Skeleton className="h-5 w-full max-w-lg rounded-lg" />
       </div>
-      <Card className="rounded-2xl">
-        <CardHeader className="gap-2">
-          <Skeleton className="h-6 w-56 max-w-full rounded-lg" />
+      <Card className="min-w-0 rounded-2xl">
+        <CardHeader className="min-w-0 gap-2">
+          <Skeleton className="h-6 w-full max-w-xs rounded-lg" />
           <Skeleton className="h-4 w-full rounded-lg" />
         </CardHeader>
-        <CardContent className="grid gap-4 md:grid-cols-3">
-          <Skeleton className="h-28 w-full rounded-2xl" />
-          <Skeleton className="h-28 w-full rounded-2xl" />
-          <Skeleton className="h-28 w-full rounded-2xl" />
+        <CardContent className="grid min-w-0 gap-4 md:grid-cols-3">
+          <Skeleton className="h-24 sm:h-28 w-full rounded-2xl" />
+          <Skeleton className="h-24 sm:h-28 w-full rounded-2xl" />
+          <Skeleton className="h-24 sm:h-28 w-full rounded-2xl" />
         </CardContent>
       </Card>
-      <Skeleton className="h-80 w-full rounded-2xl" />
+      <Skeleton className="h-64 sm:h-80 w-full min-w-0 rounded-2xl" />
     </div>
   )
 }
-
