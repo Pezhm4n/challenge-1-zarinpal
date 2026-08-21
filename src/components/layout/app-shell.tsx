@@ -27,11 +27,11 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
                 <span className="flex items-center gap-2">
                   <span className="text-base font-bold tracking-tight text-foreground">نبض زرین</span>
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                    تحلیل پذیرنده
+                    دستیار رشد فروش
                   </span>
                 </span>
                 <span className="block text-xs text-muted-foreground">
-                  Action Center هوشمند زرین‌پال
+                  مرکز اقدام هوشمند زرین‌پال
                 </span>
               </span>
             </Link>

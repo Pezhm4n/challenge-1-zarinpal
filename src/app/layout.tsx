@@ -28,7 +28,7 @@ const iranYekan = localFont({
 
 export const metadata: Metadata = {
   title: "نبض زرین | Zarin Pulse",
-  description: "مرکز اقدام تحلیلی برای پذیرندگان زرین‌پال",
+  description: "مرکز اقدام هوشمند برای پذیرندگان زرین‌پال",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

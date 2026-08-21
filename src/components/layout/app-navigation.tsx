@@ -8,16 +8,16 @@ import { cn } from "@/lib/utils"
 
 const navigationItems = [
   { href: "/", label: "اقدام‌ها", icon: CircleGauge },
-  { href: "/recovery", label: "بازیابی", icon: RefreshCcw },
+  { href: "/recovery", label: "نجات فروش", icon: RefreshCcw },
   { href: "/customers", label: "مشتریان", icon: UsersRound },
-  { href: "/opportunities", label: "فرصت‌ها", icon: Target },
+  { href: "/opportunities", label: "رقبا", icon: Target },
 ] as const
 
 export function AppNavigation() {
   const pathname = usePathname()
 
   return (
-    <nav aria-label="مسیرهای تحلیل" className="w-full lg:w-auto">
+    <nav aria-label="منوی اصلی" className="w-full lg:w-auto">
       <ul className="grid grid-cols-4 gap-1 rounded-full bg-muted/80 p-1 border border-border/60 shadow-2xs lg:flex lg:gap-1.5">
         {navigationItems.map((item) => {
           const Icon = item.icon
