@@ -26,6 +26,7 @@ import {
   inspectEvidenceOperands,
 } from "./model"
 import { useSheetScrollTop } from "./use-sheet-scroll-top"
+import { describeEvidenceFilter } from "./filter-text"
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
@@ -41,12 +42,6 @@ const grainLabels: Record<EvidenceRecord["grain"], string> = {
 
 function formatPeriod(period: EvidenceRecord["period"]): string {
   return formatPersianPeriod(period)
-}
-
-function formatFilterValue(value: string | number | boolean): string {
-  if (typeof value === "boolean") return value ? "بله" : "خیر"
-  if (typeof value === "number") return numberFormatter.format(value)
-  return value
 }
 
 function EvidenceSection({
@@ -68,20 +63,20 @@ function hasPersianChars(text: string): boolean {
   return /[\u0600-\u06FF]/.test(text)
 }
 
-const statusTranslations: Record<string, { fa: string; en: string }> = {
-  NoAttempt: { fa: "انصراف قبل از درگاه", en: "NoAttempt" },
-  Verified: { fa: "پرداخت موفق", en: "Verified" },
-  Failed: { fa: "ناموفق", en: "Failed" },
-  Initiated: { fa: "شروع‌شده", en: "Initiated" },
-  Paid: { fa: "پرداخت در بانک", en: "Paid" },
-  Reversed: { fa: "برگشت‌خورده", en: "Reversed" },
-  Expired: { fa: "منقضی‌شده", en: "Expired" },
+const statusTranslations: Record<string, string> = {
+  NoAttempt: "انصراف قبل از درگاه",
+  Verified: "پرداخت موفق",
+  Failed: "ناموفق",
+  Initiated: "شروع‌شده",
+  Paid: "پرداخت در بانک",
+  Reversed: "برگشت‌خورده",
+  Expired: "منقضی‌شده",
 }
 
 function formatStatus(status: string | null | undefined): string {
   if (!status) return "کاربرد ندارد"
-  const tr = statusTranslations[status]
-  return tr ? `${tr.fa} (${tr.en})` : localizePersianText(status)
+  const label = statusTranslations[status]
+  return label ?? localizePersianText(status)
 }
 
 function EvidenceList({ items, emptyLabel }: { items: string[]; emptyLabel: string }) {
@@ -140,7 +135,7 @@ const sampleFields: Array<{
   {
     key: "sessionKey",
     label: "شناسه پرداخت",
-    format: (row) => row.sessionKey,
+    format: (row) => localizePersianText(row.sessionKey),
   },
   { key: "trySeq", label: "شماره تلاش" },
   {
@@ -163,7 +158,7 @@ const sampleFields: Array<{
     label: "وضعیت تلاش",
     format: (row) => formatStatus(row.tryStatus),
   },
-  { key: "pspCode", label: "درگاه (PSP)" },
+  { key: "pspCode", label: "درگاه" },
   { key: "payerCardMasked", label: "کارت خریدار" },
 ]
 
@@ -428,17 +423,10 @@ export function EvidenceSheet({
                 </summary>
 
                 <div className="grid gap-5 border-t border-border/50 p-4 sm:p-5">
-                  <EvidenceSection title="فرمول و شناسه فنی محاسبه">
-                    <dl className="grid gap-3 rounded-2xl border border-border/60 bg-card p-4">
-                      <KeyValue label="روش محاسبه (فنی)">
-                        {localizePersianText(evidence.formulaFa)}
-                      </KeyValue>
-                      <KeyValue label="شناسه فنی فرمول">
-                        <code dir="ltr" className="inline-block max-w-full whitespace-normal rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono break-all text-muted-foreground">
-                          {evidence.formulaId}
-                        </code>
-                      </KeyValue>
-                    </dl>
+                  <EvidenceSection title="روش محاسبه (فنی)">
+                    <p className="rounded-2xl border border-border/60 bg-card p-4 text-sm leading-relaxed text-foreground">
+                      {localizePersianText(evidence.formulaFa)}
+                    </p>
                   </EvidenceSection>
 
                   <EvidenceSection title="شرایط و فرض‌های تحلیل">
@@ -480,7 +468,11 @@ export function EvidenceSheet({
                               فیلتر {numberFormatter.format(index + 1)} ({columnLabels[filter.field] ?? filter.field})
                             </span>
                             <span className="rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
-                              {columnLabels[filter.field] ?? filter.field} {filter.operator === "=" ? "برابر با" : filter.operator === ">=" ? "بزرگتر یا مساوی با" : filter.operator} {localizePersianText(formatFilterValue(filter.value))}
+                              {describeEvidenceFilter(
+                                columnLabels[filter.field] ?? filter.field,
+                                filter.operator,
+                                filter.value,
+                              )}
                             </span>
                           </div>
                         ))}
@@ -500,7 +492,7 @@ export function EvidenceSheet({
                   </EvidenceSection>
 
                   <p className="break-all border-t border-border/50 pt-4 text-xs text-muted-foreground">
-                    شناسه نسخه داده (Fingerprint): <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
+                    شناسه نسخه داده: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
                   </p>
                 </div>
               </details>

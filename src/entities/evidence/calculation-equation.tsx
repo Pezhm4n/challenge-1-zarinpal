@@ -20,7 +20,7 @@ function OperandBox({
       }`}
     >
       <p
-        className={`text-[11px] font-semibold leading-4 ${
+        className={`min-h-8 text-[11px] font-semibold leading-4 ${
           isResult ? "text-primary/80" : "text-muted-foreground"
         }`}
       >

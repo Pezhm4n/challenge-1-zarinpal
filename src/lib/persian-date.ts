@@ -222,9 +222,9 @@ const domainReplacements: Array<[RegExp, string]> = [
   [/KPIهای مشتری فقط بر همین پوشش متکی‌اند\.?/g, "شاخص‌های وفاداری مشتریان بر مبنای سفارش‌های دارای کارت بانکی محاسبه شده‌اند."],
   
   // Labels & Titles
-  [/اندازه Cohort اولیه/g, "اندازه گروه مشتریان اولیه (Cohort)"],
+  [/اندازه Cohort اولیه/g, "اندازه گروه مشتریان اولیه"],
   [/اندازه اولیه Cohort/g, "اندازه اولیه گروه مشتریان"],
-  [/Retention ماهانه Cohort/g, "ماندگاری ماهانه خریداران (Cohort)"],
+  [/Retention ماهانه Cohort/g, "ماندگاری ماهانه خریداران (گروه مشتریان)"],
   [/Retention Cohort/g, "ماندگاری گروه خریداران"],
   [/Cardهای بازگشته در ماه/g, "خریداران بازگشته در ماه"],
   [/Cardهای فعال Cohort/g, "خریداران فعال گروه"],
@@ -273,18 +273,18 @@ const domainReplacements: Array<[RegExp, string]> = [
   [/eventual_verified/g, "وضعیت پرداخت نهایی"],
   [/payer_card_key/g, "شناسه کارت بانکی"],
   [/Customer denominatorها/g, "محاسبات آماری مشتریان"],
-  [/NoAttempt/g, "انصراف قبل از درگاه (NoAttempt)"],
+  [/NoAttempt/g, "انصراف قبل از درگاه"],
   [/Sessionهای Verified/g, "خریدهای موفق"],
   [/Sessionهای attempted/g, "تلاش‌های پرداخت"],
   [/Sessionهای Stage/g, "سفارش‌های مرحله"],
   [/Sessionهای/g, "سفارش‌های"],
   [/Session/g, "سفارش"],
-  [/Conversion/g, "نرخ پرداخت موفق (Conversion)"],
+  [/Conversion/g, "نرخ پرداخت موفق"],
   [/Cardهای بازگشتی/g, "خریداران بازگشتی"],
   [/Cardهای فعال/g, "خریداران فعال"],
   [/Cardهای/g, "کارت‌های خریدار"],
   [/Card/g, "کارت خریدار"],
-  [/Cohort/g, "گروه مشتریان (Cohort)"],
+  [/Cohort/g, "گروه مشتریان"],
   [/try_status\s*=\s*Verified/g, "وضعیت تلاش = تاییدشده"],
   [/try_status/g, "وضعیت تلاش"],
   [/session_status/g, "وضعیت سفارش"],
@@ -295,7 +295,7 @@ const domainReplacements: Array<[RegExp, string]> = [
   [/NON_CAUSAL_SCENARIO/g, "برآورد تخمینی"],
   [/card-known/g, "دارای کارت مشخص"],
   [/Checkout/g, "صفحه تسویه حساب"],
-  [/CRM/g, "سیستم مشتریان (CRM)"],
+  [/CRM/g, "سیستم مشتریان"],
 ];
 
 const persianDigits = "۰۱۲۳۴۵۶۷۸۹";

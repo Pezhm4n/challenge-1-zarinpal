@@ -15,6 +15,7 @@ import {
 } from "@/lib/persian-date"
 import { BaselineComparison } from "@/entities/evidence/baseline-comparison"
 import { CalculationEquation, inferCalculationMode } from "@/entities/evidence/calculation-equation"
+import { describeEvidenceFilter } from "@/entities/evidence/filter-text"
 import type { EvidenceRecord, MetricValue } from "./types"
 
 const faNumber = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 2 })
@@ -210,7 +211,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                 <TableBody>
                   {evidence.sampleRows.map((row) => (
                     <TableRow key={row.sessionKey}>
-                      <TableCell dir="ltr">{row.sessionKey}</TableCell>
+                      <TableCell>{localizePersianText(row.sessionKey)}</TableCell>
                       <TableCell>{row.payerCardMasked ?? "—"}</TableCell>
                       <TableCell>{faInteger.format(row.amountRial)}</TableCell>
                       <TableCell>{formatPersianDateTime(row.createdAt)}</TableCell>
@@ -224,7 +225,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                 <dl className="rounded-lg bg-background p-3" key={row.sessionKey}>
                   <div className="flex items-center justify-between gap-3">
                     <dt className="text-muted-foreground">شناسه پرداخت</dt>
-                    <dd dir="ltr">{row.sessionKey}</dd>
+                    <dd>{localizePersianText(row.sessionKey)}</dd>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-3">
                     <dt className="text-muted-foreground">کارت خریدار</dt>
@@ -251,9 +252,6 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
           <div>
             <p className="text-xs text-muted-foreground">فرمول محاسبه (فنی)</p>
             <p className="mt-1 text-sm">{localizePersianText(evidence.formulaFa)}</p>
-            <p className="mt-1 break-all text-xs text-muted-foreground" dir="ltr">
-              {evidence.formulaId}
-            </p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">ستون‌های منبع</p>
@@ -272,7 +270,9 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                 {evidence.filters.map((filter, index) => (
                   <div className="flex flex-wrap items-center justify-between text-xs rounded bg-muted/50 p-2" key={`${filter.field}-${index}`}>
                     <span className="text-muted-foreground">{columnLabels[filter.field] ?? filter.field}</span>
-                    <span className="font-medium text-foreground">{columnLabels[filter.field] ?? filter.field} {filter.operator === "=" ? "برابر با" : filter.operator} {localizePersianText(String(filter.value))}</span>
+                    <span className="font-medium text-foreground">
+                      {describeEvidenceFilter(columnLabels[filter.field] ?? filter.field, filter.operator, filter.value)}
+                    </span>
                   </div>
                 ))}
               </dd>
@@ -281,7 +281,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
         </div>
 
         <p className="break-all text-xs text-muted-foreground">
-          شناسه داده (Fingerprint): <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
+          شناسه نسخه داده: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
         </p>
       </div>
     </details>

@@ -24,6 +24,7 @@ import {
 } from "@/lib/persian-date"
 import type { EvidenceRecord, EvidenceSampleRow, MetricValue } from "./types"
 import { useSheetScrollTop } from "@/entities/evidence/use-sheet-scroll-top"
+import { describeEvidenceFilter } from "@/entities/evidence/filter-text"
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
@@ -61,12 +62,6 @@ function formatDate(value: string): string {
   return formatPersianDate(value)
 }
 
-function formatFilterValue(value: string | number | boolean): string {
-  if (typeof value === "boolean") return value ? "بله" : "خیر"
-  if (typeof value === "number") return numberFormatter.format(value)
-  return value
-}
-
 function EvidenceSection({
   title,
   children,
@@ -101,20 +96,20 @@ function hasPersianChars(text: string): boolean {
   return /[\u0600-\u06FF]/.test(text)
 }
 
-const statusTranslations: Record<string, { fa: string; en: string }> = {
-  NoAttempt: { fa: "انصراف قبل از درگاه", en: "NoAttempt" },
-  Verified: { fa: "پرداخت موفق", en: "Verified" },
-  Failed: { fa: "ناموفق", en: "Failed" },
-  Initiated: { fa: "شروع‌شده", en: "Initiated" },
-  Paid: { fa: "پرداخت در بانک", en: "Paid" },
-  Reversed: { fa: "برگشت‌خورده", en: "Reversed" },
-  Expired: { fa: "منقضی‌شده", en: "Expired" },
+const statusTranslations: Record<string, string> = {
+  NoAttempt: "انصراف قبل از درگاه",
+  Verified: "پرداخت موفق",
+  Failed: "ناموفق",
+  Initiated: "شروع‌شده",
+  Paid: "پرداخت در بانک",
+  Reversed: "برگشت‌خورده",
+  Expired: "منقضی‌شده",
 }
 
 function formatStatus(status: string | null | undefined): string {
   if (!status) return "کاربرد ندارد"
-  const tr = statusTranslations[status]
-  return tr ? `${tr.fa} (${tr.en})` : localizePersianText(status)
+  const label = statusTranslations[status]
+  return label ?? localizePersianText(status)
 }
 
 function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
@@ -208,7 +203,7 @@ const columnLabels: Record<string, string> = {
   try_status: "وضعیت تلاش",
   session_status: "وضعیت سفارش",
   payer_card_key: "شناسه کارت خریدار",
-  psp_code: "کد درگاه (PSP)",
+  psp_code: "درگاه",
   evidence_scope: "محدوده تحلیل",
 }
 
@@ -321,11 +316,6 @@ export function RecoveryEvidenceSheet({
                       ? `${formatDate(evidence.comparisonPeriod.from)} تا ${formatDate(evidence.comparisonPeriod.to)}`
                       : "مستقل از دوره مقایسه"}
                   </KeyValue>
-                  <KeyValue label="شناسه فنی فرمول">
-                    <code dir="ltr" className="inline-block max-w-full whitespace-normal rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono break-all text-muted-foreground">
-                      {evidence.formulaId}
-                    </code>
-                  </KeyValue>
                 </dl>
               </EvidenceSection>
 
@@ -384,7 +374,7 @@ export function RecoveryEvidenceSheet({
               </EvidenceSection>
 
               <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
-                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold text-foreground hover:bg-muted/40 marker:content-none [&::-webkit-details-marker]:hidden">
+                <summary className="flex min-h-12 cursor-pointer list-none flex-col items-center justify-center gap-2 p-4 text-center font-semibold text-foreground hover:bg-muted/40 marker:content-none sm:flex-row sm:justify-between sm:text-start [&::-webkit-details-marker]:hidden">
                   <span className="text-sm font-bold">مشاهده فیلترها، ستون‌های داده و نمونه پرداخت‌ها</span>
                   <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
                     بررسی بیشتر
@@ -434,7 +424,11 @@ export function RecoveryEvidenceSheet({
                               فیلتر {numberFormatter.format(index + 1)} ({columnLabels[filter.field] ?? filter.field})
                             </span>
                             <span className="rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
-                              {columnLabels[filter.field] ?? filter.field} {filter.operator === "=" ? "برابر با" : filter.operator === ">=" ? "بزرگتر یا مساوی با" : filter.operator} {localizePersianText(formatFilterValue(filter.value))}
+                              {describeEvidenceFilter(
+                                columnLabels[filter.field] ?? filter.field,
+                                filter.operator,
+                                filter.value,
+                              )}
                             </span>
                           </div>
                         ))}
@@ -463,7 +457,7 @@ export function RecoveryEvidenceSheet({
                   </EvidenceSection>
 
                   <p className="break-all border-t border-border/50 pt-4 text-xs font-medium text-muted-foreground">
-                    شناسه نسخه داده (Fingerprint): <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
+                    شناسه نسخه داده: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
                   </p>
                 </div>
               </details>

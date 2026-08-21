@@ -136,7 +136,7 @@ function CohortSection({
     <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
       <CardHeader className="gap-1.5">
         <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-          <h2>ماندگاری و بازگشت ماهانه مشتریان (Cohort Retention)</h2>
+          <h2>ماندگاری و بازگشت ماهانه مشتریان</h2>
           <HelpTooltip term="Cohort" />
         </CardTitle>
         <CardDescription className="text-xs leading-relaxed">
