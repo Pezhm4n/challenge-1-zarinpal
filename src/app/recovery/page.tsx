@@ -33,7 +33,7 @@ async function loadPageData(searchParams: RecoveryRouteProps["searchParams"]) {
     const errorMessage =
       error instanceof ConversionRecoveryArtifactError
         ? error.message
-        : "تحلیل بازیابی در حال حاضر قابل نمایش نیست."
+        : "گزارش نجات فروش در حال حاضر قابل نمایش نیست."
 
     return { artifact: null, payload: null, merchantKeys: [], errorMessage }
   }
@@ -52,7 +52,7 @@ export default async function RecoveryRoute({ searchParams }: RecoveryRouteProps
           <CircleAlert aria-hidden="true" />
           <AlertTitle>
             <h1 id="recovery-error-title">
-              خطا در بارگذاری تحلیل بازیابی
+              خطا در بارگذاری گزارش نجات فروش
             </h1>
           </AlertTitle>
           <AlertDescription>{result.errorMessage}</AlertDescription>

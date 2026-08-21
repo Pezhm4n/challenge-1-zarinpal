@@ -31,7 +31,7 @@ export function RecoveryMerchantSelector({
         id="recovery-merchant-label"
         className="text-xs font-medium text-muted-foreground"
       >
-        پذیرنده نمایشی
+        فروشگاه
       </label>
       <Select
         items={options}
@@ -52,7 +52,7 @@ export function RecoveryMerchantSelector({
         </SelectTrigger>
         <SelectContent align="start">
           <SelectGroup>
-            <SelectLabel>پذیرنده‌ها</SelectLabel>
+            <SelectLabel>فروشگاه‌ها</SelectLabel>
             {options.map((option) => (
               <SelectItem
                 key={option.value}

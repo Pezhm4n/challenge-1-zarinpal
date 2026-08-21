@@ -328,7 +328,7 @@ export function ConversionRecoveryPage({
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            نجات فروش و رفع موانع پرداخت برای <span className="text-primary">{payload.selection.merchantKey}</span>
+            نجات فروش و رفع موانع پرداخت برای <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             رهگیری مرحله‌به‌مرحله فرآیند خرید، کشف دلایل انصراف مشتریان و پتانسیل افزایش درآمد با برطرف کردن موانع پرداخت.
@@ -375,7 +375,7 @@ export function ConversionRecoveryPage({
               </div>
             </div>
             <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
-              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی نجات فروش (تخمینی)</p>
+              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی نجات فروش</p>
               <p className="mt-2 text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                 {scenario ? formatCompactRial(scenario.estimatedVolumeRial) : "داده ناکافی"}
               </p>
@@ -408,9 +408,9 @@ export function ConversionRecoveryPage({
       ) : (
         <Alert>
           <CircleAlert aria-hidden="true" />
-          <AlertTitle>فرصت اولویت‌دار ثبت نشد</AlertTitle>
+          <AlertTitle>هنوز پیشنهادی برای این دوره نداریم</AlertTitle>
           <AlertDescription>
-            داده‌های این دوره برای ساخت پیشنهاد عددی کافی نیست. مسیر پرداخت و مدارک موجود را بررسی کنید؛ هیچ عدد یا پیشنهاد غیرقابل اتکایی نمایش داده نمی‌شود.
+            داده‌های این دوره برای ساخت پیشنهاد عددی کافی نیست. هیچ عدد بدون پشتوانه نمایش داده نمی‌شود.
           </AlertDescription>
         </Alert>
       )}
@@ -524,27 +524,27 @@ export function ConversionRecoveryPage({
 
       <Alert className="rounded-2xl">
         <FlaskConical aria-hidden="true" />
-        <AlertTitle>سناریو، اثر علّی یا تضمین فروش نیست</AlertTitle>
+        <AlertTitle>این عدد برآورد است، نه تضمین فروش</AlertTitle>
         <AlertDescription>
-          خط مبنا سهم NoAttempt دوره قبل است؛ نرخ تبدیل attempted و متوسط مبلغ Verified دوره جاری ثابت فرض شده‌اند. Paid فقط عبور از بانک است و Reversed موفقیت محسوب نمی‌شود.
+          مبنا، سهم انصراف قبل از درگاه در دوره قبل است؛ نرخ موفقیت پرداخت و میانگین مبلغ خرید دوره جاری ثابت فرض شده‌اند. عبور از درگاه به‌تنهایی پرداخت موفق نیست و تراکنش برگشتی فروش محسوب نمی‌شود.
         </AlertDescription>
       </Alert>
 
       <section aria-labelledby="psp-title" className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">کنترل متغیر مخدوش‌کننده</span>
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">مقایسه منصفانه</span>
             <h2 id="psp-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
               <span>عملکرد درگاه‌های پرداخت (PSP)</span>
               <HelpTooltip term="PSP" />
             </h2>
             <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-              نرخ هر PSP فقط در همان Quartile مبلغ مقایسه می‌شود؛ زیر ۱۰۰ Session کلی یا ۲۵ Session در cell، رتبه و پیشنهاد نمایش داده نمی‌شود.
+              نرخ هر درگاه فقط در بازه مبلغی مشابه مقایسه می‌شود؛ اگر تعداد سفارش‌ها کم باشد (کمتر از ۱۰۰ سفارش کلی یا ۲۵ سفارش در یک بازه)، رتبه و پیشنهادی نمایش داده نمی‌شود.
             </p>
           </div>
           <Badge variant="outline" className="font-semibold gap-1.5">
             <ShieldCheck aria-hidden="true" data-icon="inline-start" />
-            بدون Winner label
+            بدون معرفی برنده
           </Badge>
         </div>
 
@@ -563,7 +563,7 @@ export function ConversionRecoveryPage({
                   <Badge variant={segments.every((segment) => segment.quality === "insufficient-data") ? "outline" : "secondary"} className="font-semibold">
                     {segments.every((segment) => segment.quality === "insufficient-data")
                       ? "نمونه ناکافی"
-                      : "نمونه کنترل‌شده"}
+                      : "نمونه کافی"}
                   </Badge>
                 </CardAction>
               </CardHeader>
@@ -582,9 +582,9 @@ export function ConversionRecoveryPage({
         ) : (
           <Alert className="rounded-2xl">
             <CircleAlert aria-hidden="true" />
-            <AlertTitle>داده PSP برای مقایسه موجود نیست</AlertTitle>
+            <AlertTitle>داده درگاه‌ها برای مقایسه موجود نیست</AlertTitle>
             <AlertDescription>
-              هیچ رتبه، برنده یا پیشنهاد مقایسه‌ای ساخته نشده است. Funnel و تحلیل NoAttempt همچنان بر پایه Sessionهای معتبر قابل بررسی‌اند.
+              هیچ رتبه یا پیشنهاد مقایسه‌ای ساخته نشده است. تحلیل قیف پرداخت و انصراف قبل از درگاه همچنان بر پایه سفارش‌های معتبر قابل بررسی است.
             </AlertDescription>
           </Alert>
         )}
@@ -597,17 +597,17 @@ export function ConversionRecoveryPage({
             <h2>قواعد خواندن این گزارش</h2>
           </CardTitle>
           <CardDescription>
-            عددها از Attempt خام به Session یکتا تبدیل شده‌اند.
+            عددها پس از یکی‌سازی تلاش‌های تکراری، به ازای هر سفارش محاسبه می‌شوند.
           </CardDescription>
         </CardHeader>
         <CardContent className="mt-4 grid gap-3 p-0 text-xs leading-relaxed text-muted-foreground sm:grid-cols-3">
           <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
             <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success" />
-            <p>فروش و مبلغ موفق فقط با Verified محاسبه شده‌اند.</p>
+            <p>فروش موفق فقط شامل پرداخت‌های تاییدشده نهایی است.</p>
           </div>
           <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
             <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-destructive" />
-            <p>Paid و Reversed به‌تنهایی فروش موفق نیستند.</p>
+            <p>عبور از درگاه یا تراکنش برگشتی به‌تنهایی فروش موفق محسوب نمی‌شوند.</p>
           </div>
           <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
             <ArrowLeft aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -618,9 +618,12 @@ export function ConversionRecoveryPage({
 
       <footer className="flex flex-col gap-1 pb-4 text-xs font-medium text-muted-foreground sm:flex-row sm:justify-between">
         <span>
-          تولید Artifact: {formatPeriod(artifact.generatedAt.slice(0, 10))}
+          تاریخ تهیه گزارش: {formatPeriod(artifact.generatedAt.slice(0, 10))}
         </span>
-        <span dir="ltr" className="font-mono">Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…</span>
+        <span className="flex items-center gap-1.5">
+          نسخه داده:
+          <span dir="ltr" className="font-mono">{artifact.dataset.fingerprint.slice(0, 12)}…</span>
+        </span>
       </footer>
 
       <RecoveryEvidenceSheet
