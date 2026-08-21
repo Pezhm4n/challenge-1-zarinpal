@@ -875,37 +875,37 @@ def _merchant_payload(
     if insufficient:
         status = "insufficient-data"
         title = "برای سنجش بازگشت مشتری داده کافی نیست"
-        finding = f"فقط {active_cards} Card فعال دارای شناسه در این دوره دیده شد."
+        finding = f"تنها {active_cards} خریدار فعال دارای کارت در این دوره ثبت شد."
         action = "پس از کامل‌شدن نمونه دوره بعد، نرخ بازگشت را دوباره بررسی کنید."
         confidence = "low"
-        confidence_reason = "تعداد Card فعال کمتر از حداقل نمونه Feature است."
+        confidence_reason = "تعداد خریداران فعال کمتر از حداقل نمونه آماری است."
     elif comparison_share is None:
         status = "insufficient-data"
         title = "خط مبنای دوره قبل در دسترس نیست"
-        finding = f"سهم Cardهای بازگشتی این دوره {returning_share:.2f}٪ است، اما دوره قبل denominator معتبر ندارد."
+        finding = f"سهم خریداران بازگشتی این دوره {returning_share:.2f}٪ است، اما دوره قبل جامعه آماری معتبر ندارد."
         action = "پس از ثبت یک دوره مقایسه معتبر، تغییر نرخ بازگشت را اندازه‌گیری کنید."
         confidence = "low"
-        confidence_reason = "شاخص جاری معتبر است اما تغییر دوره‌ای بدون baseline گزارش نمی‌شود."
+        confidence_reason = "شاخص جاری معتبر است اما تغییر دوره‌ای بدون خط مبنا گزارش نمی‌شود."
     elif delta_pp is not None and delta_pp < -1:
         status = "warning"
         title = "سهم مشتریان بازگشتی کاهش یافته است"
         finding = (
-            f"سهم Cardهای بازگشتی از {comparison_share:.2f}٪ به {returning_share:.2f}٪ رسیده؛ "
+            f"سهم خریداران بازگشتی از {comparison_share:.2f}٪ به {returning_share:.2f}٪ رسیده؛ "
             f"تغییر {delta_pp:.2f} واحد درصد است."
         )
-        action = "یک کمپین بازگشت را در CRM خود اجرا و همین شاخص را در دوره بعد مقایسه کنید."
+        action = "یک کمپین بازگشت مشتریان (مانند پیامک یا تخفیف) اجرا و این شاخص را در دوره بعد مقایسه کنید."
         confidence = "medium"
-        confidence_reason = "عدد قطعی است اما فقط رفتار Cardهای ناشناس دارای پوشش را می‌سنجد."
+        confidence_reason = "محاسبه دقیق است اما صرفاً رفتار کارت‌های بانکی خریداران را تحلیل می‌کند."
     else:
         status = "stable"
         title = "سهم مشتریان بازگشتی پایدار است"
         finding = (
-            f"سهم Cardهای بازگشتی {returning_share:.2f}٪ است؛ نسبت به دوره قبل "
+            f"سهم خریداران بازگشتی {returning_share:.2f}٪ است؛ نسبت به دوره قبل "
             f"{delta_pp:+.2f} واحد درصد تغییر کرده است."
         )
-        action = "همین Cohort را در دوره بعد پایش و پیشنهاد وفاداری فعلی را اندازه‌گیری کنید."
+        action = "همین گروه خریداران را در دوره بعد پایش و پیشنهاد وفاداری فعلی را اندازه‌گیری کنید."
         confidence = "medium"
-        confidence_reason = "محاسبه Session-level است و محدودیت پوشش Card صریح نمایش داده می‌شود."
+        confidence_reason = "محاسبه بر اساس سفارش‌هاست و محدودیت پوشش کارت صریح نمایش داده می‌شود."
 
     insights = [
         {
@@ -936,15 +936,15 @@ def _merchant_payload(
                 "priority": 4,
                 "status": "warning" if top_share >= 40 else "stable",
                 "titleFa": (
-                    "وابستگی مبلغ به یک Card بالاست"
+                    "وابستگی مبلغ به یک خریدار بالاست"
                     if top_share >= 40
-                    else "تمرکز مبلغ روی یک Card کنترل‌شده است"
+                    else "تمرکز مبلغ روی خریداران اصلی کنترل‌شده است"
                 ),
-                "findingFa": f"پرتراکنش‌ترین Card ناشناس {top_share:.2f}٪ از مبلغ card-known دوره را ساخته است.",
-                "actionFa": "ریسک تمرکز را در برنامه وفاداری بسنجید؛ فهرست تماس یا هویت مشتری از این داده استخراج نمی‌شود.",
+                "findingFa": f"پرتراکنش‌ترین خریدار {top_share:.2f}٪ از کل مبلغ دارای کارت دوره را ایجاد کرده است.",
+                "actionFa": "ریسک وابستگی به خریداران عمده را بسنجید؛ فهرست تماس یا هویت مشتری از این داده استخراج نمی‌شود.",
                 "impact": _metric(top_share, "percent", "تمرکز مبلغ Card اول", precision=2),
                 "confidence": "medium",
-                "confidenceReasonFa": "مبلغ واقعی است اما Card ناشناس معادل هویت مشتری نیست.",
+                "confidenceReasonFa": "مبلغ واقعی است اما کارت بانکی معادل هویت مشتری نیست.",
                 "evidenceId": concentration_evidence_id,
                 "destination": "/customers",
             }

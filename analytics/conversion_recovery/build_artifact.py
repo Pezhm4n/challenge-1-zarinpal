@@ -942,17 +942,17 @@ def _merchant_payload(
             }
         ]
         scenario_controls = [
-            "Baseline is the comparison-period NoAttempt share",
-            "Attempted conversion is fixed at the current-period observed rate",
-            "Average ticket uses current-period Verified sessions only",
+            "خط مبنا: سهم انصراف خریداران در دوره قبل",
+            "نرخ تبدیل تلاش‌ها مطابق دوره جاری ثابت در نظر گرفته شده است",
+            "میانگین سبد خرید فقط از پرداخت‌های موفق دوره جاری محاسبه شده است",
         ]
         scenario_assumptions = [
-            "NoAttempt مازاد تا خط مبنای دوره قبل کاهش می‌یابد.",
-            "نرخ تبدیل attempted و متوسط مبلغ Verified ثابت فرض می‌شوند.",
+            "انصراف مازاد قبل از درگاه تا سطح مبنای دوره قبل کاهش می‌یابد.",
+            "نرخ تبدیل پرداخت و میانگین مبلغ خریدهای موفق ثابت فرض می‌شوند.",
         ]
         scenario_limitations = [
-            "سناریو غیرعلّی، غیرتضمینی و بدون کنترل مداخله‌های هم‌زمان است.",
-            "فروش و مبلغ موفق فقط از try_status=Verified محاسبه شده‌اند.",
+            "این سناریو یک برآورد محتمل است و تضمین قطعی فروش نیست.",
+            "آمار فروش و مبالغ فقط از تراکنش‌های تاییدشده محاسبه شده‌اند.",
         ]
         baseline = {
             "type": "comparison-period-no-attempt-share",
@@ -965,13 +965,13 @@ def _merchant_payload(
                 _evidence(
                     evidence_id=order_evidence_id,
                     formula_id="scenario.no_attempt_recovery.v1",
-                    title_fa="سفارش بالقوه در سناریوی کاهش NoAttempt",
-                    explanation_fa="NoAttempt مازاد بر خط مبنای دوره قبل در نرخ تبدیل attempted جاری ضرب شده است.",
+                    title_fa="سفارش بالقوه در سناریوی کاهش انصراف خریداران",
+                    explanation_fa="انصراف مازاد قبل از درگاه در نرخ پرداخت موفق دوره جاری ضرب شده است.",
                     grain="merchant-period",
                     source_columns=["session_key", "try_seq", "try_status", "amount", "created_at"],
                     filters=scenario_filters,
                     selection=selection,
-                    formula_fa="MAX(0, NoAttempt جاری − Session جاری × سهم مبنا) × نرخ تبدیل attempted",
+                    formula_fa="حداکثر(۰، انصراف جاری − کل سفارش‌ها × سهم مبنا) × نرخ پرداخت موفق",
                     result=_metric(
                         scenario_result.estimated_orders,
                         "count",
@@ -989,14 +989,14 @@ def _merchant_payload(
                 _evidence(
                     evidence_id=volume_evidence_id,
                     formula_id="scenario.no_attempt_recovery.v1",
-                    title_fa="حجم بالقوه در سناریوی کاهش NoAttempt",
-                    explanation_fa="سفارش بالقوه در متوسط مبلغ Sessionهای Verified دوره جاری ضرب شده است.",
+                    title_fa="حجم بالقوه در سناریوی کاهش انصراف خریداران",
+                    explanation_fa="سفارش بالقوه در متوسط مبلغ خریدهای تاییدشده دوره جاری ضرب شده است.",
                     grain="merchant-period",
                     source_columns=["session_key", "try_seq", "try_status", "amount", "created_at"],
                     filters=scenario_filters,
                     selection=selection,
                     numerator=("سفارش بالقوه گرد‌شده", scenario_result.estimated_orders),
-                    formula_fa="سفارش بالقوه دقیق × متوسط amount Sessionهای Verified جاری",
+                    formula_fa="سفارش بالقوه دقیق × میانگین مبلغ خریدهای موفق جاری",
                     result=_metric(
                         scenario_result.estimated_volume_rial,
                         "rial",
@@ -1033,11 +1033,11 @@ def _merchant_payload(
             "priority": 1,
             "status": "insufficient-data",
             "titleFa": "برای برآورد فرصت بازیابی داده کافی نیست",
-            "findingFa": "حداقل یکی از مخرج‌های Session، attempted، Verified یا دوره مقایسه صفر است.",
+            "findingFa": "حداقل یکی از مخرج‌های سفارش، تلاش، پرداخت موفق یا دوره مقایسه صفر است.",
             "actionFa": "پس از تکمیل یک دوره جاری و یک دوره مقایسه معتبر، تحلیل را دوباره اجرا کنید.",
             "impact": None,
             "confidence": "low",
-            "confidenceReasonFa": "ZERO_DENOMINATOR مانع ساخت Recommendation عددی شده است.",
+            "confidenceReasonFa": "داده آماری ناکافی مانع ساخت پیشنهاد عددی شده است.",
             "evidenceId": f"recovery-{merchant_key}-no-attempt-share",
             "destination": "/recovery",
         }
@@ -1059,14 +1059,14 @@ def _merchant_payload(
             "titleFa": (
                 "افت اصلی پیش از شروع پرداخت دیده می‌شود"
                 if no_attempt_rate.value > comparison_no_attempt.value
-                else "NoAttempt از خط مبنای دوره قبل بالاتر نیست"
+                else "انصراف خریداران از خط مبنای دوره قبل بالاتر نیست"
             ),
             "findingFa": (
-                f"سهم NoAttempt از {comparison_no_attempt.value:.2f}٪ به "
-                f"{no_attempt_rate.value:.2f}٪ و Conversion از "
+                f"سهم انصراف خریداران از {comparison_no_attempt.value:.2f}٪ به "
+                f"{no_attempt_rate.value:.2f}٪ و نرخ پرداخت موفق از "
                 f"{comparison_conversion.value:.2f}٪ به {current_conversion.value:.2f}٪ رسیده است."
             ),
-            "actionFa": "مسیر Checkout تا آغاز درگاه را پایش و نرخ NoAttempt دوره بعد را با همین خط مبنا مقایسه کنید.",
+            "actionFa": "فرآیند ثبت سفارش تا ورود به درگاه را ساده‌تر کنید تا انصراف قبل از پرداخت کاهش یابد.",
             "impact": _metric(
                 scenario_result.estimated_volume_rial,
                 "rial",
