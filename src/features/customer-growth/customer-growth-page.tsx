@@ -25,6 +25,10 @@ import {
 } from "./ui/table"
 import { cn } from "@/lib/utils"
 
+import {
+  formatPersianMonth,
+  formatPersianPeriod,
+} from "@/lib/persian-date"
 import { EvidenceDetails } from "./evidence-details"
 import { MerchantSelector } from "./merchant-selector"
 import type {
@@ -150,7 +154,7 @@ function CohortSection({
             <TableBody>
               {cohortNames.map((cohort) => (
                 <TableRow key={cohort}>
-                  <TableCell dir="ltr" className="font-mono font-medium text-foreground">{cohort}</TableCell>
+                  <TableCell className="font-semibold text-foreground">{formatPersianMonth(cohort)}</TableCell>
                   {periods.map((period) => {
                     const cell = cohortMap.get(`${cohort}:${period}`)
                     return (
@@ -179,8 +183,8 @@ function CohortSection({
         <div className="flex flex-col gap-3 md:hidden">
           {latestCohorts.map((cohort) => (
             <div className="rounded-xl border border-border/50 bg-muted/30 p-4" key={cohort}>
-              <p className="font-mono font-bold text-foreground" dir="ltr">
-                {cohort}
+              <p className="font-bold text-foreground">
+                {formatPersianMonth(cohort)}
               </p>
               <dl className="mt-3 grid grid-cols-2 gap-2.5">
                 {periods.slice(0, 4).map((period) => {
@@ -261,6 +265,9 @@ export function CustomerGrowthPage({
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             رفتار Cardهای ناشناس در همین پذیرنده؛ بدون بازیابی هویت یا اطلاعات تماس.
+          </p>
+          <p className="mt-3 text-xs font-medium text-muted-foreground">
+            دوره: {formatPersianPeriod(payload.selection.period)}
           </p>
         </div>
         <MerchantSelector
@@ -475,7 +482,7 @@ export function CustomerGrowthPage({
 
       <footer className="flex flex-col gap-1 pb-4 text-xs font-medium text-muted-foreground sm:flex-row sm:justify-between">
         <span>
-          دوره: {payload.selection.period.from} تا {payload.selection.period.to}
+          دوره: {formatPersianPeriod(payload.selection.period)}
         </span>
         <span dir="ltr" className="font-mono">
           Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…

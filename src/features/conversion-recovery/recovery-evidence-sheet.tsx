@@ -17,17 +17,14 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 
+import {
+  formatPersianDate,
+  formatPersianDateTime,
+} from "@/lib/persian-date"
 import type { EvidenceRecord, EvidenceSampleRow, MetricValue } from "./types"
-
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
-})
-const dateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-gregory", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: "UTC",
 })
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
   attempt: "تلاش پرداخت",
@@ -59,11 +56,7 @@ function formatMetric(metric: MetricValue): string {
 }
 
 function formatDate(value: string): string {
-  const withTime = value.includes("T") ? value : `${value}T00:00:00`
-  const normalized = /(?:Z|[+-]\d{2}:\d{2})$/.test(withTime)
-    ? withTime
-    : `${withTime}Z`
-  return dateFormatter.format(new Date(normalized))
+  return formatPersianDate(value)
 }
 
 function formatFilterValue(value: string | number | boolean): string {
@@ -132,7 +125,7 @@ function SampleCard({ row, index }: { row: EvidenceSampleRow; index: number }) {
         <KeyValue label="Session">
           <span dir="ltr">{row.sessionKey}</span>
         </KeyValue>
-        <KeyValue label="زمان">{formatDate(row.createdAt)}</KeyValue>
+        <KeyValue label="زمان">{formatPersianDateTime(row.createdAt)}</KeyValue>
         <KeyValue label="مبلغ">
           {numberFormatter.format(row.amountRial)} ریال
         </KeyValue>

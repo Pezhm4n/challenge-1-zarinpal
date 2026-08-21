@@ -14,19 +14,16 @@ import {
 import type { ArtifactError, EvidenceRecord, EvidenceSampleRow } from "@/contracts"
 import { formatMetricValue, metricKindLabels } from "@/entities/insight/metric-value"
 import {
+  formatPersianDateTime,
+  formatPersianPeriod,
+} from "@/lib/persian-date"
+import {
   hasSufficientEvidenceSample,
   inspectEvidenceOperands,
 } from "./model"
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
-})
-
-const dateFormatter = new Intl.DateTimeFormat("fa-IR-u-ca-gregory", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-  timeZone: "UTC",
 })
 
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
@@ -37,12 +34,8 @@ const grainLabels: Record<EvidenceRecord["grain"], string> = {
   "peer-group": "گروه همتا",
 }
 
-function formatDate(date: string): string {
-  return dateFormatter.format(new Date(`${date}T00:00:00Z`))
-}
-
 function formatPeriod(period: EvidenceRecord["period"]): string {
-  return `${formatDate(period.from)} تا ${formatDate(period.to)}`
+  return formatPersianPeriod(period)
 }
 
 function formatFilterValue(value: string | number | boolean): string {
@@ -96,14 +89,8 @@ function SampleValue({ value }: { value: string | number | null | undefined }) {
   return <>{typeof value === "number" ? numberFormatter.format(value) : value}</>
 }
 
-const persianDigits = "۰۱۲۳۴۵۶۷۸۹"
-
-function localizeDigits(value: string): string {
-  return value.replace(/\d/g, (digit) => persianDigits[Number(digit)])
-}
-
 function formatSampleTimestamp(value: string): string {
-  return localizeDigits(value.replace("T", "، ").replace(/Z$/, ""))
+  return formatPersianDateTime(value)
 }
 
 const sampleFields: Array<{
@@ -114,7 +101,7 @@ const sampleFields: Array<{
   {
     key: "sessionKey",
     label: "شناسه پرداخت",
-    format: (row) => localizeDigits(row.sessionKey),
+    format: (row) => row.sessionKey,
   },
   { key: "trySeq", label: "شماره تلاش" },
   {

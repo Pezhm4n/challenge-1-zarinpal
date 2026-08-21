@@ -32,6 +32,10 @@ import { cn } from "@/lib/utils"
 
 import { RecoveryEvidenceSheet } from "./recovery-evidence-sheet"
 import { RecoveryMerchantSelector } from "./recovery-merchant-selector"
+import {
+  formatPersianDate,
+  formatPersianPeriod,
+} from "@/lib/persian-date"
 import type {
   ConversionRecoveryArtifact,
   ConversionRecoveryPayload,
@@ -45,12 +49,6 @@ const faInteger = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 })
 const faPercent = new Intl.NumberFormat("fa-IR", {
   minimumFractionDigits: 1,
   maximumFractionDigits: 2,
-})
-const faDate = new Intl.DateTimeFormat("fa-IR-u-ca-gregory", {
-  year: "numeric",
-  month: "short",
-  day: "numeric",
-  timeZone: "UTC",
 })
 const stageLabels: Record<FunnelStage["stage"], string> = {
   session: "درخواست پرداخت",
@@ -94,7 +92,7 @@ function formatCompactRial(value: number): string {
 }
 
 function formatPeriod(value: string): string {
-  return faDate.format(new Date(`${value}T00:00:00Z`))
+  return formatPersianDate(value)
 }
 
 function EvidenceButton({
@@ -352,7 +350,7 @@ export function ConversionRecoveryPage({
             افت فروش را از درخواست پرداخت تا Verified دنبال کنید؛ هر عدد مدرک، فرمول و Session نمونه دارد.
           </p>
           <p className="mt-3 text-xs font-medium text-muted-foreground">
-            دوره {formatPeriod(payload.selection.period.from)} تا {formatPeriod(payload.selection.period.to)}؛ مقایسه با {payload.selection.comparison ? `${formatPeriod(payload.selection.comparison.from)} تا ${formatPeriod(payload.selection.comparison.to)}` : "بدون دوره مبنا"}
+            دوره {formatPersianPeriod(payload.selection.period)}؛ مقایسه با {payload.selection.comparison ? formatPersianPeriod(payload.selection.comparison) : "بدون دوره مبنا"}
           </p>
         </div>
         <RecoveryMerchantSelector

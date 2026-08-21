@@ -12,20 +12,15 @@ import {
   type EvidenceResolution,
 } from "@/entities/evidence/model";
 
+import { formatPersianDate } from "@/lib/persian-date";
 import { FairComparisonNote } from "./components/fair-comparison-note";
 import { GrowthDecomposition } from "./components/growth-decomposition";
 import { PeerPosition } from "./components/peer-position";
 import { TimeWindowOpportunities } from "./components/time-window-opportunities";
 import type { EvidenceReference, PeerOpportunitiesPayload } from "./types";
 
-const dateFormatter = new Intl.DateTimeFormat("fa-IR", {
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-});
-
 function formatDate(value: string) {
-  return dateFormatter.format(new Date(`${value}T00:00:00Z`));
+  return formatPersianDate(value);
 }
 
 const confidenceLabels = {

@@ -7,7 +7,10 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table"
-
+import {
+  formatPersianDateTime,
+  formatPersianPeriod,
+} from "@/lib/persian-date"
 import type { EvidenceRecord } from "./types"
 
 const faNumber = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 2 })
@@ -81,8 +84,8 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
           </div>
           <div>
             <dt className="text-xs text-muted-foreground">بازه محاسبه</dt>
-            <dd className="mt-1 font-medium" dir="ltr">
-              {evidence.period.from.slice(0, 10)} – {evidence.period.to.slice(0, 10)}
+            <dd className="mt-1 font-medium">
+              {formatPersianPeriod(evidence.period)}
             </dd>
           </div>
           <div className="sm:col-span-2">
@@ -154,7 +157,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                       <TableCell dir="ltr">{row.sessionKey}</TableCell>
                       <TableCell>{row.payerCardMasked ?? "—"}</TableCell>
                       <TableCell>{faInteger.format(row.amountRial)}</TableCell>
-                      <TableCell dir="ltr">{row.createdAt.slice(0, 10)}</TableCell>
+                      <TableCell>{formatPersianDateTime(row.createdAt)}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
@@ -177,7 +180,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-3">
                     <dt className="text-muted-foreground">زمان</dt>
-                    <dd dir="ltr">{row.createdAt.slice(0, 10)}</dd>
+                    <dd>{formatPersianDateTime(row.createdAt)}</dd>
                   </div>
                 </dl>
               ))}

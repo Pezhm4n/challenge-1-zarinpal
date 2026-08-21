@@ -34,6 +34,7 @@ import { formatMetricValue } from "@/entities/insight/metric-value"
 import { MerchantSelector } from "@/entities/merchant/merchant-selector"
 import { cn } from "@/lib/utils"
 
+import { formatActionCenterPeriodLabel } from "@/lib/persian-date"
 import {
   ActionCenterEmptyState,
   ActionCenterErrorState,
@@ -135,10 +136,11 @@ function ResolvedActionCenter({
       description: merchant.categoryTitleFa,
     }
   })
-  const availablePeriods = artifact.merchants[merchantKey]?.merchant.availablePeriods ?? []
+  const merchantData = artifact.merchants[merchantKey]?.merchant
+  const availablePeriods = merchantData?.availablePeriods ?? []
   const periodOptions = availablePeriods.map((period) => ({
     value: periodKey(period),
-    label: period.labelFa,
+    label: formatActionCenterPeriodLabel(period, merchantData?.dataCoverage),
   }))
   const selectedPeriod =
     availablePeriods.find((period) => periodKey(period) === selectedPeriodKey) ??
