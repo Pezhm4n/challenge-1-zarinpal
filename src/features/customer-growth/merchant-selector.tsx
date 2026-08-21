@@ -35,7 +35,7 @@ export function MerchantSelector({
         className="text-xs font-medium text-muted-foreground"
         id="merchant-selector-label"
       >
-        پذیرنده نمایشی
+        فروشگاه
       </label>
       <Select
         items={merchantOptions}
@@ -58,7 +58,7 @@ export function MerchantSelector({
         </SelectTrigger>
         <SelectContent align="start">
           <SelectGroup>
-            <SelectLabel>پذیرنده‌ها</SelectLabel>
+            <SelectLabel>فروشگاه‌ها</SelectLabel>
             {merchantOptions.map((option) => (
               <SelectItem
                 className="min-h-11"

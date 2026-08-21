@@ -5,7 +5,7 @@ export default function CustomersLoading() {
   return (
     <div
       aria-busy="true"
-      aria-label="در حال بارگذاری تحلیل مشتری"
+      aria-label="در حال بارگذاری گزارش مشتریان"
       className="grid gap-8 lg:gap-10"
     >
       <div className="grid gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">

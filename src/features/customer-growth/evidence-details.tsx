@@ -18,11 +18,11 @@ const faNumber = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 2 })
 const faInteger = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 })
 
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
-  attempt: "سطح تحلیل: تلاش‌های پرداخت",
-  session: "سطح تحلیل: سفارش‌های مستقل",
-  "merchant-period": "سطح تحلیل: کل دوره فروشگاه",
-  "merchant-card": "سطح تحلیل: خریداران دارای کارت بانکی",
-  "peer-group": "سطح تحلیل: گروه هم‌صنفان و بازار",
+  attempt: "محاسبه روی تلاش‌های پرداخت",
+  session: "محاسبه روی سفارش‌های مستقل",
+  "merchant-period": "محاسبه روی کل دوره فروشگاه",
+  "merchant-card": "محاسبه روی خریداران دارای کارت بانکی",
+  "peer-group": "محاسبه روی فروشگاه‌های هم‌صنف",
 }
 
 const columnLabels: Record<string, string> = {
@@ -186,7 +186,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
 
         {evidence.sampleRows.length > 0 ? (
           <div>
-            <p className="mb-2 font-medium">نمونه سفارش‌های مرتبط با صورت کسر</p>
+            <p className="mb-2 font-medium">نمونه سفارش‌های بررسی‌شده</p>
             <div className="hidden md:block">
               <Table>
                 <TableHeader>

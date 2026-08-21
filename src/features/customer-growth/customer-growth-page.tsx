@@ -102,10 +102,10 @@ function CohortSection({
       <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
         <CardHeader>
           <CardTitle className="text-lg font-bold">
-            <h2>Retention ماهانه Cohort</h2>
+            <h2>ماندگاری و بازگشت ماهانه مشتریان</h2>
           </CardTitle>
           <CardDescription>
-            فقط Cohortهای دارای حداقل نمونه معتبر نمایش داده می‌شوند.
+            فقط گروه‌های دارای حداقل نمونه معتبر نمایش داده می‌شوند.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -113,7 +113,7 @@ function CohortSection({
             <AlertCircleIcon />
             <AlertTitle>داده کافی نیست</AlertTitle>
             <AlertDescription>
-              برای این پذیرنده Cohort ماهانه قابل اتکایی در بازه موجود نیست.
+              برای این فروشگاه هنوز گروه‌بندی ماهانه قابل محاسبه‌ای وجود ندارد.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -140,7 +140,7 @@ function CohortSection({
           <HelpTooltip term="Cohort" />
         </CardTitle>
         <CardDescription className="text-xs leading-relaxed">
-          هر ردیف Cardهایی است که اولین خرید موفقشان در همان ماه ثبت شده است؛ ۰٪ یعنی ماه سپری شده اما بازگشتی ثبت نشده و — یعنی ماه هنوز نرسیده است.
+          هر ردیف، گروهی از خریدارانی است که اولین خرید موفقشان در همان ماه ثبت شده است؛ ۰٪ یعنی ماه سپری شده اما بازگشتی ثبت نشده و — یعنی ماه هنوز نرسیده است.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -266,12 +266,12 @@ export function CustomerGrowthPage({
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <ShieldCheckIcon aria-hidden="true" className="size-3.5" />
-              کارت‌های ناشناس مشتری (Card)
+              کارت‌های ناشناس مشتری
               <HelpTooltip term="Card" icon="info" />
             </Badge>
           </div>
           <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            رشد و وفاداری مشتریان برای <span className="text-primary">{payload.selection.merchantKey}</span>
+            رشد و وفاداری مشتریان برای <span className="text-primary">فروشگاه شما</span>
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             تحلیل رفتار خرید و تکرار مراجعه مشتریان بر اساس کارت‌های بانکی ناشناس؛ کاملاً امن و بدون افشای هویت خریداران.
@@ -494,8 +494,9 @@ export function CustomerGrowthPage({
         <span>
           دوره: {formatPersianPeriod(payload.selection.period)}
         </span>
-        <span dir="ltr" className="font-mono">
-          Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…
+        <span className="flex items-center gap-1.5">
+          نسخه داده:
+          <span dir="ltr" className="font-mono">{artifact.dataset.fingerprint.slice(0, 12)}…</span>
         </span>
       </footer>
     </div>
