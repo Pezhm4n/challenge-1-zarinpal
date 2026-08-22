@@ -6,7 +6,7 @@ import { PeerOpportunitiesPage } from "@/features/peer-opportunities/peer-opport
 
 export const metadata: Metadata = {
   title: "فرصت‌های رشد | نبض زرین",
-  description: "تفکیک عوامل رشد، مقایسه هم‌صنف و فرصت‌های زمانی پذیرنده",
+  description: "تفکیک عوامل رشد، مقایسه هم‌صنف و فرصت‌های زمانی فروشگاه",
 };
 
 export default async function OpportunitiesRoute() {

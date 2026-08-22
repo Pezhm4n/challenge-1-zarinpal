@@ -95,7 +95,9 @@ export function PeerOpportunitiesPage({
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
+      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -104,11 +106,14 @@ export function PeerOpportunitiesPage({
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <Database aria-hidden="true" className="size-3.5" />
-              کل داده‌های معتبر چالش
+              بر پایه کل داده‌های ثبت‌شده
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            فرصت‌های رشد و مقایسه با بازار برای <span className="text-primary"><bdi dir="ltr">{payload.selection.merchantKey}</bdi></span>
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
+            <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
+              فرصت‌های رشد
+            </span>{" "}
+            و مقایسه با بازار برای فروشگاه شما
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             کشف راه‌های افزایش فروش، سنجش رتبه در میان هم‌صنفان و شناسایی ساعات طلایی خرید مشتریان.
@@ -139,7 +144,7 @@ export function PeerOpportunitiesPage({
             <span className="text-xs font-medium text-muted-foreground">اولویت {primaryInsight.priority}</span>
           </div>
           <div className="grid gap-2">
-            <h2 className="text-xl font-bold tracking-tight text-foreground sm:text-2xl">{localizePersianText(primaryInsight.titleFa)}</h2>
+            <h2 className="text-lg font-bold tracking-tight text-foreground sm:text-2xl">{localizePersianText(primaryInsight.titleFa)}</h2>
             <p className="max-w-4xl text-sm leading-relaxed text-foreground/85 sm:text-base">
               {localizePersianText(primaryInsight.findingFa)}
             </p>
@@ -163,7 +168,7 @@ export function PeerOpportunitiesPage({
               onClick={() => handleEvidenceRequest(primaryInsight.evidenceId)}
             >
               <Calculator aria-hidden="true" data-icon="inline-start" />
-              <span>مشاهده {primaryEvidenceLabel}</span>
+              <span>چطور محاسبه شد؟</span>
             </Button>
           </div>
         </section>

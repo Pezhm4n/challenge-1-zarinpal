@@ -5,6 +5,7 @@ import {
   CircleHelp,
   Database,
 } from "lucide-react"
+import { useRef } from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -22,16 +23,18 @@ import {
   localizePersianText,
 } from "@/lib/persian-date"
 import type { EvidenceRecord, EvidenceSampleRow, MetricValue } from "./types"
+import { useSheetScrollTop } from "@/entities/evidence/use-sheet-scroll-top"
+import { describeEvidenceFilter } from "@/entities/evidence/filter-text"
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 2,
 })
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
-  attempt: "سطح تحلیل: تلاش‌های پرداخت",
-  session: "سطح تحلیل: هر سفارش مستقل",
-  "merchant-period": "سطح تحلیل: کل دوره فروشگاه",
-  "merchant-card": "سطح تحلیل: خریداران دارای کارت بانکی",
-  "peer-group": "سطح تحلیل: گروه هم‌صنفان و بازار",
+  attempt: "محاسبه روی تلاش‌های پرداخت",
+  session: "محاسبه روی هر سفارش مستقل",
+  "merchant-period": "محاسبه روی کل دوره فروشگاه",
+  "merchant-card": "محاسبه روی خریداران دارای کارت بانکی",
+  "peer-group": "محاسبه روی فروشگاه‌های هم‌صنف",
 }
 const unitLabels: Record<MetricValue["unit"], string> = {
   rial: "ریال",
@@ -57,12 +60,6 @@ function formatMetric(metric: MetricValue): string {
 
 function formatDate(value: string): string {
   return formatPersianDate(value)
-}
-
-function formatFilterValue(value: string | number | boolean): string {
-  if (typeof value === "boolean") return value ? "بله" : "خیر"
-  if (typeof value === "number") return numberFormatter.format(value)
-  return value
 }
 
 function EvidenceSection({
@@ -99,20 +96,21 @@ function hasPersianChars(text: string): boolean {
   return /[\u0600-\u06FF]/.test(text)
 }
 
-const statusTranslations: Record<string, { fa: string; en: string }> = {
-  NoAttempt: { fa: "انصراف بدون تلاش", en: "NoAttempt" },
-  Verified: { fa: "پرداخت موفق", en: "Verified" },
-  Failed: { fa: "ناموفق", en: "Failed" },
-  Initiated: { fa: "شروع‌شده", en: "Initiated" },
-  Paid: { fa: "پرداخت در بانک", en: "Paid" },
-  Reversed: { fa: "برگشت‌خورده", en: "Reversed" },
-  Expired: { fa: "منقضی‌شده", en: "Expired" },
+const statusTranslations: Record<string, string> = {
+  NoAttempt: "انصراف قبل از درگاه",
+  Verified: "پرداخت موفق",
+  Failed: "ناموفق",
+  Initiated: "شروع‌شده",
+  InBank: "در جریان پرداخت در بانک",
+  Paid: "پرداخت در بانک",
+  Reversed: "برگشت‌خورده",
+  Expired: "منقضی‌شده",
 }
 
 function formatStatus(status: string | null | undefined): string {
   if (!status) return "کاربرد ندارد"
-  const tr = statusTranslations[status]
-  return tr ? `${tr.fa} (${tr.en})` : localizePersianText(status)
+  const label = statusTranslations[status]
+  return label ?? localizePersianText(status)
 }
 
 function EvidenceList({ items, empty }: { items: string[]; empty: string }) {
@@ -203,11 +201,18 @@ const columnLabels: Record<string, string> = {
   created_at: "زمان ثبت",
   eventual_verified: "وضعیت پرداخت نهایی",
   try_seq: "شماره تلاش",
+  "max(try_seq)": "شماره آخرین تلاش",
+  first_try_status: "وضعیت اولین تلاش",
+  amount_band: "بازه مبلغی",
   try_status: "وضعیت تلاش",
   session_status: "وضعیت سفارش",
   payer_card_key: "شناسه کارت خریدار",
-  psp_code: "کد درگاه (PSP)",
+  psp_code: "درگاه",
   evidence_scope: "محدوده تحلیل",
+  sessions: "تعداد سفارش‌ها",
+  weekday: "روز هفته",
+  hour: "ساعت روز",
+  metric: "معیار مقایسه",
 }
 
 export function RecoveryEvidenceSheet({
@@ -224,10 +229,14 @@ export function RecoveryEvidenceSheet({
       notes.findIndex((candidate) => candidate.messageFa === note.messageFa) ===
       index,
   )
+  const contentRef = useSheetScrollTop(open, evidence?.id)
+  const headerRef = useRef<HTMLDivElement | null>(null)
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
+        ref={contentRef}
+        initialFocus={headerRef}
         side="left"
         className="data-[side=left]:w-full data-[side=left]:max-w-none data-[side=left]:sm:max-w-2xl gap-0 overflow-y-auto"
         aria-label="مدرک و روش محاسبه"
@@ -238,7 +247,7 @@ export function RecoveryEvidenceSheet({
             <SheetHeader className="pe-14 text-start">
               <SheetTitle>مدرک محاسبه پیدا نشد</SheetTitle>
               <SheetDescription>
-                جزئیات فنی این بخش در دسترس نیست.
+                جزئیات محاسبه این بخش در دسترس نیست.
               </SheetDescription>
             </SheetHeader>
             <div className="px-4 pb-6">
@@ -246,14 +255,18 @@ export function RecoveryEvidenceSheet({
                 <CircleAlert aria-hidden="true" />
                 <AlertTitle>گزارش ناقص است</AlertTitle>
                 <AlertDescription>
-                  جزئیات فنی داخلی نمایش داده نمی‌شود.
+                  جزئیات محاسبه نمایش داده نمی‌شود.
                 </AlertDescription>
               </Alert>
             </div>
           </>
         ) : (
           <>
-            <SheetHeader className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start sm:p-6">
+            <SheetHeader
+              ref={headerRef}
+              tabIndex={-1}
+              className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start outline-none sm:p-6"
+            >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge variant={evidence.result?.kind === "estimate" ? "default" : "secondary"}>
                   {evidence.result ? kindLabels[evidence.result.kind] : "داده ناکافی"}
@@ -271,7 +284,7 @@ export function RecoveryEvidenceSheet({
             <div className="grid gap-5 p-5 sm:p-6">
               <div className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5">
                 <p className="text-xs font-semibold text-muted-foreground">نتیجه نهایی محاسبه</p>
-                <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
+                <p className="mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                   {evidence.result ? formatMetric(evidence.result) : "قابل محاسبه نیست"}
                 </p>
               </div>
@@ -290,8 +303,8 @@ export function RecoveryEvidenceSheet({
                     )}
                     <AlertTitle>
                       {note.severity === "warning"
-                        ? "محدودیت داده"
-                        : "یادداشت تحلیلی"}
+                        ? "نکته مهم درباره داده‌ها"
+                        : "نکته تکمیلی"}
                     </AlertTitle>
                     <AlertDescription className="text-sm leading-relaxed">
                       <p>{localizePersianText(note.messageFa)}</p>
@@ -311,11 +324,6 @@ export function RecoveryEvidenceSheet({
                       ? `${formatDate(evidence.comparisonPeriod.from)} تا ${formatDate(evidence.comparisonPeriod.to)}`
                       : "مستقل از دوره مقایسه"}
                   </KeyValue>
-                  <KeyValue label="شناسه فنی فرمول">
-                    <code dir="ltr" className="inline-block rounded-full bg-muted px-2.5 py-0.5 text-xs font-mono text-muted-foreground">
-                      {evidence.formulaId}
-                    </code>
-                  </KeyValue>
                 </dl>
               </EvidenceSection>
 
@@ -323,7 +331,7 @@ export function RecoveryEvidenceSheet({
                 {evidence.numerator && evidence.denominator ? (
                   <div className="grid gap-3 sm:grid-cols-2">
                     <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (تعداد / مقدار جزء)</p>
+                      <p className="text-xs font-semibold text-muted-foreground">صورت کسر (مقداری که اندازه می‌گیریم)</p>
                       <p className="mt-1 text-sm font-bold text-foreground">
                         {localizePersianText(evidence.numerator.labelFa)}
                       </p>
@@ -332,7 +340,7 @@ export function RecoveryEvidenceSheet({
                       </p>
                     </div>
                     <div className="rounded-2xl border border-border/60 bg-card p-4">
-                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل جامعه آماری)</p>
+                      <p className="text-xs font-semibold text-muted-foreground">مخرج کسر (کل موارد بررسی‌شده)</p>
                       <p className="mt-1 text-sm font-bold text-foreground">
                         {localizePersianText(evidence.denominator.labelFa)}
                       </p>
@@ -348,7 +356,7 @@ export function RecoveryEvidenceSheet({
                 )}
 
                 <div className="rounded-2xl border border-border/60 bg-card p-4">
-                  <p className="text-xs font-semibold text-muted-foreground">خط مبنای مقایسه</p>
+                  <p className="text-xs font-semibold text-muted-foreground">مبنای مقایسه</p>
                   {evidence.baseline ? (
                     <p className="mt-1 text-sm font-medium text-foreground leading-relaxed">
                       {formatBaselineLabel(evidence.baseline.type)}:{" "}
@@ -374,7 +382,7 @@ export function RecoveryEvidenceSheet({
               </EvidenceSection>
 
               <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
-                <summary className="flex min-h-12 cursor-pointer list-none items-center justify-between gap-3 p-4 font-semibold text-foreground hover:bg-muted/40 marker:content-none [&::-webkit-details-marker]:hidden">
+                <summary className="flex min-h-12 cursor-pointer list-none flex-col items-center justify-center gap-2 p-4 text-center font-semibold text-foreground hover:bg-muted/40 marker:content-none sm:flex-row sm:justify-between sm:text-start [&::-webkit-details-marker]:hidden">
                   <span className="text-sm font-bold">مشاهده فیلترها، ستون‌های داده و نمونه پرداخت‌ها</span>
                   <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
                     بررسی بیشتر
@@ -388,12 +396,12 @@ export function RecoveryEvidenceSheet({
                   <EvidenceSection title="شرایط و فرض‌های تحلیل">
                     <div className="grid gap-4 sm:grid-cols-2">
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                        <p className="text-xs font-bold text-foreground">شرایط کنترل‌شده</p>
-                        <EvidenceList items={evidence.controls} empty="شرط کنترلی خاصی ثبت نشده است." />
+                          <p className="text-xs font-bold text-foreground">شرایط ثابت مقایسه</p>
+                          <EvidenceList items={evidence.controls} empty="شرطی ثبت نشده است." />
                       </div>
                       <div className="grid content-start gap-2 rounded-xl bg-card border border-border/50 p-3.5">
-                        <p className="text-xs font-bold text-foreground">فرض‌های آماری</p>
-                        <EvidenceList items={evidence.assumptions} empty="فرض اضافه‌ای ثبت نشده است." />
+                          <p className="text-xs font-bold text-foreground">فرض‌های محاسبه</p>
+                          <EvidenceList items={evidence.assumptions} empty="فرض خاصی ثبت نشده است." />
                       </div>
                     </div>
                   </EvidenceSection>
@@ -424,7 +432,11 @@ export function RecoveryEvidenceSheet({
                               فیلتر {numberFormatter.format(index + 1)} ({columnLabels[filter.field] ?? filter.field})
                             </span>
                             <span className="rounded-md bg-muted px-2.5 py-1 text-xs font-medium text-foreground">
-                              {columnLabels[filter.field] ?? filter.field} {filter.operator === "=" ? "برابر با" : filter.operator === ">=" ? "بزرگتر یا مساوی با" : filter.operator} {localizePersianText(formatFilterValue(filter.value))}
+                              {describeEvidenceFilter(
+                                columnLabels[filter.field] ?? filter.field,
+                                filter.operator,
+                                filter.value,
+                              )}
                             </span>
                           </div>
                         ))}
@@ -440,7 +452,7 @@ export function RecoveryEvidenceSheet({
                         <CircleAlert aria-hidden="true" />
                         <AlertTitle>نمونه داده</AlertTitle>
                         <AlertDescription>
-                          برای این شاخص آماری، ردیف‌های نمونه جداگانه ذخیره نشده است و عدد بر اساس کل سفارش‌های دوره به دست آمده است.
+                          برای این عدد نمونه جداگانه‌ای ذخیره نشده؛ عدد از مجموع همه سفارش‌های این دوره محاسبه شده است.
                         </AlertDescription>
                       </Alert>
                     ) : (
@@ -453,7 +465,7 @@ export function RecoveryEvidenceSheet({
                   </EvidenceSection>
 
                   <p className="break-all border-t border-border/50 pt-4 text-xs font-medium text-muted-foreground">
-                    شناسه نسخه داده (Fingerprint): <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
+                    شناسه نسخه داده: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
                   </p>
                 </div>
               </details>

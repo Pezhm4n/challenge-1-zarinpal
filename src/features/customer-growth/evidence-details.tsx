@@ -7,22 +7,41 @@ import {
   TableHeader,
   TableRow,
 } from "./ui/table"
+import { CalendarDays, Play, Scale } from "lucide-react"
 import {
   formatPersianDateTime,
   formatPersianPeriod,
   localizePersianText,
 } from "@/lib/persian-date"
-import type { EvidenceRecord } from "./types"
+import { BaselineComparison } from "@/entities/evidence/baseline-comparison"
+import { CalculationEquation, inferCalculationMode } from "@/entities/evidence/calculation-equation"
+import { describeEvidenceFilter } from "@/entities/evidence/filter-text"
+import type { EvidenceRecord, MetricValue } from "./types"
 
 const faNumber = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 2 })
 const faInteger = new Intl.NumberFormat("fa-IR", { maximumFractionDigits: 0 })
 
+const unitSuffixes: Record<MetricValue["unit"], string> = {
+  rial: "ریال",
+  percent: "٪",
+  count: "",
+  "percentage-point": "واحد درصد",
+  seconds: "ثانیه",
+}
+
+function formatResultDisplay(result: MetricValue): string {
+  if (result.value === null || !Number.isFinite(result.value)) return ""
+  const formatted = faNumber.format(result.value)
+  const suffix = unitSuffixes[result.unit]
+  return suffix ? `${formatted} ${suffix}` : formatted
+}
+
 const grainLabels: Record<EvidenceRecord["grain"], string> = {
-  attempt: "سطح تحلیل: تلاش‌های پرداخت",
-  session: "سطح تحلیل: سفارش‌های مستقل",
-  "merchant-period": "سطح تحلیل: کل دوره فروشگاه",
-  "merchant-card": "سطح تحلیل: خریداران دارای کارت بانکی",
-  "peer-group": "سطح تحلیل: گروه هم‌صنفان و بازار",
+  attempt: "محاسبه روی تلاش‌های پرداخت",
+  session: "محاسبه روی سفارش‌های مستقل",
+  "merchant-period": "محاسبه روی کل دوره فروشگاه",
+  "merchant-card": "محاسبه روی خریداران دارای کارت بانکی",
+  "peer-group": "محاسبه روی فروشگاه‌های هم‌صنف",
 }
 
 const columnLabels: Record<string, string> = {
@@ -34,11 +53,18 @@ const columnLabels: Record<string, string> = {
   created_at: "زمان ثبت",
   eventual_verified: "وضعیت پرداخت نهایی",
   try_seq: "شماره تلاش",
+  "max(try_seq)": "شماره آخرین تلاش",
+  first_try_status: "وضعیت اولین تلاش",
+  amount_band: "بازه مبلغی",
   try_status: "وضعیت تلاش",
   session_status: "وضعیت سفارش",
   payer_card_key: "شناسه کارت خریدار",
   psp_code: "کد درگاه (PSP)",
   evidence_scope: "محدوده تحلیل",
+  sessions: "تعداد سفارش‌ها",
+  weekday: "روز هفته",
+  hour: "ساعت روز",
+  metric: "معیار مقایسه",
 }
 
 type EvidenceDetailsProps = {
@@ -50,15 +76,34 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
     return null
   }
 
+  const numerator = evidence.numerator
+  const denominator = evidence.denominator
+  const result = evidence.result
+  const resultDisplay =
+    result && result.value !== null && Number.isFinite(result.value)
+      ? formatResultDisplay(result)
+      : ""
+  const canShowEquation = Boolean(
+    numerator && denominator && result && resultDisplay,
+  )
+  const resultValue =
+    result && result.value !== null ? result.value : null
+
   return (
     <details className="group rounded-2xl border border-border/60 bg-muted/20 p-4 transition-all">
       <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between font-semibold text-foreground hover:text-primary outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 marker:content-none [&::-webkit-details-marker]:hidden">
         <span className="text-xs font-bold">چطور محاسبه شد؟</span>
-        <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
-          نمایش جزئیات
-        </span>
-        <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
-          بستن جزئیات
+        <span className="flex items-center gap-2">
+          <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
+            نمایش جزئیات
+          </span>
+          <span className="hidden rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:inline">
+            بستن جزئیات
+          </span>
+          <Play
+            aria-hidden="true"
+            className="size-3 rotate-90 fill-current text-muted-foreground transition-transform duration-200 group-open:rotate-180"
+          />
         </span>
       </summary>
       <div className="mt-4 flex flex-col gap-4 text-sm">
@@ -67,68 +112,47 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
           <p className="text-muted-foreground">{localizePersianText(evidence.explanationFa)}</p>
         </div>
 
-        <dl className="grid gap-3 sm:grid-cols-2">
-          <div className="rounded-lg bg-background p-3">
-            <dt className="text-xs text-muted-foreground">
-              {localizePersianText(evidence.numerator?.labelFa) || "صورت"}
-            </dt>
-            <dd className="mt-1 font-medium">
-              {faNumber.format(evidence.numerator?.value ?? 0)}
-            </dd>
-          </div>
-          <div className="rounded-lg bg-background p-3">
-            <dt className="text-xs text-muted-foreground">
-              {localizePersianText(evidence.denominator?.labelFa) || "مخرج"}
-            </dt>
-            <dd className="mt-1 font-medium">
-              {faNumber.format(evidence.denominator?.value ?? 0)}
-            </dd>
-          </div>
-        </dl>
+        {canShowEquation && numerator && denominator && result ? (
+          <CalculationEquation
+            mode={inferCalculationMode(numerator.value, denominator.value, result.value ?? Number.NaN)}
+            numeratorLabel={localizePersianText(numerator.labelFa)}
+            numeratorValue={faNumber.format(numerator.value)}
+            denominatorLabel={localizePersianText(denominator.labelFa)}
+            denominatorValue={faNumber.format(denominator.value)}
+            resultDisplay={resultDisplay}
+          />
+        ) : null}
 
-        <div>
-          <p className="text-xs text-muted-foreground">فرمول</p>
-          <p className="mt-1 font-medium">{localizePersianText(evidence.formulaFa)}</p>
-          <p className="mt-1 text-xs text-muted-foreground" dir="ltr">
-            {evidence.formulaId}
+        {!canShowEquation ? (
+          <p className="rounded-xl bg-background p-3 text-sm leading-relaxed text-muted-foreground">
+            {localizePersianText(evidence.formulaFa)}
           </p>
+        ) : null}
+
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+            <CalendarDays aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+            بازه تحلیل: {formatPersianPeriod(evidence.period)}
+          </span>
+          {evidence.comparisonPeriod ? (
+            <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full border border-border/60 bg-background px-3 py-1.5 font-medium text-foreground">
+              <Scale aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground" />
+              مقایسه با دوره قبل: {formatPersianPeriod(evidence.comparisonPeriod)}
+            </span>
+          ) : null}
+          <span className="inline-flex min-h-8 items-center rounded-full border border-border/60 bg-muted/40 px-3 py-1.5 font-medium text-muted-foreground">
+            {grainLabels[evidence.grain]}
+          </span>
         </div>
 
-        <dl className="grid gap-3 sm:grid-cols-2">
-          <div>
-            <dt className="text-xs text-muted-foreground">سطح محاسبه</dt>
-            <dd className="mt-1 font-medium">{grainLabels[evidence.grain]}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted-foreground">بازه محاسبه</dt>
-            <dd className="mt-1 font-medium">
-              {formatPersianPeriod(evidence.period)}
-            </dd>
-          </div>
-          <div className="sm:col-span-2">
-            <dt className="text-xs text-muted-foreground">ستون‌های منبع</dt>
-            <dd className="mt-1 flex flex-wrap gap-2" dir="rtl">
-              {evidence.sourceColumns.map((column) => (
-                <span className="rounded-full bg-background px-2.5 py-0.5 text-xs font-medium text-foreground" key={column}>
-                  {columnLabels[column] ?? column}
-                </span>
-              ))}
-            </dd>
-          </div>
-          {evidence.filters.length > 0 ? (
-            <div className="sm:col-span-2">
-              <dt className="text-xs text-muted-foreground">فیلترهای اعمال‌شده</dt>
-              <dd className="mt-1 flex flex-col gap-1">
-                {evidence.filters.map((filter, index) => (
-                  <div className="flex flex-wrap items-center justify-between text-xs rounded bg-background p-2" key={`${filter.field}-${index}`}>
-                    <span className="text-muted-foreground">{columnLabels[filter.field] ?? filter.field}</span>
-                    <span className="font-medium text-foreground">{columnLabels[filter.field] ?? filter.field} {filter.operator === "=" ? "برابر با" : filter.operator} {localizePersianText(String(filter.value))}</span>
-                  </div>
-                ))}
-              </dd>
-            </div>
-          ) : null}
-        </dl>
+        {evidence.baseline ? (
+          <BaselineComparison
+            baseline={evidence.baseline}
+            currentValue={resultValue}
+            currentDisplay={resultDisplay || undefined}
+            isRate={result?.unit === "percent"}
+          />
+        ) : null}
 
         {evidence.dataQuality.map((note) => (
           <Alert key={note.code}>
@@ -186,7 +210,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
 
         {evidence.sampleRows.length > 0 ? (
           <div>
-            <p className="mb-2 font-medium">نمونه سفارش‌های مرتبط با صورت کسر</p>
+            <p className="mb-2 font-medium">نمونه سفارش‌های بررسی‌شده</p>
             <div className="hidden md:block">
               <Table>
                 <TableHeader>
@@ -200,7 +224,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                 <TableBody>
                   {evidence.sampleRows.map((row) => (
                     <TableRow key={row.sessionKey}>
-                      <TableCell dir="ltr">{row.sessionKey}</TableCell>
+                      <TableCell>{localizePersianText(row.sessionKey)}</TableCell>
                       <TableCell>{row.payerCardMasked ?? "—"}</TableCell>
                       <TableCell>{faInteger.format(row.amountRial)}</TableCell>
                       <TableCell>{formatPersianDateTime(row.createdAt)}</TableCell>
@@ -214,7 +238,7 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
                 <dl className="rounded-lg bg-background p-3" key={row.sessionKey}>
                   <div className="flex items-center justify-between gap-3">
                     <dt className="text-muted-foreground">شناسه پرداخت</dt>
-                    <dd dir="ltr">{row.sessionKey}</dd>
+                    <dd>{localizePersianText(row.sessionKey)}</dd>
                   </div>
                   <div className="mt-2 flex items-center justify-between gap-3">
                     <dt className="text-muted-foreground">کارت خریدار</dt>
@@ -234,8 +258,43 @@ export function EvidenceDetails({ evidence }: EvidenceDetailsProps) {
           </div>
         ) : null}
 
+        <div className="grid gap-3 rounded-xl border border-border/50 bg-background/60 p-3.5">
+          <p className="text-xs font-bold text-foreground">
+            جزئیات فنی برای راستی‌آزمایی محاسبه
+          </p>
+          <div>
+            <p className="text-xs text-muted-foreground">فرمول محاسبه (فنی)</p>
+            <p className="mt-1 text-sm">{localizePersianText(evidence.formulaFa)}</p>
+          </div>
+          <div>
+            <p className="text-xs text-muted-foreground">ستون‌های منبع</p>
+            <dd className="mt-1 flex flex-wrap gap-2" dir="rtl">
+              {evidence.sourceColumns.map((column) => (
+                <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-foreground" key={column}>
+                  {columnLabels[column] ?? column}
+                </span>
+              ))}
+            </dd>
+          </div>
+          {evidence.filters.length > 0 ? (
+            <div>
+              <p className="text-xs text-muted-foreground">فیلترهای اعمال‌شده</p>
+              <dd className="mt-1 flex flex-col gap-1">
+                {evidence.filters.map((filter, index) => (
+                  <div className="flex flex-wrap items-center justify-between text-xs rounded bg-muted/50 p-2" key={`${filter.field}-${index}`}>
+                    <span className="text-muted-foreground">{columnLabels[filter.field] ?? filter.field}</span>
+                    <span className="font-medium text-foreground">
+                      {describeEvidenceFilter(columnLabels[filter.field] ?? filter.field, filter.operator, filter.value)}
+                    </span>
+                  </div>
+                ))}
+              </dd>
+            </div>
+          ) : null}
+        </div>
+
         <p className="break-all text-xs text-muted-foreground">
-          شناسه داده (Fingerprint): <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
+          شناسه نسخه داده: <span dir="ltr" className="font-mono">{evidence.datasetFingerprint}</span>
         </p>
       </div>
     </details>

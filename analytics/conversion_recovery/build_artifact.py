@@ -1000,7 +1000,7 @@ def _merchant_payload(
                     result=_metric(
                         scenario_result.estimated_volume_rial,
                         "rial",
-                        "پتانسیل برآوردی و غیرتضمینی",
+                        "پتانسیل تقریبی؛ قطعی نیست",
                         kind="estimate",
                     ),
                     baseline=baseline,
@@ -1062,15 +1062,15 @@ def _merchant_payload(
                 else "انصراف خریداران از خط مبنای دوره قبل بالاتر نیست"
             ),
             "findingFa": (
-                f"سهم انصراف خریداران از {comparison_no_attempt.value:.2f}٪ به "
-                f"{no_attempt_rate.value:.2f}٪ و نرخ پرداخت موفق از "
-                f"{comparison_conversion.value:.2f}٪ به {current_conversion.value:.2f}٪ رسیده است."
+                f"سهم سفارش‌هایی که بدون پرداخت رها شدند از {comparison_no_attempt.value:.2f}٪ به "
+                f"{no_attempt_rate.value:.2f}٪ رسید و در نتیجه آن، پرداخت‌های موفق از "
+                f"{comparison_conversion.value:.2f}٪ به {current_conversion.value:.2f}٪ تغییر کرد."
             ),
             "actionFa": "فرآیند ثبت سفارش تا ورود به درگاه را ساده‌تر کنید تا انصراف قبل از پرداخت کاهش یابد.",
             "impact": _metric(
                 scenario_result.estimated_volume_rial,
                 "rial",
-                "پتانسیل برآوردی و غیرتضمینی",
+                "پتانسیل تقریبی؛ قطعی نیست",
                 kind="estimate",
             ),
             "confidence": "medium",

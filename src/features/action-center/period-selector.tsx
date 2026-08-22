@@ -12,6 +12,7 @@ import {
 export type PeriodOption = {
   value: string
   label: string
+  triggerLabel?: string
 }
 
 
@@ -29,7 +30,7 @@ export function PeriodSelector({
   return (
     <div className="flex flex-col gap-1.5 min-w-0">
       <label id="period-selector-label" className="text-xs font-semibold text-muted-foreground">
-        دوره تحلیل
+        بازه زمانی
       </label>
       <Select
         items={options}
@@ -42,7 +43,7 @@ export function PeriodSelector({
           className="min-h-11 w-full bg-card sm:w-72"
           aria-labelledby="period-selector-label"
         >
-          <SelectValue>{selectedOption?.label}</SelectValue>
+          <SelectValue>{selectedOption?.triggerLabel ?? selectedOption?.label}</SelectValue>
         </SelectTrigger>
         <SelectContent align="start">
           {options.map((option) => (

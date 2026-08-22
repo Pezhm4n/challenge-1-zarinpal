@@ -74,6 +74,9 @@ function statusVariant(status: InsightSummary["status"]) {
 }
 
 function cohortTone(value: number) {
+  if (value === 0) {
+    return "bg-destructive/10 text-destructive font-semibold"
+  }
   if (value >= 60) {
     return "bg-primary text-primary-foreground font-bold"
   }
@@ -102,10 +105,10 @@ function CohortSection({
       <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
         <CardHeader>
           <CardTitle className="text-lg font-bold">
-            <h2>Retention ماهانه Cohort</h2>
+            <h2>ماندگاری و بازگشت ماهانه مشتریان</h2>
           </CardTitle>
           <CardDescription>
-            فقط Cohortهای دارای حداقل نمونه معتبر نمایش داده می‌شوند.
+            فقط گروه‌های دارای حداقل نمونه معتبر نمایش داده می‌شوند.
           </CardDescription>
         </CardHeader>
         <CardContent>
@@ -113,7 +116,7 @@ function CohortSection({
             <AlertCircleIcon />
             <AlertTitle>داده کافی نیست</AlertTitle>
             <AlertDescription>
-              برای این پذیرنده Cohort ماهانه قابل اتکایی در بازه موجود نیست.
+              برای این فروشگاه هنوز گروه‌بندی ماهانه قابل محاسبه‌ای وجود ندارد.
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -136,11 +139,11 @@ function CohortSection({
     <Card className="rounded-2xl border border-border/70 bg-card shadow-xs">
       <CardHeader className="gap-1.5">
         <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
-          <h2>ماندگاری و بازگشت ماهانه مشتریان (Cohort Retention)</h2>
+          <h2>ماندگاری و بازگشت ماهانه مشتریان</h2>
           <HelpTooltip term="Cohort" />
         </CardTitle>
         <CardDescription className="text-xs leading-relaxed">
-          هر ردیف Cardهایی است که اولین خرید موفقشان در همان ماه ثبت شده است؛ ۰٪ یعنی ماه سپری شده اما بازگشتی ثبت نشده و — یعنی ماه هنوز نرسیده است.
+          هر ردیف، گروهی از خریدارانی است که اولین خرید موفقشان در همان ماه ثبت شده است؛ ۰٪ یعنی ماه سپری شده اما بازگشتی ثبت نشده و — یعنی ماه هنوز نرسیده است.
         </CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
@@ -197,7 +200,12 @@ function CohortSection({
                       <dt className="text-xs text-muted-foreground">
                         {periodLabel(period)}
                       </dt>
-                      <dd className="mt-1 font-bold tabular-nums text-foreground">
+                      <dd
+                        className={cn(
+                          "mt-1 font-bold tabular-nums text-foreground",
+                          cell?.retentionPct === 0 && "text-destructive",
+                        )}
+                      >
                         {cell ? `${faPercent.format(cell.retentionPct)}٪` : "—"}
                       </dd>
                     </div>
@@ -254,24 +262,35 @@ export function CustomerGrowthPage({
     "customer.revenue_concentration.v1",
   )
   const qualityNote = returningEvidence?.dataQuality[0]
+  const hasReturningBaseline =
+    payload.returningSharePct !== null && comparisonShare != null
+  const returningImproved =
+    hasReturningBaseline && (payload.returningSharePct as number) > (comparisonShare as number)
+  const returningDropped =
+    hasReturningBaseline && (payload.returningSharePct as number) < (comparisonShare as number)
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
+      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
               <UsersRoundIcon aria-hidden="true" className="size-3.5" />
-              تحلیل مشتریان
+              مشتریان
             </Badge>
             <Badge variant="outline" className="gap-1.5 font-semibold">
               <ShieldCheckIcon aria-hidden="true" className="size-3.5" />
-              کارت‌های ناشناس مشتری (Card)
+              کارت‌های ناشناس مشتری
               <HelpTooltip term="Card" icon="info" />
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            رشد و وفاداری مشتریان برای <span className="text-primary">{payload.selection.merchantKey}</span>
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
+            <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
+              رشد و وفاداری مشتریان
+            </span>{" "}
+            برای فروشگاه شما
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             تحلیل رفتار خرید و تکرار مراجعه مشتریان بر اساس کارت‌های بانکی ناشناس؛ کاملاً امن و بدون افشای هویت خریداران.
@@ -280,10 +299,12 @@ export function CustomerGrowthPage({
             دوره: {formatPersianPeriod(payload.selection.period)}
           </p>
         </div>
-        <MerchantSelector
-          merchantKey={payload.selection.merchantKey}
-          merchantKeys={merchantKeys}
-        />
+        <div className="border-t border-border/50 pt-4">
+          <MerchantSelector
+            merchantKey={payload.selection.merchantKey}
+            merchantKeys={merchantKeys}
+          />
+        </div>
       </header>
 
       {headline ? (
@@ -338,7 +359,7 @@ export function CustomerGrowthPage({
       <section aria-labelledby="customer-mix-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">ترکیب پایگاه مشتریان</span>
-          <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl" id="customer-mix-title">
+          <h2 className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl" id="customer-mix-title">
             ترکیب خریداران شما در این دوره
           </h2>
         </div>
@@ -369,7 +390,15 @@ export function CustomerGrowthPage({
               </p>
             </CardContent>
           </Card>
-          <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card
+            size="sm"
+            className={cn(
+              "rounded-2xl border bg-card p-5 shadow-xs transition-colors",
+              returningImproved && "border-success/40",
+              returningDropped && "border-destructive/40",
+              !hasReturningBaseline && "border-border/70",
+            )}
+          >
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
                 <h3>خریداران بازگشتی</h3>
@@ -381,7 +410,13 @@ export function CustomerGrowthPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0 mt-3">
-              <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
+              <p
+                className={cn(
+                  "text-3xl font-extrabold tabular-nums tracking-tight text-foreground",
+                  returningImproved && "text-success-foreground",
+                  returningDropped && "text-destructive",
+                )}
+              >
                 {payload.returningSharePct === null
                   ? "—"
                   : `${faPercent.format(payload.returningSharePct)}٪`}
@@ -397,7 +432,7 @@ export function CustomerGrowthPage({
       <section aria-labelledby="repeat-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">وفاداری و تکرار</span>
-          <h2 className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl" id="repeat-title">
+          <h2 className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl" id="repeat-title">
             تکرار خرید و مشتریان وفادار
           </h2>
         </div>
@@ -494,8 +529,9 @@ export function CustomerGrowthPage({
         <span>
           دوره: {formatPersianPeriod(payload.selection.period)}
         </span>
-        <span dir="ltr" className="font-mono">
-          Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…
+        <span className="flex items-center gap-1.5">
+          نسخه داده:
+          <span dir="ltr" className="font-mono">{artifact.dataset.fingerprint.slice(0, 12)}…</span>
         </span>
       </footer>
     </div>

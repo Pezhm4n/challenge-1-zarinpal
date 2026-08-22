@@ -30,7 +30,7 @@ async function loadPageData(searchParams: CustomersPageProps["searchParams"]) {
     const errorMessage =
       error instanceof CustomerGrowthArtifactError
         ? error.message
-        : "تحلیل مشتری در حال حاضر قابل نمایش نیست."
+        : "گزارش مشتریان در حال حاضر قابل نمایش نیست."
 
     return { artifact: null, merchantKeys: [], payload: null, errorMessage }
   }
@@ -43,7 +43,7 @@ export default async function CustomersPage({ searchParams }: CustomersPageProps
     return (
       <div className="mx-auto flex min-h-[50vh] w-full max-w-3xl items-center p-4 sm:p-6">
         <Alert variant="destructive" className="rounded-2xl">
-          <AlertTitle>خطا در بارگذاری تحلیل مشتری</AlertTitle>
+          <AlertTitle>خطا در بارگذاری گزارش مشتریان</AlertTitle>
           <AlertDescription>{result.errorMessage}</AlertDescription>
         </Alert>
       </div>

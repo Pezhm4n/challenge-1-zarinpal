@@ -5,9 +5,9 @@ import type { DecompositionItem, Driver } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
 const driverLabels: Record<Driver, string> = {
-  traffic: "تعداد خریداران (ترافیک سفارش)",
-  conversion: "درصد پرداخت موفق (نرخ تبدیل)",
-  ticket: "میانگین مبلغ هر خرید (سبد خرید)",
+  traffic: "تعداد خریداران",
+  conversion: "درصد پرداخت موفق",
+  ticket: "میانگین مبلغ هر خرید",
 };
 
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
@@ -25,7 +25,7 @@ function formatDriverValue(item: DecompositionItem, value: number) {
 }
 
 function DriverUnit({ driver }: { driver: Driver }) {
-  return <span>{driver === "conversion" ? "٪" : driver === "ticket" ? "ریال" : "پرداخت"}</span>;
+  return <span>{driver === "conversion" ? "٪" : driver === "ticket" ? "ریال" : "خریدار"}</span>;
 }
 
 function DriverValue({ item, value }: { item: DecompositionItem; value: number }) {
@@ -128,17 +128,18 @@ export function GrowthDecomposition({
     <section aria-labelledby="decomposition-title" className="grid gap-5">
       <header className="grid gap-1">
         <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">عامل‌های اصلی رشد</span>
-        <h2 id="decomposition-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        <h2 id="decomposition-title" className="mt-1 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
           فروش شما از چه راه‌هایی تغییر کرده است؟
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          تفکیک سهم ۳ عامل کلیدی (تعداد خریداران، درصد خرید موفق، و مبلغ خرید)؛ سهم هر عامل جداگانه سنجیده شده است.
+          تفکیک سهم ۳ عامل کلیدی (تعداد خریداران، درصد خرید موفق، و مبلغ خرید)؛ تأثیر هر عامل جداگانه محاسبه شده است.
         </p>
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
         {items.map((item) => {
           const isNegative = item.contributionRial < 0;
+          const isPositive = item.contributionRial > 0;
           const evidenceId = evidenceByScope[`growth:${item.driver}`];
           const width = `${Math.max(
             8,
@@ -147,7 +148,12 @@ export function GrowthDecomposition({
           return (
             <article
               key={item.driver}
-              className="grid gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm"
+              className={cn(
+                "grid gap-4 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
+                isPositive && "border-success/35 hover:border-success/55",
+                isNegative && "border-destructive/40 hover:border-destructive/60",
+                !isPositive && !isNegative && "border-border/70 hover:border-border",
+              )}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
@@ -161,7 +167,9 @@ export function GrowthDecomposition({
                   className={
                     isNegative
                       ? "inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive"
-                      : "inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success-foreground"
+                      : isPositive
+                        ? "inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success-foreground"
+                        : "inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground"
                   }
                 >
                   <DirectionIcon value={item.contributionRial} />
@@ -171,7 +179,7 @@ export function GrowthDecomposition({
 
               <div className="grid gap-2.5 pt-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="font-semibold text-muted-foreground">اثر مستقیم بر فروش:</span>
+                  <span className="font-semibold text-muted-foreground">سهم در تغییر فروش:</span>
                   <EvidenceMetricButton
                     evidenceId={evidenceId}
                     ariaLabel={`مشاهده روش محاسبه سهم ${driverLabels[item.driver]} در فروش`}

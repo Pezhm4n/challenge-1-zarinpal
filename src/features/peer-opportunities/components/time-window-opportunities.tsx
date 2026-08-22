@@ -55,7 +55,7 @@ export function TimeWindowOpportunities({
     return (
       <section className="grid gap-2 rounded-xl border bg-card p-4" aria-live="polite">
         <Clock3 aria-hidden="true" className="size-5 text-muted-foreground" />
-        <h2 className="font-medium">نمونه کافی برای بازه زمانی وجود ندارد</h2>
+        <h2 className="font-medium">نمونه کافی برای تحلیل ساعات خرید وجود ندارد</h2>
         <p className="text-sm text-muted-foreground">
           {emptyMessage ?? "فقط بازه‌هایی با حداقل ۲۵ پرداخت یکتا نمایش داده می‌شوند."}
         </p>
@@ -71,23 +71,29 @@ export function TimeWindowOpportunities({
     <section aria-labelledby="timing-title" className="grid gap-5">
       <header className="grid gap-1">
         <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary w-fit">ساعات طلایی خرید</span>
-        <h2 id="timing-title" className="mt-1 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+        <h2 id="timing-title" className="mt-1 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
           ساعت‌ها و روزهای مناسب برای بیشترین فروش
         </h2>
         <p className="text-sm leading-relaxed text-muted-foreground">
-          پنجره‌های زمانی پرفروش که خریداران بیشترین تمایل به خرید موفق را در صنف شما داشته‌اند.
+          روز و ساعت‌هایی که احتمال پرداخت موفق مشتریان در صنف شما بالاتر است.
         </p>
       </header>
 
       <div className="grid gap-4 md:grid-cols-2">
         {ranked.map((window) => {
-          const positive = window.liftVsBaselinePct >= 0;
+          const positive = window.liftVsBaselinePct > 0;
+          const negative = window.liftVsBaselinePct < 0;
           const evidence =
             evidenceByScope[`timing:${window.weekday}:${window.hour}`];
           return (
             <article
               key={`${window.weekday}-${window.hour}`}
-              className="grid min-w-0 gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center"
+              className={cn(
+                "grid min-w-0 gap-4 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center",
+                positive && "border-success/35 hover:border-success/55",
+                negative && "border-destructive/40 hover:border-destructive/60",
+                !positive && !negative && "border-border/70 hover:border-border",
+              )}
             >
               <div className="flex min-w-0 items-start gap-3.5">
                 <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
@@ -113,20 +119,22 @@ export function TimeWindowOpportunities({
               </div>
               <div
                 className={
-                  positive
-                    ? "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
-                    : "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold text-destructive sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
+                  negative
+                    ? "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold text-destructive sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
+                    : "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
                 }
               >
                 <span className="grid gap-1">
                   <span className={cn(
                     "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold w-fit",
-                    positive ? "bg-success/10 text-success-foreground" : "bg-destructive/10 text-destructive"
+                    positive ? "bg-success/10 text-success-foreground" : negative ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground"
                   )}>
                     {positive ? (
                       <TrendingUp aria-hidden="true" className="size-3.5" />
-                    ) : (
+                    ) : negative ? (
                       <TrendingDown aria-hidden="true" className="size-3.5" />
+                    ) : (
+                      <Clock3 aria-hidden="true" className="size-3.5" />
                     )}
                     <LiftSummary value={window.liftVsBaselinePct} />
                   </span>

@@ -1,7 +1,8 @@
 import Link from "next/link"
 import { ChartNoAxesCombined } from "lucide-react"
 
-import { AppNavigation } from "./app-navigation"
+import { AppMobileTabBar, AppNavigation } from "./app-navigation"
+import { ThemeToggle } from "./theme-toggle"
 
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -27,22 +28,26 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
                 <span className="flex items-center gap-2">
                   <span className="text-base font-bold tracking-tight text-foreground">نبض زرین</span>
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
-                    تحلیل پذیرنده
+                    دستیار رشد فروش
                   </span>
                 </span>
                 <span className="block text-xs text-muted-foreground">
-                  Action Center هوشمند زرین‌پال
+                  مرکز اقدام هوشمند زرین‌پال
                 </span>
               </span>
             </Link>
+            <ThemeToggle />
           </div>
 
-          <AppNavigation />
+          <div className="hidden lg:block">
+            <AppNavigation />
+          </div>
         </div>
       </header>
-      <main id="main-content" className="mx-auto w-full max-w-7xl px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+      <main id="main-content" className="mx-auto w-full max-w-7xl overflow-x-hidden px-4 pb-28 pt-6 sm:px-6 lg:px-8 lg:pb-10 lg:pt-8">
         {children}
       </main>
+      <AppMobileTabBar />
     </div>
   )
 }

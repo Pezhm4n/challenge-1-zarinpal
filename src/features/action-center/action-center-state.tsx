@@ -37,9 +37,9 @@ export function ActionCenterEmptyState() {
         <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-2xs">
           <DatabaseZap aria-hidden="true" className="size-7" />
         </div>
-        <h3 className="text-lg font-bold text-foreground">Insight دارای مدرک موجود نیست</h3>
+        <h3 className="text-lg font-bold text-foreground">هنوز پیشنهاد قابل اطمینانی نداریم</h3>
         <p className="max-w-lg text-sm leading-relaxed text-muted-foreground">
-          برای این انتخاب هنوز اقدام قابل اتکایی تولید نشده است. پذیرنده یا بازه دیگری را انتخاب کنید.
+          با این انتخاب‌ها فعلاً پیشنهادی محاسبه نشده است. فروشگاه یا بازه زمانی دیگری را امتحان کنید.
         </p>
       </CardContent>
     </Card>
@@ -52,7 +52,7 @@ export function InsufficientDataNotice() {
       <DatabaseZap aria-hidden="true" />
       <AlertTitle>داده برای نتیجه قطعی کافی نیست</AlertTitle>
       <AlertDescription>
-        این تحلیل با برچسب داده ناکافی نمایش داده می‌شود. تصمیم نهایی را پس از کامل‌شدن پوشش بازه بگیرید.
+        اطلاعات این دوره هنوز کامل نیست و نتایج ممکن است تغییر کنند. تصمیم نهایی را بعد از کامل شدن داده‌ها بگیرید.
       </AlertDescription>
     </Alert>
   )

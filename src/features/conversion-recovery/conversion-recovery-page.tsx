@@ -7,6 +7,7 @@ import {
   Calculator,
   ChartNoAxesColumnDecreasing,
   CheckCircle2,
+  ChevronDown,
   CircleAlert,
   Database,
   FlaskConical,
@@ -97,10 +98,12 @@ function formatPeriod(value: string): string {
 
 function EvidenceButton({
   label,
+  displayLabel,
   evidenceId,
   onRequest,
 }: {
   label: string
+  displayLabel?: string
   evidenceId: string
   onRequest: (evidenceId: string) => void
 }) {
@@ -108,12 +111,12 @@ function EvidenceButton({
     <Button
       variant="ghost"
       size="sm"
-      className="min-h-9 w-full justify-start text-xs font-medium text-primary hover:bg-primary/10 hover:text-primary"
+      className="min-h-9 w-full justify-start whitespace-normal text-xs font-medium text-primary hover:bg-primary/10 hover:text-primary"
       aria-label={`مشاهده ${label}`}
       onClick={() => onRequest(evidenceId)}
     >
       <Calculator aria-hidden="true" data-icon="inline-start" />
-      {label}
+      {displayLabel ?? label}
     </Button>
   )
 }
@@ -161,7 +164,7 @@ function FunnelStageCard({
       </CardHeader>
       <CardContent className="flex flex-col gap-3.5">
         <div>
-          <p className="text-2xl font-extrabold tabular-nums tracking-tight text-foreground">
+          <p className="text-xl font-extrabold tabular-nums tracking-tight text-foreground">
             {faInteger.format(stage.count)}
           </p>
           <p className="mt-1 text-xs text-muted-foreground">
@@ -193,6 +196,92 @@ function FunnelStageCard({
   )
 }
 
+const funnelBarTones = [
+  "bg-primary/15 ring-primary/20",
+  "bg-primary/25 ring-primary/30",
+  "bg-primary/40 ring-primary/40",
+  "bg-primary/60 ring-primary/50",
+] as const
+
+function FunnelOverview({
+  stages,
+  primaryDropIndex,
+  onEvidenceRequest,
+}: {
+  stages: FunnelStage[]
+  primaryDropIndex: number
+  onEvidenceRequest: (evidenceId: string) => void
+}) {
+  const baseCount = stages[0]?.count ?? 0
+  if (!(baseCount > 0)) return null
+  return (
+    <Card size="sm" className="rounded-2xl border border-border/70 bg-card shadow-xs">
+      <CardHeader className="gap-1.5">
+        <CardTitle className="text-base font-bold text-foreground">
+          نمای کلی قیف در یک نگاه
+        </CardTitle>
+        <CardDescription className="text-xs leading-relaxed">
+          عرض هر نوار نسبت به تعداد سفارش‌های مرحله اول است؛ با انتخاب هر نوار، روش محاسبه همان مرحله باز می‌شود.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ol className="grid justify-items-center">
+          {stages.map((stage, index) => {
+            const widthPct = Math.min(100, Math.max(24, (stage.count / baseCount) * 100))
+            const isPrimaryStep = index === primaryDropIndex
+            return (
+              <li key={stage.stage} className="grid w-full justify-items-center gap-1.5">
+                {index > 0 ? (
+                  <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 py-1 text-[11px] sm:text-xs">
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={cn(
+                        "size-3.5",
+                        isPrimaryStep ? "text-destructive" : "text-muted-foreground",
+                      )}
+                    />
+                    {stage.rateFromPrevious !== null ? (
+                      <span
+                        className={cn(
+                          "font-semibold tabular-nums",
+                          isPrimaryStep ? "text-destructive" : "text-muted-foreground",
+                        )}
+                      >
+                        {faPercent.format(stage.rateFromPrevious)}٪ عبور از مرحله قبل
+                      </span>
+                    ) : null}
+                    {isPrimaryStep ? (
+                      <Badge variant="destructive" className="px-2 py-0 text-[10px] font-bold">
+                        بیشترین ریزش
+                      </Badge>
+                    ) : null}
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => onEvidenceRequest(stage.evidenceIds.count)}
+                  aria-label={`مشاهده روش محاسبه ${stageLabels[stage.stage]} با ${faInteger.format(stage.count)} سفارش`}
+                  className={cn(
+                    "block h-8 rounded-lg ring-1 transition-all duration-300 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-10",
+                    funnelBarTones[Math.min(index, funnelBarTones.length - 1)],
+                  )}
+                  style={{ inlineSize: `${widthPct}%` }}
+                />
+                <p className="text-center text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
+                  <span className="font-bold text-foreground">{stageLabels[stage.stage]}</span>
+                  {" · "}
+                  {faInteger.format(stage.count)} سفارش
+                  <span className="hidden sm:inline"> · {formatCompactRial(stage.amountRial)}</span>
+                </p>
+              </li>
+            )
+          })}
+        </ol>
+      </CardContent>
+    </Card>
+  )
+}
+
 function MetricEvidenceRow({
   label,
   value,
@@ -212,6 +301,7 @@ function MetricEvidenceRow({
       </div>
       <EvidenceButton
         label={`روش محاسبه ${label}`}
+        displayLabel="روش محاسبه"
         evidenceId={evidenceId}
         onRequest={onEvidenceRequest}
       />
@@ -227,18 +317,43 @@ function SegmentRow({
   onEvidenceRequest: (evidenceId: string) => void
 }) {
   const [, band = segment.key] = segment.key.split("|", 2)
+  const hasBaseline =
+    segment.quality === "sufficient" &&
+    segment.verifyPct !== null &&
+    segment.peerOrBaselinePct !== null
+  const belowMarket =
+    segment.quality === "sufficient" &&
+    segment.verifyPct !== null &&
+    segment.peerOrBaselinePct !== null &&
+    segment.verifyPct < segment.peerOrBaselinePct
   return (
-    <div className="grid gap-3 rounded-xl border border-border/50 bg-muted/30 p-3.5 sm:grid-cols-[1fr_auto_auto] sm:items-center hover:bg-muted/50 transition-colors">
-      <div>
-        <p className="font-semibold text-foreground">{bandLabels[band] ?? band}</p>
-        <p className="mt-0.5 text-xs text-muted-foreground">
+    <div
+      className={cn(
+        "grid gap-3 rounded-xl border bg-muted/30 p-3.5 transition-colors sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center hover:bg-muted/50 lg:grid-cols-1 lg:items-start xl:grid-cols-[minmax(0,1fr)_auto]",
+        hasBaseline && belowMarket && "border-destructive/40",
+        hasBaseline && !belowMarket && "border-success/35",
+        !hasBaseline && "border-border/50",
+      )}
+    >
+      <div className="min-w-0">
+        <p className="truncate font-semibold text-foreground" title={bandLabels[band] ?? band}>
+          {bandLabels[band] ?? band}
+        </p>
+        <p className="mt-0.5 truncate text-xs text-muted-foreground" title={`${faInteger.format(segment.sessions)} سفارش در این بازه مبلغی`}>
           {faInteger.format(segment.sessions)} سفارش در این بازه مبلغی
         </p>
       </div>
       <div className="flex flex-wrap items-center gap-2">
         {segment.quality === "sufficient" && segment.verifyPct !== null ? (
           <>
-            <Badge variant="secondary" className="font-semibold">
+            <Badge
+              variant="outline"
+              className={cn(
+                "font-semibold",
+                belowMarket && "bg-destructive/10 text-destructive border-destructive/30",
+                hasBaseline && !belowMarket && "bg-success/15 text-success-foreground border-success/30",
+              )}
+            >
               موفقیت: {faPercent.format(segment.verifyPct)}٪
             </Badge>
             {segment.peerOrBaselinePct !== null ? (
@@ -252,6 +367,7 @@ function SegmentRow({
         )}
         <EvidenceButton
           label={`روش محاسبه بازه ${bandLabels[band] ?? band}`}
+          displayLabel="روش محاسبه"
           evidenceId={segment.evidenceId}
           onRequest={onEvidenceRequest}
         />
@@ -315,7 +431,9 @@ export function ConversionRecoveryPage({
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="grid gap-6 rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs lg:grid-cols-[1fr_auto] lg:items-end">
+      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -327,8 +445,11 @@ export function ConversionRecoveryPage({
               داده قطعی سفارش‌ها
             </Badge>
           </div>
-          <h1 className="mt-4 text-2xl font-extrabold tracking-tight text-foreground sm:text-3xl lg:text-4xl">
-            نجات فروش و رفع موانع پرداخت برای <span className="text-primary">{payload.selection.merchantKey}</span>
+          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
+            <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
+              نجات فروش و رفع موانع پرداخت
+            </span>{" "}
+            برای فروشگاه شما
           </h1>
           <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             رهگیری مرحله‌به‌مرحله فرآیند خرید، کشف دلایل انصراف مشتریان و پتانسیل افزایش درآمد با برطرف کردن موانع پرداخت.
@@ -337,10 +458,12 @@ export function ConversionRecoveryPage({
             دوره {formatPersianPeriod(payload.selection.period)}؛ مقایسه با {payload.selection.comparison ? formatPersianPeriod(payload.selection.comparison) : "بدون دوره مبنا"}
           </p>
         </div>
-        <RecoveryMerchantSelector
-          merchantKey={payload.selection.merchantKey}
-          merchantKeys={merchantKeys}
-        />
+        <div className="border-t border-border/50 pt-4">
+          <RecoveryMerchantSelector
+            merchantKey={payload.selection.merchantKey}
+            merchantKeys={merchantKeys}
+          />
+        </div>
       </header>
 
       {insight ? (
@@ -375,7 +498,7 @@ export function ConversionRecoveryPage({
               </div>
             </div>
             <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
-              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی نجات فروش (تخمینی)</p>
+              <p className="text-xs font-medium text-muted-foreground">پتانسیل برآوردی نجات فروش</p>
               <p className="mt-2 text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
                 {scenario ? formatCompactRial(scenario.estimatedVolumeRial) : "داده ناکافی"}
               </p>
@@ -408,9 +531,9 @@ export function ConversionRecoveryPage({
       ) : (
         <Alert>
           <CircleAlert aria-hidden="true" />
-          <AlertTitle>فرصت اولویت‌دار ثبت نشد</AlertTitle>
+          <AlertTitle>هنوز پیشنهادی برای این دوره نداریم</AlertTitle>
           <AlertDescription>
-            داده‌های این دوره برای ساخت پیشنهاد عددی کافی نیست. مسیر پرداخت و مدارک موجود را بررسی کنید؛ هیچ عدد یا پیشنهاد غیرقابل اتکایی نمایش داده نمی‌شود.
+            داده‌های این دوره برای ساخت پیشنهاد عددی کافی نیست. هیچ عدد بدون پشتوانه نمایش داده نمی‌شود.
           </AlertDescription>
         </Alert>
       )}
@@ -418,13 +541,18 @@ export function ConversionRecoveryPage({
       <section aria-labelledby="payment-rail-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">قیف ۴ مرحله‌ای پرداخت</span>
-          <h2 id="payment-rail-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h2 id="payment-rail-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
             مشتریان در کدام مرحله از خرید منصرف می‌شوند؟
           </h2>
           <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
             بررسی نرخ عبور خریداران از شروع سفارش تا تسویه نهایی؛ کارت قرمز نشان‌دهنده بیشترین ریزش مشتری در این دوره است.
           </p>
         </div>
+        <FunnelOverview
+          stages={payload.funnel}
+          primaryDropIndex={primaryDropIndex}
+          onEvidenceRequest={handleEvidenceRequest}
+        />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {payload.funnel.map((stage, index) => (
             <FunnelStageCard
@@ -441,7 +569,7 @@ export function ConversionRecoveryPage({
       <section aria-labelledby="diagnosis-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">دو اهرم قابل پیگیری</span>
-          <h2 id="diagnosis-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl">
+          <h2 id="diagnosis-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
             قبل از تلاش و بعد از خطای اول
           </h2>
         </div>
@@ -453,7 +581,7 @@ export function ConversionRecoveryPage({
                   <BanknoteArrowDown aria-hidden="true" className="size-4" />
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <h3>انصراف قبل از درگاه (NoAttempt)</h3>
+                  <h3>انصراف قبل از ورود به درگاه</h3>
                   <HelpTooltip term="NoAttempt" />
                 </div>
               </CardTitle>
@@ -490,7 +618,7 @@ export function ConversionRecoveryPage({
                   <RefreshCcw aria-hidden="true" className="size-4" />
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <h3>بازیابی پس از تلاش اول (Retry)</h3>
+                  <h3>نجات خرید با تلاش مجدد</h3>
                   <HelpTooltip term="Retry" />
                 </div>
               </CardTitle>
@@ -524,27 +652,27 @@ export function ConversionRecoveryPage({
 
       <Alert className="rounded-2xl">
         <FlaskConical aria-hidden="true" />
-        <AlertTitle>سناریو، اثر علّی یا تضمین فروش نیست</AlertTitle>
+        <AlertTitle>این عدد برآورد است، نه تضمین فروش</AlertTitle>
         <AlertDescription>
-          خط مبنا سهم NoAttempt دوره قبل است؛ نرخ تبدیل attempted و متوسط مبلغ Verified دوره جاری ثابت فرض شده‌اند. Paid فقط عبور از بانک است و Reversed موفقیت محسوب نمی‌شود.
+          مبنا، سهم انصراف قبل از درگاه در دوره قبل است؛ نرخ موفقیت پرداخت و میانگین مبلغ خرید دوره جاری ثابت فرض شده‌اند. عبور از درگاه به‌تنهایی پرداخت موفق نیست و تراکنش برگشتی فروش محسوب نمی‌شود.
         </AlertDescription>
       </Alert>
 
       <section aria-labelledby="psp-title" className="grid gap-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">کنترل متغیر مخدوش‌کننده</span>
-            <h2 id="psp-title" className="mt-2 text-xl font-bold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">مقایسه منصفانه</span>
+            <h2 id="psp-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl flex items-center gap-2">
               <span>عملکرد درگاه‌های پرداخت (PSP)</span>
               <HelpTooltip term="PSP" />
             </h2>
             <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
-              نرخ هر PSP فقط در همان Quartile مبلغ مقایسه می‌شود؛ زیر ۱۰۰ Session کلی یا ۲۵ Session در cell، رتبه و پیشنهاد نمایش داده نمی‌شود.
+              نرخ هر درگاه فقط در بازه مبلغی مشابه مقایسه می‌شود؛ اگر تعداد سفارش‌ها کم باشد (کمتر از ۱۰۰ سفارش کلی یا ۲۵ سفارش در یک بازه)، رتبه و پیشنهادی نمایش داده نمی‌شود.
             </p>
           </div>
           <Badge variant="outline" className="font-semibold gap-1.5">
             <ShieldCheck aria-hidden="true" data-icon="inline-start" />
-            بدون Winner label
+            بدون معرفی برنده
           </Badge>
         </div>
 
@@ -563,7 +691,7 @@ export function ConversionRecoveryPage({
                   <Badge variant={segments.every((segment) => segment.quality === "insufficient-data") ? "outline" : "secondary"} className="font-semibold">
                     {segments.every((segment) => segment.quality === "insufficient-data")
                       ? "نمونه ناکافی"
-                      : "نمونه کنترل‌شده"}
+                      : "نمونه کافی"}
                   </Badge>
                 </CardAction>
               </CardHeader>
@@ -582,9 +710,9 @@ export function ConversionRecoveryPage({
         ) : (
           <Alert className="rounded-2xl">
             <CircleAlert aria-hidden="true" />
-            <AlertTitle>داده PSP برای مقایسه موجود نیست</AlertTitle>
+            <AlertTitle>داده درگاه‌ها برای مقایسه موجود نیست</AlertTitle>
             <AlertDescription>
-              هیچ رتبه، برنده یا پیشنهاد مقایسه‌ای ساخته نشده است. Funnel و تحلیل NoAttempt همچنان بر پایه Sessionهای معتبر قابل بررسی‌اند.
+              هیچ رتبه یا پیشنهاد مقایسه‌ای ساخته نشده است. تحلیل قیف پرداخت و انصراف قبل از درگاه همچنان بر پایه سفارش‌های معتبر قابل بررسی است.
             </AlertDescription>
           </Alert>
         )}
@@ -597,17 +725,17 @@ export function ConversionRecoveryPage({
             <h2>قواعد خواندن این گزارش</h2>
           </CardTitle>
           <CardDescription>
-            عددها از Attempt خام به Session یکتا تبدیل شده‌اند.
+            عددها پس از یکی‌سازی تلاش‌های تکراری، به ازای هر سفارش محاسبه می‌شوند.
           </CardDescription>
         </CardHeader>
         <CardContent className="mt-4 grid gap-3 p-0 text-xs leading-relaxed text-muted-foreground sm:grid-cols-3">
           <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
             <CheckCircle2 aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-success" />
-            <p>فروش و مبلغ موفق فقط با Verified محاسبه شده‌اند.</p>
+            <p>فروش موفق فقط شامل پرداخت‌های تاییدشده نهایی است.</p>
           </div>
           <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
             <CircleAlert aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-destructive" />
-            <p>Paid و Reversed به‌تنهایی فروش موفق نیستند.</p>
+            <p>عبور از درگاه یا تراکنش برگشتی به‌تنهایی فروش موفق محسوب نمی‌شوند.</p>
           </div>
           <div className="flex items-start gap-2 rounded-xl bg-card border border-border/50 p-3">
             <ArrowLeft aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-primary" />
@@ -618,9 +746,12 @@ export function ConversionRecoveryPage({
 
       <footer className="flex flex-col gap-1 pb-4 text-xs font-medium text-muted-foreground sm:flex-row sm:justify-between">
         <span>
-          تولید Artifact: {formatPeriod(artifact.generatedAt.slice(0, 10))}
+          تاریخ تهیه گزارش: {formatPeriod(artifact.generatedAt.slice(0, 10))}
         </span>
-        <span dir="ltr" className="font-mono">Dataset: {artifact.dataset.fingerprint.slice(0, 12)}…</span>
+        <span className="flex items-center gap-1.5">
+          نسخه داده:
+          <span dir="ltr" className="font-mono">{artifact.dataset.fingerprint.slice(0, 12)}…</span>
+        </span>
       </footer>
 
       <RecoveryEvidenceSheet

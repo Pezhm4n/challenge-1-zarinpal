@@ -3,6 +3,7 @@ import localFont from "next/font/local";
 import "./globals.css";
 import { cn } from "@/lib/utils";
 import { AppShell } from "@/components/layout/app-shell";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const iranYekan = localFont({
   src: [
@@ -28,7 +29,7 @@ const iranYekan = localFont({
 
 export const metadata: Metadata = {
   title: "نبض زرین | Zarin Pulse",
-  description: "مرکز اقدام تحلیلی برای پذیرندگان زرین‌پال",
+  description: "مرکز اقدام هوشمند برای پذیرندگان زرین‌پال",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -40,7 +41,14 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       suppressHydrationWarning
     >
       <body className={iranYekan.className}>
-        <AppShell>{children}</AppShell>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AppShell>{children}</AppShell>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -7,6 +7,8 @@ import {
   CircleCheck,
   CircleMinus,
   ShieldCheck,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -56,6 +58,11 @@ const statusPresentation: Record<
   },
 }
 
+const statusBorder: Partial<Record<InsightSummary["status"], string>> = {
+  opportunity: "border-success/35 hover:border-success/55",
+  warning: "border-destructive/40 hover:border-destructive/60",
+}
+
 export function InsightCard({
   insight,
   featured = false,
@@ -76,7 +83,7 @@ export function InsightCard({
         "h-full gap-5 transition-all duration-200",
         featured
           ? "border-primary/40 bg-gradient-to-b from-card via-card to-primary/[0.02] shadow-sm ring-1 ring-primary/25"
-          : "hover:border-border hover:shadow-sm",
+          : cn("hover:shadow-sm", statusBorder[insight.status] ?? "border-border hover:border-border"),
       )}
     >
       <CardHeader className="gap-3.5">
@@ -92,7 +99,7 @@ export function InsightCard({
             {status.label}
           </Badge>
         </div>
-        <CardTitle className={cn(featured ? "text-xl sm:text-2xl" : "text-lg")}>
+        <CardTitle className={cn(featured ? "text-lg sm:text-2xl" : "text-base sm:text-lg")}>
           <h3>{localizePersianText(insight.titleFa)}</h3>
         </CardTitle>
         <CardDescription className="text-sm leading-relaxed text-foreground/80">
@@ -105,7 +112,7 @@ export function InsightCard({
           <div className="rounded-2xl border border-border/50 bg-muted/50 p-4 sm:p-5">
             <div className="flex flex-wrap items-center justify-between gap-2">
               <span className="text-xs font-medium text-muted-foreground">
-                {insight.impact.labelFa}
+                {localizePersianText(insight.impact.labelFa)}
               </span>
               <Badge
                 variant={insight.impact.kind === "estimate" ? "default" : "secondary"}
@@ -114,13 +121,26 @@ export function InsightCard({
                 {metricKindLabels[insight.impact.kind]}
               </Badge>
             </div>
-            <p className="mt-2.5 break-words text-2xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
-              {formatMetricValue(insight.impact)}
+            <p
+              className={cn(
+                "mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight sm:text-3xl",
+                insight.impact.value < 0 && "text-destructive",
+                insight.impact.value > 0 && "text-success-foreground",
+              )}
+            >
+              <span className="inline-flex flex-wrap items-center gap-x-1.5">
+                {insight.impact.value < 0 ? (
+                  <TrendingDown aria-hidden="true" className="size-5 shrink-0 sm:size-6" />
+                ) : insight.impact.value > 0 ? (
+                  <TrendingUp aria-hidden="true" className="size-5 shrink-0 sm:size-6" />
+                ) : null}
+                {formatMetricValue(insight.impact)}
+              </span>
             </p>
           </div>
         ) : (
           <div className="rounded-2xl border border-dashed border-border/70 bg-muted/30 p-4 text-sm text-muted-foreground">
-            برای این Insight اثر عددی قابل اتکا موجود نیست.
+            فعلاً عدد قابل اعتمادی برای این پیشنهاد نداریم.
           </div>
         )}
 
