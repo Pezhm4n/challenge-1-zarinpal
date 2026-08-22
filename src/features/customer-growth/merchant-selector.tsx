@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { useTransition } from "react"
+import { useCallback, useRef, useState, useTransition } from "react"
 
 import {
   Select,
@@ -24,10 +24,23 @@ export function MerchantSelector({
 }: MerchantSelectorProps) {
   const router = useRouter()
   const [isPending, startTransition] = useTransition()
+  const triggerRef = useRef<HTMLButtonElement | null>(null)
+  const [contentMaxHeight, setContentMaxHeight] = useState<number | undefined>(
+    undefined,
+  )
   const merchantOptions = merchantKeys.map((key) => ({
     label: key,
     value: key,
   }))
+
+  const handleOpenChange = useCallback((open: boolean) => {
+    if (!open) return
+    const rect = triggerRef.current?.getBoundingClientRect()
+    if (!rect) return
+    setContentMaxHeight(
+      Math.max(160, Math.min(320, window.innerHeight - rect.bottom - 16)),
+    )
+  }, [])
 
   return (
     <div className="flex min-w-48 flex-col gap-1.5">
@@ -40,6 +53,7 @@ export function MerchantSelector({
       <Select
         items={merchantOptions}
         value={merchantKey}
+        onOpenChange={handleOpenChange}
         onValueChange={(value) => {
           if (!value || value === merchantKey) {
             return
@@ -50,13 +64,19 @@ export function MerchantSelector({
         }}
       >
         <SelectTrigger
+          ref={triggerRef}
           aria-labelledby="merchant-selector-label"
           aria-busy={isPending}
           className="min-h-11 w-full"
         >
           <SelectValue>{merchantKey}</SelectValue>
         </SelectTrigger>
-        <SelectContent align="start">
+        <SelectContent
+          align="start"
+          side="bottom"
+          collisionAvoidance={{ side: "shift", align: "shift", fallbackAxisSide: "none" }}
+          style={contentMaxHeight ? { maxHeight: contentMaxHeight } : undefined}
+        >
           <SelectGroup>
             <SelectLabel>فروشگاه‌ها</SelectLabel>
             {merchantOptions.map((option) => (
