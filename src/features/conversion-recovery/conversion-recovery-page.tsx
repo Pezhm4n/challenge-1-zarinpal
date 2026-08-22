@@ -317,8 +317,24 @@ function SegmentRow({
   onEvidenceRequest: (evidenceId: string) => void
 }) {
   const [, band = segment.key] = segment.key.split("|", 2)
+  const hasBaseline =
+    segment.quality === "sufficient" &&
+    segment.verifyPct !== null &&
+    segment.peerOrBaselinePct !== null
+  const belowMarket =
+    segment.quality === "sufficient" &&
+    segment.verifyPct !== null &&
+    segment.peerOrBaselinePct !== null &&
+    segment.verifyPct < segment.peerOrBaselinePct
   return (
-    <div className="grid gap-3 rounded-xl border border-border/50 bg-muted/30 p-3.5 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center hover:bg-muted/50 transition-colors">
+    <div
+      className={cn(
+        "grid gap-3 rounded-xl border bg-muted/30 p-3.5 transition-colors sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center hover:bg-muted/50 lg:grid-cols-1 lg:items-start xl:grid-cols-[minmax(0,1fr)_auto]",
+        hasBaseline && belowMarket && "border-destructive/40",
+        hasBaseline && !belowMarket && "border-success/35",
+        !hasBaseline && "border-border/50",
+      )}
+    >
       <div className="min-w-0">
         <p className="truncate font-semibold text-foreground" title={bandLabels[band] ?? band}>
           {bandLabels[band] ?? band}
@@ -330,7 +346,14 @@ function SegmentRow({
       <div className="flex flex-wrap items-center gap-2">
         {segment.quality === "sufficient" && segment.verifyPct !== null ? (
           <>
-            <Badge variant="secondary" className="font-semibold">
+            <Badge
+              variant="outline"
+              className={cn(
+                "font-semibold",
+                belowMarket && "bg-destructive/10 text-destructive border-destructive/30",
+                hasBaseline && !belowMarket && "bg-success/15 text-success-foreground border-success/30",
+              )}
+            >
               موفقیت: {faPercent.format(segment.verifyPct)}٪
             </Badge>
             {segment.peerOrBaselinePct !== null ? (
