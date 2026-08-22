@@ -74,6 +74,9 @@ function statusVariant(status: InsightSummary["status"]) {
 }
 
 function cohortTone(value: number) {
+  if (value === 0) {
+    return "bg-destructive/10 text-destructive font-semibold"
+  }
   if (value >= 60) {
     return "bg-primary text-primary-foreground font-bold"
   }
@@ -197,7 +200,12 @@ function CohortSection({
                       <dt className="text-xs text-muted-foreground">
                         {periodLabel(period)}
                       </dt>
-                      <dd className="mt-1 font-bold tabular-nums text-foreground">
+                      <dd
+                        className={cn(
+                          "mt-1 font-bold tabular-nums text-foreground",
+                          cell?.retentionPct === 0 && "text-destructive",
+                        )}
+                      >
                         {cell ? `${faPercent.format(cell.retentionPct)}٪` : "—"}
                       </dd>
                     </div>
@@ -254,6 +262,12 @@ export function CustomerGrowthPage({
     "customer.revenue_concentration.v1",
   )
   const qualityNote = returningEvidence?.dataQuality[0]
+  const hasReturningBaseline =
+    payload.returningSharePct !== null && comparisonShare != null
+  const returningImproved =
+    hasReturningBaseline && (payload.returningSharePct as number) > (comparisonShare as number)
+  const returningDropped =
+    hasReturningBaseline && (payload.returningSharePct as number) < (comparisonShare as number)
 
   return (
     <div className="grid gap-8 lg:gap-10">
@@ -376,7 +390,15 @@ export function CustomerGrowthPage({
               </p>
             </CardContent>
           </Card>
-          <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card
+            size="sm"
+            className={cn(
+              "rounded-2xl border bg-card p-5 shadow-xs transition-colors",
+              returningImproved && "border-success/40",
+              returningDropped && "border-destructive/40",
+              !hasReturningBaseline && "border-border/70",
+            )}
+          >
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
                 <h3>خریداران بازگشتی</h3>
@@ -388,7 +410,13 @@ export function CustomerGrowthPage({
               </CardDescription>
             </CardHeader>
             <CardContent className="p-0 mt-3">
-              <p className="text-3xl font-extrabold tabular-nums tracking-tight text-foreground">
+              <p
+                className={cn(
+                  "text-3xl font-extrabold tabular-nums tracking-tight text-foreground",
+                  returningImproved && "text-success-foreground",
+                  returningDropped && "text-destructive",
+                )}
+              >
                 {payload.returningSharePct === null
                   ? "—"
                   : `${faPercent.format(payload.returningSharePct)}٪`}
