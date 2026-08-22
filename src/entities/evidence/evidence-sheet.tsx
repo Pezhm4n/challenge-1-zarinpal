@@ -393,7 +393,26 @@ export function EvidenceSheet({
               ))}
 
               <EvidenceSection title="این عدد در مقایسه با مبنایش">
-                {evidence.baseline ? (
+                {evidence.baseline &&
+                evidence.formulaId === "growth.revenue_decomposition.v1" &&
+                evidence.result?.unit === "rial" ? (
+                  <div className="grid gap-3">
+                    <div className="rounded-2xl border border-border/60 bg-card p-4">
+                      <p className="text-xs font-semibold text-muted-foreground">
+                        سهم محاسبه‌شده این عامل از تغییر فروش این دوره
+                      </p>
+                      <p className="mt-1 text-lg font-extrabold tabular-nums text-foreground">
+                        {evidence.result
+                          ? formatMetricValue(evidence.result)
+                          : "—"}
+                      </p>
+                      <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+                        جمع سهم سه عامل (تعداد خریداران، نرخ پرداخت موفق و میانگین مبلغ خرید) با کل تغییر فروش موفق برابر است؛ عدد زیر مقدار همین عامل در دوره قبل است، نه قابل جمع با سهم بالا.
+                      </p>
+                    </div>
+                    <BaselineComparison baseline={evidence.baseline} currentValue={null} />
+                  </div>
+                ) : evidence.baseline ? (
                   <BaselineComparison
                     baseline={evidence.baseline}
                     currentValue={

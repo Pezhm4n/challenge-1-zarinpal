@@ -18,6 +18,8 @@ const baselineLabels: Record<string, string> = {
   "same-category-peer-median-averageVerifiedTicketRial":
     "میانه مبلغ خرید هم‌صنفان",
   "previous-period-sessions": "تعداد سفارش‌ها در دوره قبل",
+  "previous-period-traffic": "تعداد خریداران در دوره قبل",
+  "previous-period-conversion": "نرخ پرداخت موفق در دوره قبل",
   "previous-period-ticket": "میانگین مبلغ خرید در دوره قبل",
   "previous-period-rate": "نرخ پرداخت موفق در دوره قبل",
 }
