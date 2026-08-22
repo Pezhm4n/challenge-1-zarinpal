@@ -139,6 +139,7 @@ export function GrowthDecomposition({
       <div className="grid gap-4 lg:grid-cols-3">
         {items.map((item) => {
           const isNegative = item.contributionRial < 0;
+          const isPositive = item.contributionRial > 0;
           const evidenceId = evidenceByScope[`growth:${item.driver}`];
           const width = `${Math.max(
             8,
@@ -147,7 +148,12 @@ export function GrowthDecomposition({
           return (
             <article
               key={item.driver}
-              className="grid gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm"
+              className={cn(
+                "grid gap-4 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
+                isPositive && "border-success/35 hover:border-success/55",
+                isNegative && "border-destructive/40 hover:border-destructive/60",
+                !isPositive && !isNegative && "border-border/70 hover:border-border",
+              )}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
@@ -161,7 +167,9 @@ export function GrowthDecomposition({
                   className={
                     isNegative
                       ? "inline-flex items-center gap-1 rounded-full bg-destructive/10 px-2.5 py-0.5 text-xs font-semibold text-destructive"
-                      : "inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success-foreground"
+                      : isPositive
+                        ? "inline-flex items-center gap-1 rounded-full bg-success/10 px-2.5 py-0.5 text-xs font-semibold text-success-foreground"
+                        : "inline-flex items-center gap-1 rounded-full bg-muted px-2.5 py-0.5 text-xs font-semibold text-muted-foreground"
                   }
                 >
                   <DirectionIcon value={item.contributionRial} />

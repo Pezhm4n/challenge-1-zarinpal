@@ -1,5 +1,6 @@
 import { CircleAlert, UsersRound } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import type { PeerBenchmark } from "../types";
 import { EvidenceMetricButton } from "./evidence-metric-button";
 
@@ -98,10 +99,17 @@ export function PeerPosition({
               </article>
             );
           }
+          const aboveMedian = benchmark.merchantValue > benchmark.peerMedian;
+          const belowMedian = benchmark.merchantValue < benchmark.peerMedian;
           return (
             <article
               key={benchmark.metric}
-              className="grid gap-5 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm"
+              className={cn(
+                "grid gap-5 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
+                aboveMedian && "border-success/35 hover:border-success/55",
+                belowMedian && "border-destructive/40 hover:border-destructive/60",
+                !aboveMedian && !belowMedian && "border-border/70 hover:border-border",
+              )}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">

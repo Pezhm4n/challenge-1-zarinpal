@@ -7,6 +7,8 @@ import {
   CircleCheck,
   CircleMinus,
   ShieldCheck,
+  TrendingDown,
+  TrendingUp,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -119,8 +121,21 @@ export function InsightCard({
                 {metricKindLabels[insight.impact.kind]}
               </Badge>
             </div>
-            <p className="mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl">
-              {formatMetricValue(insight.impact)}
+            <p
+              className={cn(
+                "mt-2.5 break-words text-xl font-extrabold tabular-nums tracking-tight sm:text-3xl",
+                insight.impact.value < 0 && "text-destructive",
+                insight.impact.value > 0 && "text-success-foreground",
+              )}
+            >
+              <span className="inline-flex flex-wrap items-center gap-x-1.5">
+                {insight.impact.value < 0 ? (
+                  <TrendingDown aria-hidden="true" className="size-5 shrink-0 sm:size-6" />
+                ) : insight.impact.value > 0 ? (
+                  <TrendingUp aria-hidden="true" className="size-5 shrink-0 sm:size-6" />
+                ) : null}
+                {formatMetricValue(insight.impact)}
+              </span>
             </p>
           </div>
         ) : (
