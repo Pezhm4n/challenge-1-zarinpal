@@ -7,6 +7,7 @@ import {
   Calculator,
   ChartNoAxesColumnDecreasing,
   CheckCircle2,
+  ChevronDown,
   CircleAlert,
   Database,
   FlaskConical,
@@ -191,6 +192,92 @@ function FunnelStageCard({
           onRequest={onEvidenceRequest}
         />
       </CardFooter>
+    </Card>
+  )
+}
+
+const funnelBarTones = [
+  "bg-primary/15 ring-primary/20",
+  "bg-primary/25 ring-primary/30",
+  "bg-primary/40 ring-primary/40",
+  "bg-primary/60 ring-primary/50",
+] as const
+
+function FunnelOverview({
+  stages,
+  primaryDropIndex,
+  onEvidenceRequest,
+}: {
+  stages: FunnelStage[]
+  primaryDropIndex: number
+  onEvidenceRequest: (evidenceId: string) => void
+}) {
+  const baseCount = stages[0]?.count ?? 0
+  if (!(baseCount > 0)) return null
+  return (
+    <Card size="sm" className="rounded-2xl border border-border/70 bg-card shadow-xs">
+      <CardHeader className="gap-1.5">
+        <CardTitle className="text-base font-bold text-foreground">
+          نمای کلی قیف در یک نگاه
+        </CardTitle>
+        <CardDescription className="text-xs leading-relaxed">
+          عرض هر نوار نسبت به تعداد سفارش‌های مرحله اول است؛ با انتخاب هر نوار، روش محاسبه همان مرحله باز می‌شود.
+        </CardDescription>
+      </CardHeader>
+      <CardContent>
+        <ol className="grid justify-items-center">
+          {stages.map((stage, index) => {
+            const widthPct = Math.min(100, Math.max(24, (stage.count / baseCount) * 100))
+            const isPrimaryStep = index === primaryDropIndex
+            return (
+              <li key={stage.stage} className="grid w-full justify-items-center gap-1.5">
+                {index > 0 ? (
+                  <div className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-1 py-1 text-[11px] sm:text-xs">
+                    <ChevronDown
+                      aria-hidden="true"
+                      className={cn(
+                        "size-3.5",
+                        isPrimaryStep ? "text-destructive" : "text-muted-foreground",
+                      )}
+                    />
+                    {stage.rateFromPrevious !== null ? (
+                      <span
+                        className={cn(
+                          "font-semibold tabular-nums",
+                          isPrimaryStep ? "text-destructive" : "text-muted-foreground",
+                        )}
+                      >
+                        {faPercent.format(stage.rateFromPrevious)}٪ عبور از مرحله قبل
+                      </span>
+                    ) : null}
+                    {isPrimaryStep ? (
+                      <Badge variant="destructive" className="px-2 py-0 text-[10px] font-bold">
+                        بیشترین ریزش
+                      </Badge>
+                    ) : null}
+                  </div>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={() => onEvidenceRequest(stage.evidenceIds.count)}
+                  aria-label={`مشاهده روش محاسبه ${stageLabels[stage.stage]} با ${faInteger.format(stage.count)} سفارش`}
+                  className={cn(
+                    "block h-8 rounded-lg ring-1 transition-all duration-300 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-10",
+                    funnelBarTones[Math.min(index, funnelBarTones.length - 1)],
+                  )}
+                  style={{ inlineSize: `${widthPct}%` }}
+                />
+                <p className="text-center text-[11px] leading-relaxed text-muted-foreground sm:text-xs">
+                  <span className="font-bold text-foreground">{stageLabels[stage.stage]}</span>
+                  {" · "}
+                  {faInteger.format(stage.count)} سفارش
+                  <span className="hidden sm:inline"> · {formatCompactRial(stage.amountRial)}</span>
+                </p>
+              </li>
+            )
+          })}
+        </ol>
+      </CardContent>
     </Card>
   )
 }
@@ -438,6 +525,11 @@ export function ConversionRecoveryPage({
             بررسی نرخ عبور خریداران از شروع سفارش تا تسویه نهایی؛ کارت قرمز نشان‌دهنده بیشترین ریزش مشتری در این دوره است.
           </p>
         </div>
+        <FunnelOverview
+          stages={payload.funnel}
+          primaryDropIndex={primaryDropIndex}
+          onEvidenceRequest={handleEvidenceRequest}
+        />
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
           {payload.funnel.map((stage, index) => (
             <FunnelStageCard
@@ -466,7 +558,7 @@ export function ConversionRecoveryPage({
                   <BanknoteArrowDown aria-hidden="true" className="size-4" />
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <h3>انصراف قبل از درگاه (NoAttempt)</h3>
+                  <h3>انصراف قبل از ورود به درگاه</h3>
                   <HelpTooltip term="NoAttempt" />
                 </div>
               </CardTitle>
@@ -503,7 +595,7 @@ export function ConversionRecoveryPage({
                   <RefreshCcw aria-hidden="true" className="size-4" />
                 </span>
                 <div className="flex items-center gap-1.5">
-                  <h3>بازیابی پس از تلاش اول (Retry)</h3>
+                  <h3>نجات خرید با تلاش مجدد</h3>
                   <HelpTooltip term="Retry" />
                 </div>
               </CardTitle>

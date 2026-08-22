@@ -68,6 +68,7 @@ const statusTranslations: Record<string, string> = {
   Verified: "پرداخت موفق",
   Failed: "ناموفق",
   Initiated: "شروع‌شده",
+  InBank: "در جریان پرداخت در بانک",
   Paid: "پرداخت در بانک",
   Reversed: "برگشت‌خورده",
   Expired: "منقضی‌شده",
@@ -250,11 +251,18 @@ const columnLabels: Record<string, string> = {
   created_at: "زمان ثبت",
   eventual_verified: "وضعیت پرداخت نهایی",
   try_seq: "شماره تلاش",
+  "max(try_seq)": "شماره آخرین تلاش",
+  first_try_status: "وضعیت اولین تلاش",
+  amount_band: "بازه مبلغی",
   try_status: "وضعیت تلاش",
   session_status: "وضعیت سفارش",
   payer_card_key: "شناسه کارت خریدار",
   psp_code: "کد درگاه (PSP)",
   evidence_scope: "محدوده تحلیل",
+  sessions: "تعداد سفارش‌ها",
+  weekday: "روز هفته",
+  hour: "ساعت روز",
+  metric: "معیار مقایسه",
 }
 
 export function EvidenceSheet({

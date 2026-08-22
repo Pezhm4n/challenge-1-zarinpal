@@ -1,14 +1,36 @@
-import { localizePersianText } from "@/lib/persian-date"
+import { formatPersianDate, localizePersianText } from "@/lib/persian-date"
 
 const statusLabelsFa: Record<string, string> = {
   NoAttempt: "انصراف قبل از درگاه",
   Verified: "پرداخت موفق",
   Failed: "ناموفق",
   Initiated: "شروع‌شده",
+  InBank: "در جریان پرداخت در بانک",
   Paid: "پرداخت در بانک",
   Reversed: "برگشت‌خورده",
   Expired: "منقضی‌شده",
 }
+
+const metricValueLabelsFa: Record<string, string> = {
+  verificationRate: "نرخ پرداخت موفق",
+  verifiedVolumeRial: "فروش موفق",
+  averageVerifiedTicketRial: "میانگین مبلغ خرید موفق",
+}
+
+const bandValueLabelsFa: Record<string, string> = {
+  low: "مبلغ پایین",
+  "lower-middle": "میانی پایین",
+  "upper-middle": "میانی بالا",
+  high: "مبلغ بالا",
+}
+
+const scopeValueLabelsFa: Array<[RegExp, string]> = [
+  [/^growth:traffic$/, "رشد ترافیک خریداران"],
+  [/^growth:conversion$/, "رشد نرخ تبدیل"],
+  [/^growth:ticket$/, "رشد میانگین مبلغ خرید"],
+  [/^peer:/, "مقایسه با فروشگاه‌های هم‌صنف"],
+  [/^timing:/, "روز و ساعت مشخص از هفته"],
+]
 
 export function formatStatusFa(status: string | null | undefined): string {
   if (!status) return "کاربرد ندارد"
@@ -25,6 +47,21 @@ function formatFilterValueText(value: string | number | boolean | null): string 
   if (typeof value === "boolean") return value ? "بله" : "خیر"
   if (typeof value === "number") return filterNumberFormatter.format(value)
   if (typeof value === "string") {
+    const isoDateMatch = /^(\d{4})-(\d{2})-(\d{2})(?:[T ]\d{2}:\d{2}(?::\d{2})?)?$/.exec(value)
+    if (isoDateMatch) return formatPersianDate(isoDateMatch[0])
+    const bandLabel = bandValueLabelsFa[value]
+    if (bandLabel) return bandLabel
+    const metricLabel = metricValueLabelsFa[value]
+    if (metricLabel) return metricLabel
+    for (const [pattern, label] of scopeValueLabelsFa) {
+      if (pattern.test(value)) return label
+    }
+    if (value.includes("|")) {
+      return value
+        .split("|")
+        .map((part) => statusLabelsFa[part] ?? localizePersianText(part))
+        .join("، ")
+    }
     const statusLabel = statusLabelsFa[value]
     if (statusLabel) return statusLabel
     const pspMatch = /^PSP-(\d+)$/.exec(value)
@@ -45,7 +82,9 @@ export function describeEvidenceFilter(
   const operatorLabel =
     operator === "="
       ? "برابر با"
-      : operator === ">="
+      : operator === "!=" || operator === "<>"
+        ? "به‌جز"
+        : operator === ">="
         ? "بزرگتر یا مساوی با"
         : operator === "<="
           ? "کوچکتر یا مساوی با"
@@ -53,7 +92,9 @@ export function describeEvidenceFilter(
             ? "کوچک‌تر از"
             : operator === ">"
               ? "بزرگ‌تر از"
-              : operator
+              : operator === "IN"
+                ? "یکی از این حالت‌ها"
+                : operator
 
   return `${fieldLabel} ${operatorLabel} ${formatFilterValueText(value)}`
 }
