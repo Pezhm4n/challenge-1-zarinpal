@@ -2,6 +2,7 @@ import Link from "next/link"
 import { ChartNoAxesCombined } from "lucide-react"
 
 import { AppMobileTabBar, AppNavigation } from "./app-navigation"
+import { ThemeToggle } from "./theme-toggle"
 
 export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
@@ -35,6 +36,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
                 </span>
               </span>
             </Link>
+            <ThemeToggle />
           </div>
 
           <div className="hidden lg:block">
