@@ -77,7 +77,14 @@ function HeadlineMetric({
   const DirectionIcon = isPositive ? TrendingUp : isNegative ? TrendingDown : CircleMinus
 
   return (
-    <div className="flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm">
+    <div
+      className={cn(
+        "flex min-w-0 flex-col rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
+        isPositive && "border-success/40 hover:border-success/60",
+        isNegative && "border-destructive/40 hover:border-destructive/60",
+        !isPositive && !isNegative && "border-border/70 hover:border-border",
+      )}
+    >
       <div className="flex items-center justify-center gap-1.5 sm:justify-start">
         <p className="text-xs font-medium text-muted-foreground">{localizePersianText(friendlyKpiTitle(metric.value.labelFa))}</p>
         {metric.value.labelFa.includes("بدون شروع تلاش") || metric.value.labelFa.includes("بدون ورود به تلاش") ? (

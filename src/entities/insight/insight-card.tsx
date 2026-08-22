@@ -56,6 +56,11 @@ const statusPresentation: Record<
   },
 }
 
+const statusBorder: Partial<Record<InsightSummary["status"], string>> = {
+  opportunity: "border-success/35 hover:border-success/55",
+  warning: "border-destructive/40 hover:border-destructive/60",
+}
+
 export function InsightCard({
   insight,
   featured = false,
@@ -76,7 +81,7 @@ export function InsightCard({
         "h-full gap-5 transition-all duration-200",
         featured
           ? "border-primary/40 bg-gradient-to-b from-card via-card to-primary/[0.02] shadow-sm ring-1 ring-primary/25"
-          : "hover:border-border hover:shadow-sm",
+          : cn("hover:shadow-sm", statusBorder[insight.status] ?? "border-border hover:border-border"),
       )}
     >
       <CardHeader className="gap-3.5">
