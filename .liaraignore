@@ -1,0 +1,30 @@
+# Node dependencies & build artifacts
+node_modules/
+.next/
+out/
+build/
+
+# Git & IDEs
+.git/
+.gitignore
+.vscode/
+.idea/
+.gemini/
+
+# Raw challenge data
+data/raw/
+data/derived/
+
+# Python analytics cache & virtualenvs
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.coverage
+
+# Logs & temp
+*.log
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
