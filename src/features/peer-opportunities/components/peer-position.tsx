@@ -99,17 +99,16 @@ export function PeerPosition({
               </article>
             );
           }
-          const aboveMedian = benchmark.merchantValue > benchmark.peerMedian;
-          const belowMedian = benchmark.merchantValue < benchmark.peerMedian;
+          const medianDelta =
+            benchmark.peerMedian !== 0
+              ? ((benchmark.merchantValue - benchmark.peerMedian) /
+                  Math.abs(benchmark.peerMedian)) *
+                100
+              : null;
           return (
             <article
               key={benchmark.metric}
-              className={cn(
-                "grid gap-5 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
-                aboveMedian && "border-success/35 hover:border-success/55",
-                belowMedian && "border-destructive/40 hover:border-destructive/60",
-                !aboveMedian && !belowMedian && "border-border/70 hover:border-border",
-              )}
+              className="grid gap-5 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm"
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
@@ -183,7 +182,7 @@ export function PeerPosition({
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap justify-between gap-x-3 gap-y-0.5 text-[11px] font-medium text-muted-foreground px-1" dir="ltr">
+                  <div className="flex flex-wrap justify-between gap-x-3 gap-y-0.5 px-1 text-xs font-medium text-muted-foreground" dir="ltr">
                     <span className="text-muted-foreground">۰٪ (کمترین)</span>
                     <span className="font-semibold text-foreground/75">میانه صنف (۵۰٪)</span>
                     <span className="text-muted-foreground">۱۰۰٪ (بیشترین)</span>
@@ -203,6 +202,20 @@ export function PeerPosition({
                     </dd>
                   </div>
                 </dl>
+                {medianDelta !== null ? (
+                  <p
+                    className={cn(
+                      "inline-flex w-fit flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+                      medianDelta > 0 && "bg-success/10 text-success-foreground",
+                      medianDelta < 0 && "bg-destructive/10 text-destructive",
+                      medianDelta === 0 && "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {medianDelta === 0
+                      ? "هم‌تراز میانهٔ هم‌صنفان"
+                      : `${numberFormatter.format(Math.abs(medianDelta))}٪ ${medianDelta > 0 ? "بالاتر" : "پایین‌تر"} از میانهٔ هم‌صنفان`}
+                  </p>
+                ) : null}
               </div>
             </article>
           );

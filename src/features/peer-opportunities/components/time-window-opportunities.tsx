@@ -14,8 +14,14 @@ const weekdays: Record<number, string> = {
   7: "یکشنبه",
 };
 
+const weekdayOrder = [1, 2, 3, 4, 5, 6, 7];
+const hours = Array.from({ length: 24 }, (_, index) => index);
+
 const numberFormatter = new Intl.NumberFormat("fa-IR", {
   maximumFractionDigits: 1,
+});
+const integerFormatter = new Intl.NumberFormat("fa-IR", {
+  maximumFractionDigits: 0,
 });
 
 function PercentageValue({ value }: { value: number }) {
@@ -37,6 +43,119 @@ function LiftSummary({ value }: { value: number }) {
       <PercentageValue value={value} />
       <span>{value > 0 ? "بالاتر از نرخ مبنا" : "پایین‌تر از نرخ مبنا"}</span>
     </span>
+  );
+}
+
+/** Diverging success/destructive ramp by |lift|; color is never the only
+ * signal because data cells always render the number too. */
+function heatCellTone(lift: number): string {
+  const magnitude = Math.abs(lift);
+  if (lift > 0) {
+    if (magnitude >= 40) return "bg-success text-primary-foreground font-bold";
+    if (magnitude >= 15) return "bg-success/60 text-foreground font-semibold";
+    return "bg-success/30 text-foreground font-semibold";
+  }
+  if (lift < 0) {
+    if (magnitude >= 40) return "bg-destructive text-primary-foreground font-bold";
+    if (magnitude >= 15) return "bg-destructive/60 text-foreground font-semibold";
+    return "bg-destructive/30 text-foreground font-semibold";
+  }
+  return "bg-muted text-foreground font-semibold";
+}
+
+function GoldenHoursHeatmap({
+  windows,
+  evidenceByScope,
+  onEvidenceRequest,
+}: {
+  windows: TimeWindow[];
+  evidenceByScope: Record<string, EvidenceReference>;
+  onEvidenceRequest: (evidenceId: string) => void;
+}) {
+  const windowMap = new Map(
+    windows.map((window) => [`${window.weekday}:${window.hour}`, window]),
+  );
+
+  return (
+    <div className="overflow-x-auto overscroll-x-contain rounded-2xl border border-border/60">
+      <table className="w-full min-w-[52rem] border-collapse">
+        <caption className="sr-only">
+          نقشه حرارتی روز و ساعت‌های هفته؛ رنگ هر خانه فاصله نرخ موفقیت آن
+          بازه از نرخ مبنا را نشان می‌دهد. خانه‌های خالی نمونه کافی ندارند.
+        </caption>
+        <thead>
+          <tr className="bg-muted/60">
+            <th
+              scope="col"
+              className="sticky start-0 z-10 bg-muted p-2 text-start text-xs font-bold text-foreground"
+            >
+              روز \ ساعت
+            </th>
+            {hours.map((hour) => (
+              <th
+                key={hour}
+                scope="col"
+                className="p-1 text-center text-xs font-medium tabular-nums text-muted-foreground"
+              >
+                {integerFormatter.format(hour)}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {weekdayOrder.map((weekday) => (
+            <tr key={weekday} className="border-t border-border/50">
+              <th
+                scope="row"
+                className="sticky start-0 z-10 whitespace-nowrap bg-card p-2 text-start text-xs font-semibold text-foreground"
+              >
+                {weekdays[weekday]}
+              </th>
+              {hours.map((hour) => {
+                const window = windowMap.get(`${weekday}:${hour}`);
+                if (!window) {
+                  return (
+                    <td key={hour} className="p-0.5">
+                      <div
+                        aria-hidden="true"
+                        className="grid h-8 min-w-8 place-items-center rounded-md bg-muted/30 text-xs text-muted-foreground"
+                      >
+                        ·
+                      </div>
+                    </td>
+                  );
+                }
+                const evidence =
+                  evidenceByScope[`timing:${weekday}:${hour}`];
+                const ariaLabel = `${weekdays[weekday]} ساعت ${integerFormatter.format(hour)}: نرخ موفقیت ${numberFormatter.format(window.verifyPct)}٪، ${numberFormatter.format(Math.abs(window.liftVsBaselinePct))}٪ ${window.liftVsBaselinePct >= 0 ? "بالاتر" : "پایین‌تر"} از نرخ مبنا با ${integerFormatter.format(window.sessions)} خریدار${evidence?.id ? ". برای روش محاسبه انتخاب کنید" : ""}`;
+                return (
+                  <td key={hour} className="p-0.5">
+                    <button
+                      type="button"
+                      aria-label={ariaLabel}
+                      disabled={!evidence?.id}
+                      onClick={() =>
+                        evidence?.id ? onEvidenceRequest(evidence.id) : undefined
+                      }
+                      className={cn(
+                        "grid h-8 min-w-8 place-items-center rounded-md text-xs tabular-nums transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+                        heatCellTone(window.liftVsBaselinePct),
+                        evidence?.id && "cursor-pointer hover:scale-[1.06]",
+                      )}
+                    >
+                      <span dir="ltr">
+                        {window.liftVsBaselinePct > 0 ? "+" : window.liftVsBaselinePct < 0 ? "−" : ""}
+                        {integerFormatter.format(Math.round(Math.abs(window.liftVsBaselinePct)))}٪
+                      </span>
+                    </button>
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
   );
 }
 
@@ -79,6 +198,31 @@ export function TimeWindowOpportunities({
         </p>
       </header>
 
+      <div className="grid gap-3">
+        <GoldenHoursHeatmap
+          windows={windows}
+          evidenceByScope={evidenceByScope}
+          onEvidenceRequest={onEvidenceRequest}
+        />
+        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-muted-foreground">
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="size-2.5 rounded-xs bg-success/60" />
+            بالاتر از نرخ مبنا
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="size-2.5 rounded-xs bg-destructive/60" />
+            پایین‌تر از نرخ مبنا
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden="true" className="size-2.5 rounded-xs bg-muted/40" />
+            نمونه ناکافی
+          </span>
+          <span>
+            در این دوره فقط {integerFormatter.format(windows.length)} بازه حداقل ۲۵ پرداخت یکتا داشت؛ بقیه خانه‌ها نمونه کافی ندارند و عددی برایشان ساخته نشده است.
+          </span>
+        </div>
+      </div>
+
       <div className="grid gap-4 md:grid-cols-2">
         {ranked.map((window) => {
           const positive = window.liftVsBaselinePct > 0;
@@ -88,12 +232,7 @@ export function TimeWindowOpportunities({
           return (
             <article
               key={`${window.weekday}-${window.hour}`}
-              className={cn(
-                "grid min-w-0 gap-4 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center",
-                positive && "border-success/35 hover:border-success/55",
-                negative && "border-destructive/40 hover:border-destructive/60",
-                !positive && !negative && "border-border/70 hover:border-border",
-              )}
+              className="grid min-w-0 gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center"
             >
               <div className="flex min-w-0 items-start gap-3.5">
                 <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-muted text-foreground">
@@ -117,13 +256,7 @@ export function TimeWindowOpportunities({
                   </div>
                 </div>
               </div>
-              <div
-                className={
-                  negative
-                    ? "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold text-destructive sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
-                    : "grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0"
-                }
-              >
+              <div className="grid gap-3 border-t border-border/50 pt-3 text-start text-sm font-semibold sm:border-s sm:border-t-0 sm:ps-4 sm:pt-0">
                 <span className="grid gap-1">
                   <span className={cn(
                     "inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold w-fit",
@@ -149,7 +282,7 @@ export function TimeWindowOpportunities({
                     type="button"
                     variant="outline"
                     size="sm"
-                    className="min-h-9 w-fit text-xs font-medium"
+                    className="min-h-10 w-fit text-xs font-medium"
                     onClick={() => onEvidenceRequest(evidence.id)}
                   >
                     <Calculator aria-hidden="true" data-icon="inline-start" />
