@@ -103,7 +103,7 @@ function GoldenHoursHeatmap({
           </tr>
         </thead>
         <tbody>
-          {weekdayOrder.map((weekday) => (
+          {weekdayOrder.map((weekday, weekdayIndex) => (
             <tr key={weekday} className="border-t border-border/50">
               <th
                 scope="row"
@@ -112,13 +112,15 @@ function GoldenHoursHeatmap({
                 {weekdays[weekday]}
               </th>
               {hours.map((hour) => {
+                const cellDelay = `${weekdayIndex * 60 + hour * 8}ms`
                 const window = windowMap.get(`${weekday}:${hour}`);
                 if (!window) {
                   return (
                     <td key={hour} className="p-0.5">
                       <div
                         aria-hidden="true"
-                        className="grid h-8 min-w-8 place-items-center rounded-md bg-muted/30 text-xs text-muted-foreground"
+                        className="grid h-8 min-w-8 animate-pop-in place-items-center rounded-md bg-muted/30 text-xs text-muted-foreground"
+                        style={{ animationDelay: cellDelay }}
                       >
                         ·
                       </div>
@@ -138,10 +140,11 @@ function GoldenHoursHeatmap({
                         evidence?.id ? onEvidenceRequest(evidence.id) : undefined
                       }
                       className={cn(
-                        "grid h-8 min-w-8 place-items-center rounded-md text-xs tabular-nums transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
+                        "grid h-8 min-w-8 animate-pop-in place-items-center rounded-md text-xs tabular-nums transition-transform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background",
                         heatCellTone(window.liftVsBaselinePct),
                         evidence?.id && "cursor-pointer hover:scale-[1.06]",
                       )}
+                      style={{ animationDelay: cellDelay }}
                     >
                       <span dir="ltr">
                         {window.liftVsBaselinePct > 0 ? "+" : window.liftVsBaselinePct < 0 ? "−" : ""}
@@ -224,7 +227,7 @@ export function TimeWindowOpportunities({
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        {ranked.map((window) => {
+        {ranked.map((window, rankIndex) => {
           const positive = window.liftVsBaselinePct > 0;
           const negative = window.liftVsBaselinePct < 0;
           const evidence =
@@ -232,7 +235,8 @@ export function TimeWindowOpportunities({
           return (
             <article
               key={`${window.weekday}-${window.hour}`}
-              className="grid min-w-0 gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center"
+              className="grid min-w-0 animate-rise-in gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-sm sm:grid-cols-[minmax(0,1fr)_minmax(10rem,auto)] sm:items-center"
+              style={{ animationDelay: `${rankIndex * 90}ms` }}
             >
               <div className="flex min-w-0 items-start gap-3.5">
                 <div className="grid size-11 shrink-0 place-items-center rounded-xl bg-muted text-foreground">

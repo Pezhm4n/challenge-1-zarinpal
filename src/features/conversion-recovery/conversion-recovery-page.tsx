@@ -180,10 +180,13 @@ function FunnelOverview({
                   onClick={() => onEvidenceRequest(stage.evidenceIds.count)}
                   aria-label={`مشاهده روش محاسبه ${stageLabels[stage.stage]} با ${faInteger.format(stage.count)} سفارش`}
                   className={cn(
-                    "block h-10 rounded-lg ring-1 transition-all duration-300 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-12",
+                    "block h-10 origin-center animate-bar-grow-x rounded-lg ring-1 transition-all duration-300 hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:h-12",
                     funnelBarTones[Math.min(index, funnelBarTones.length - 1)],
                   )}
-                  style={{ inlineSize: `${widthPct}%` }}
+                  style={{
+                    inlineSize: `${widthPct}%`,
+                    animationDelay: `${index * 130}ms`,
+                  }}
                 />
                 <p className="text-center text-xs leading-relaxed text-muted-foreground">
                   <span className="font-bold text-foreground">{stageLabels[stage.stage]}</span>
@@ -230,14 +233,19 @@ const bandOrder = ["low", "lower-middle", "upper-middle", "high"] as const
 
 function MatrixCellButton({
   segment,
+  animationDelayMs = 0,
   onEvidenceRequest,
 }: {
   segment: RecoverySegment | undefined
+  animationDelayMs?: number
   onEvidenceRequest: (evidenceId: string) => void
 }) {
   if (!segment) {
     return (
-      <div className="grid min-h-16 place-items-center rounded-xl border border-dashed border-border/40 bg-muted/20 px-2 py-2 text-xs text-muted-foreground">
+      <div
+        className="grid min-h-16 animate-pop-in place-items-center rounded-xl border border-dashed border-border/40 bg-muted/20 px-2 py-2 text-xs text-muted-foreground"
+        style={{ animationDelay: `${animationDelayMs}ms` }}
+      >
         داده‌ای ثبت نشده
       </div>
     )
@@ -258,7 +266,8 @@ function MatrixCellButton({
           ? `مشاهده روش محاسبه نرخ موفقیت در بازه ${bandLabels[segment.key.split("|")[1] ?? ""] ?? segment.key}`
           : `مشاهده روش محاسبه بازه با نمونه ناکافی`
       }
-      className="grid min-h-16 w-full place-items-center gap-0.5 rounded-xl border border-border/50 bg-card px-2 py-2 text-center transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+      className="grid min-h-16 w-full animate-pop-in place-items-center gap-0.5 rounded-xl border border-border/50 bg-card px-2 py-2 text-center transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background"
+      style={{ animationDelay: `${animationDelayMs}ms` }}
     >
       {sufficient ? (
         <>
@@ -321,15 +330,16 @@ function PspBandMatrix({
           </tr>
         </thead>
         <tbody>
-          {pspCodes.map((psp) => (
+          {pspCodes.map((psp, pspIndex) => (
             <tr key={psp} className="border-t border-border/50">
               <th scope="row" className="sticky start-0 z-10 bg-card p-3 text-start">
                 <span dir="ltr" className="font-mono text-xs font-semibold text-foreground">{psp}</span>
               </th>
-              {bandOrder.map((band) => (
+              {bandOrder.map((band, bandIndex) => (
                 <td key={band} className="p-1.5 align-middle">
                   <MatrixCellButton
                     segment={cellMap.get(`${psp}|${band}`)}
+                    animationDelayMs={pspIndex * 90 + bandIndex * 45}
                     onEvidenceRequest={onEvidenceRequest}
                   />
                 </td>

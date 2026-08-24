@@ -69,8 +69,9 @@ function WaterfallChart({ model }: { model: WaterfallModel }) {
       <div className="relative h-48">
         <svg
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 h-full w-full"
+          className="pointer-events-none absolute inset-0 h-full w-full animate-fade-in"
           preserveAspectRatio="none"
+          style={{ animationDelay: "450ms" }}
           viewBox="0 0 100 100"
         >
           {model.steps.slice(0, -1).map((step, index) => {
@@ -114,20 +115,21 @@ function WaterfallChart({ model }: { model: WaterfallModel }) {
               >
                 <span
                   className={cn(
-                    "absolute z-10 whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-bold tabular-nums",
+                    "absolute z-10 animate-pop-in whitespace-nowrap rounded-full px-2 py-0.5 text-xs font-bold tabular-nums",
                     chipClassName(step),
                   )}
                   style={{
                     bottom: `calc(${topPct}% + 6px)`,
                     left: "50%",
                     transform: "translateX(-50%)",
+                    animationDelay: `${280 + index * 110}ms`,
                   }}
                 >
                   {formatSignedCompactRial(step)}
                 </span>
                 <div
                   className={cn(
-                    "absolute rounded-t-md",
+                    "absolute origin-bottom animate-bar-grow-y rounded-t-md",
                     barClassName(step),
                   )}
                   style={{
@@ -135,6 +137,7 @@ function WaterfallChart({ model }: { model: WaterfallModel }) {
                     width: "64%",
                     bottom: `${bottomPct}%`,
                     height: `${heightPct}%`,
+                    animationDelay: `${index * 110}ms`,
                   }}
                 />
               </div>
@@ -161,10 +164,11 @@ function WaterfallChart({ model }: { model: WaterfallModel }) {
 function WaterfallList({ model }: { model: WaterfallModel }) {
   return (
     <ol className="grid gap-2 sm:hidden">
-      {model.steps.map((step) => (
+      {model.steps.map((step, index) => (
         <li
           key={step.kind}
-          className="flex items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/30 px-3.5 py-3"
+          className="flex animate-rise-in items-center justify-between gap-3 rounded-xl border border-border/50 bg-muted/30 px-3.5 py-3"
+          style={{ animationDelay: `${index * 70}ms` }}
         >
           <div className="min-w-0">
             <p className="text-sm font-semibold text-foreground">{step.labelFa}</p>

@@ -137,7 +137,7 @@ export function GrowthDecomposition({
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {items.map((item) => {
+        {items.map((item, itemIndex) => {
           const isNegative = item.contributionRial < 0;
           const isPositive = item.contributionRial > 0;
           const evidenceId = evidenceByScope[`growth:${item.driver}`];
@@ -149,8 +149,9 @@ export function GrowthDecomposition({
             <article
               key={item.driver}
               className={cn(
-                "grid gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm",
+                "grid animate-rise-in gap-4 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-sm",
               )}
+              style={{ animationDelay: `${itemIndex * 90}ms` }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
@@ -199,10 +200,10 @@ export function GrowthDecomposition({
                 >
                   <div
                     className={cn(
-                      "h-full rounded-full transition-all duration-500",
+                      "h-full origin-inline-start animate-bar-grow-x rounded-full",
                       isNegative ? "bg-destructive" : "bg-primary"
                     )}
-                    style={{ width }}
+                    style={{ width, animationDelay: `${200 + itemIndex * 90}ms` }}
                   />
                 </div>
               </div>

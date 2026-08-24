@@ -163,19 +163,20 @@ function CohortSection({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {cohortNames.map((cohort) => (
+              {cohortNames.map((cohort, cohortIndex) => (
                 <TableRow key={cohort}>
                   <TableCell className="font-semibold text-foreground">{formatPersianMonth(cohort)}</TableCell>
-                  {periods.map((period) => {
+                  {periods.map((period, periodIndex) => {
                     const cell = cohortMap.get(`${cohort}:${period}`)
                     return (
                       <TableCell key={period} className="text-center">
                         {cell ? (
                           <span
                             className={cn(
-                              "inline-flex min-w-16 justify-center rounded-full px-2.5 py-1 text-xs tabular-nums",
+                              "inline-flex min-w-16 animate-pop-in justify-center rounded-full px-2.5 py-1 text-xs tabular-nums",
                               cohortTone(cell.retentionPct),
                             )}
+                            style={{ animationDelay: `${cohortIndex * 80 + periodIndex * 40}ms` }}
                           >
                             {faPercent.format(cell.retentionPct)}٪
                           </span>
@@ -192,8 +193,12 @@ function CohortSection({
         </div>
 
         <div className="flex flex-col gap-3 md:hidden">
-          {latestCohorts.map((cohort) => (
-            <div className="rounded-xl border border-border/50 bg-muted/30 p-4" key={cohort}>
+          {latestCohorts.map((cohort, cohortIndex) => (
+            <div
+              className="animate-rise-in rounded-xl border border-border/50 bg-muted/30 p-4"
+              style={{ animationDelay: `${cohortIndex * 90}ms` }}
+              key={cohort}
+            >
               <p className="font-bold text-foreground">
                 {formatPersianMonth(cohort)}
               </p>
@@ -369,7 +374,7 @@ export function CustomerGrowthPage({
           </h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card size="sm" className="animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
                 <h3>کل خریداران فعال</h3>
@@ -382,7 +387,7 @@ export function CustomerGrowthPage({
               </p>
             </CardContent>
           </Card>
-          <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card size="sm" className="animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs" style={{ animationDelay: "80ms" }}>
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
                 <h3>خریداران جدید</h3>
@@ -398,8 +403,9 @@ export function CustomerGrowthPage({
           <Card
             size="sm"
             className={cn(
-              "rounded-2xl border border-border/70 bg-card p-5 shadow-xs",
+              "animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs",
             )}
+            style={{ animationDelay: "160ms" }}
           >
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
@@ -508,8 +514,12 @@ export function CustomerGrowthPage({
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {payload.concentration.length > 0 ? (
-            payload.concentration.map((bucket) => (
-              <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3.5" key={bucket.bucket}>
+            payload.concentration.map((bucket, bucketIndex) => (
+              <div
+                className="flex animate-rise-in flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3.5"
+                style={{ animationDelay: `${bucketIndex * 80}ms` }}
+                key={bucket.bucket}
+              >
                 <div className="text-sm font-semibold text-foreground">
                   {bucketLabels[bucket.bucket] ?? bucket.bucket}
                 </div>
@@ -526,8 +536,11 @@ export function CustomerGrowthPage({
                     role="img"
                   >
                     <div
-                      className="h-full rounded-full bg-primary transition-all duration-500"
-                      style={{ width: `${Math.min(bucket.revenueSharePct, 100)}%` }}
+                      className="h-full origin-inline-start animate-bar-grow-x rounded-full bg-primary"
+                      style={{
+                        width: `${Math.min(bucket.revenueSharePct, 100)}%`,
+                        animationDelay: `${150 + bucketIndex * 80}ms`,
+                      }}
                     />
                   </div>
                   <div className="flex items-center justify-between gap-3 text-xs">
@@ -542,8 +555,11 @@ export function CustomerGrowthPage({
                     role="img"
                   >
                     <div
-                      className="h-full rounded-full bg-chart-4 transition-all duration-500"
-                      style={{ width: `${Math.min(bucket.customerSharePct, 100)}%` }}
+                      className="h-full origin-inline-start animate-bar-grow-x rounded-full bg-chart-4"
+                      style={{
+                        width: `${Math.min(bucket.customerSharePct, 100)}%`,
+                        animationDelay: `${230 + bucketIndex * 80}ms`,
+                      }}
                     />
                   </div>
                 </div>

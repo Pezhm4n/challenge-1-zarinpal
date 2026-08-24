@@ -77,7 +77,7 @@ export function PeerPosition({
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {benchmarks.map((benchmark) => {
+        {benchmarks.map((benchmark, benchmarkIndex) => {
           const evidenceId = evidenceByScope[`peer:${benchmark.metric}`];
           const label = labels[benchmark.metric] ?? {
             title: benchmark.metric,
@@ -87,7 +87,8 @@ export function PeerPosition({
             return (
               <article
                 key={benchmark.metric}
-                className="grid gap-3 rounded-2xl border border-border/70 bg-card p-5 shadow-xs"
+                className="grid animate-rise-in gap-3 rounded-2xl border border-border/70 bg-card p-5 shadow-xs"
+                style={{ animationDelay: `${benchmarkIndex * 90}ms` }}
               >
                 <div className="flex size-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <CircleAlert aria-hidden="true" className="size-5" />
@@ -108,7 +109,8 @@ export function PeerPosition({
           return (
             <article
               key={benchmark.metric}
-              className="grid gap-5 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:border-border hover:shadow-sm"
+              className="grid animate-rise-in gap-5 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-sm"
+              style={{ animationDelay: `${benchmarkIndex * 90}ms` }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
@@ -175,8 +177,11 @@ export function PeerPosition({
                     {/* Position Pin Indicator on Axis */}
                     <div
                       aria-hidden="true"
-                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 pointer-events-none"
-                      style={{ left: `${Math.max(4, Math.min(96, benchmark.percentile))}%` }}
+                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex animate-pop-in items-center justify-center pointer-events-none"
+                      style={{
+                        left: `${Math.max(4, Math.min(96, benchmark.percentile))}%`,
+                        animationDelay: `${350 + benchmarkIndex * 90}ms`,
+                      }}
                     >
                       <span className="size-4 rounded-full border-2 border-card bg-primary shadow-md ring-3 ring-primary/25" />
                     </div>

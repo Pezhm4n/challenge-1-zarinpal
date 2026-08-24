@@ -14,11 +14,99 @@
  */
 
 
+/*
+ * Reduced motion (HIG Accessibility > Motion): honor the OS preference by
+ * removing large/positional movement (slides, zooms, bar growth) while keeping
+ * subtle opacity crossfades so the UI still feels alive and state changes stay
+ * perceivable. Keyframes redeclared here only apply when the media matches.
+ */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
+  html {
     scroll-behavior: auto !important;
+  }
+  @keyframes enter {
+    from { opacity: var(--tw-enter-opacity, 1); transform: none; filter: blur(0); }
+  }
+  @keyframes exit {
+    to { opacity: var(--tw-exit-opacity, 1); transform: none; filter: blur(0); }
+  }
+  @keyframes rise-in {
+    from { opacity: 0; translate: 0 0; }
+    to { opacity: 1; translate: 0 0; }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; scale: 1; }
+    to { opacity: 1; scale: 1; }
+  }
+  @keyframes page-enter {
+    from { opacity: 0; translate: 0 0; }
+    to { opacity: 1; translate: 0 0; }
+  }
+}
+
+/*
+ * Motion tokens: entrance/stagger animations for charts and sections.
+ * Keyframes animate the independent `translate`/`scale`/opacity properties so
+ * they compose with inline `transform` (e.g. waterfall chips centered with
+ * translateX(-50%)) and never block hover transforms after they finish
+ * (fill mode is `backwards`, final state = natural state).
+ */
+@theme {
+  --ease-smooth: cubic-bezier(0.32, 0.72, 0, 1);
+  --animate-page-enter: page-enter 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-rise-in: rise-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  --animate-pop-in: pop-in 0.4s cubic-bezier(0.34, 1.3, 0.64, 1) backwards;
+  --animate-fade-in: fade-in 0.6s ease-out backwards;
+  --animate-bar-grow-y: bar-grow-y 0.8s cubic-bezier(0.34, 1.25, 0.64, 1) backwards;
+  --animate-bar-grow-x: bar-grow-x 0.8s cubic-bezier(0.34, 1.25, 0.64, 1) backwards;
+  --animate-shimmer: shimmer 2s ease-in-out infinite;
+
+  @keyframes rise-in {
+    from { opacity: 0; translate: 0 12px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+  @keyframes pop-in {
+    from { opacity: 0; scale: 0.9; }
+    to { opacity: 1; scale: 1; }
+  }
+  @keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes page-enter {
+    from { opacity: 0; translate: 0 14px; }
+    to { opacity: 1; translate: 0 0; }
+  }
+  @keyframes bar-grow-y {
+    from { transform: scaleY(0); }
+    to { transform: scaleY(1); }
+  }
+  @keyframes bar-grow-x {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+  @keyframes shimmer {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+}
+
+/*
+ * Smooth <details> open/close (progressive enhancement, Chromium 129+).
+ * Unsupported browsers fall back to instant expand with no visual breakage.
+ * Height animation is movement, so it is gated behind reduced-motion preference.
+ */
+@media (prefers-reduced-motion: no-preference) {
+  details::details-content {
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+    transition: height 250ms ease-out, opacity 250ms ease-out,
+      content-visibility 250ms allow-discrete;
+  }
+  details[open]::details-content {
+    height: auto;
+    opacity: 1;
   }
 }
 
