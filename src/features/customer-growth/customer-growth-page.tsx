@@ -2,6 +2,8 @@ import {
   AlertCircleIcon,
   ShieldCheckIcon,
   TargetIcon,
+  TrendingDownIcon,
+  TrendingUpIcon,
   UsersRoundIcon,
 } from "lucide-react"
 
@@ -73,20 +75,23 @@ function statusVariant(status: InsightSummary["status"]) {
   return "outline" as const
 }
 
+/** Sequential primary scale: stronger retention = deeper tint. 0% stays
+ * neutral (a passed month without return), never red — red is reserved for
+ * destructive meaning. */
 function cohortTone(value: number) {
   if (value === 0) {
-    return "bg-destructive/10 text-destructive font-semibold"
+    return "bg-muted/60 text-muted-foreground font-semibold"
   }
-  if (value >= 60) {
-    return "bg-primary text-primary-foreground font-bold"
+  if (value >= 4) {
+    return "bg-primary/60 text-primary-foreground font-bold"
   }
-  if (value >= 30) {
-    return "bg-primary/60 text-primary-foreground font-semibold"
+  if (value >= 2) {
+    return "bg-primary/40 text-foreground font-semibold"
   }
-  if (value > 0) {
-    return "bg-primary/15 text-primary font-semibold"
+  if (value >= 1) {
+    return "bg-primary/25 text-foreground font-semibold"
   }
-  return "bg-muted text-muted-foreground"
+  return "bg-primary/10 text-foreground font-semibold"
 }
 
 function periodLabel(periodIndex: number) {
@@ -202,8 +207,8 @@ function CohortSection({
                       </dt>
                       <dd
                         className={cn(
-                          "mt-1 font-bold tabular-nums text-foreground",
-                          cell?.retentionPct === 0 && "text-destructive",
+                          "mt-1 font-bold tabular-nums",
+                          cell?.retentionPct === 0 ? "text-muted-foreground" : "text-foreground",
                         )}
                       >
                         {cell ? `${faPercent.format(cell.retentionPct)}٪` : "—"}
@@ -418,7 +423,24 @@ export function CustomerGrowthPage({
                   ? "—"
                   : `${faPercent.format(payload.returningSharePct)}٪`}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              {hasReturningBaseline ? (
+                <span
+                  className={cn(
+                    "mt-2 inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                    returningDropped && "bg-destructive/10 text-destructive",
+                    returningImproved && "bg-success/10 text-success-foreground",
+                    !returningDropped && !returningImproved && "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {returningImproved ? (
+                    <TrendingUpIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                  ) : returningDropped ? (
+                    <TrendingDownIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                  ) : null}
+                  {faPercent.format(Math.abs((payload.returningSharePct as number) - (comparisonShare as number)))} واحد درصد {returningImproved ? "بیشتر" : returningDropped ? "کمتر" : ""} از دوره قبل
+                </span>
+              ) : null}
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 {faInteger.format(payload.returningCards)} خریدار از {faInteger.format(payload.activeCards)} خریدار فعال
               </p>
             </CardContent>
@@ -488,25 +510,43 @@ export function CustomerGrowthPage({
           {payload.concentration.length > 0 ? (
             payload.concentration.map((bucket) => (
               <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3.5" key={bucket.bucket}>
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-semibold text-foreground">{bucketLabels[bucket.bucket] ?? bucket.bucket}</span>
-                  <span className="tabular-nums font-bold text-foreground">
-                    {faPercent.format(bucket.revenueSharePct)}٪ مبلغ
-                  </span>
+                <div className="text-sm font-semibold text-foreground">
+                  {bucketLabels[bucket.bucket] ?? bucket.bucket}
                 </div>
-                <div
-                  aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.revenueSharePct)} درصد مبلغ`}
-                  className="h-2.5 overflow-hidden rounded-full bg-muted"
-                  role="img"
-                >
+                <div className="grid gap-1.5">
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-muted-foreground">سهم از مبلغ فروش</span>
+                    <span className="tabular-nums font-bold text-foreground">
+                      {faPercent.format(bucket.revenueSharePct)}٪
+                    </span>
+                  </div>
                   <div
-                    className="h-full rounded-full bg-primary transition-all duration-500"
-                    style={{ width: `${Math.min(bucket.revenueSharePct, 100)}%` }}
-                  />
+                    aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.revenueSharePct)} درصد از مبلغ فروش`}
+                    className="h-2.5 overflow-hidden rounded-full bg-muted"
+                    role="img"
+                  >
+                    <div
+                      className="h-full rounded-full bg-primary transition-all duration-500"
+                      style={{ width: `${Math.min(bucket.revenueSharePct, 100)}%` }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-muted-foreground">سهم از خریداران فعال</span>
+                    <span className="tabular-nums font-semibold text-foreground">
+                      {faPercent.format(bucket.customerSharePct)}٪
+                    </span>
+                  </div>
+                  <div
+                    aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.customerSharePct)} درصد از خریداران فعال`}
+                    className="h-2.5 overflow-hidden rounded-full bg-muted"
+                    role="img"
+                  >
+                    <div
+                      className="h-full rounded-full bg-chart-4 transition-all duration-500"
+                      style={{ width: `${Math.min(bucket.customerSharePct, 100)}%` }}
+                    />
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {faPercent.format(bucket.customerSharePct)}٪ از کل خریداران فعال
-                </p>
               </div>
             ))
           ) : (
