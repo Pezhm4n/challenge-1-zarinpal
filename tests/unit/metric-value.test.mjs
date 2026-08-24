@@ -20,6 +20,11 @@ test("مبلغ ریالی بدون تبدیل ضمنی به تومان نمای�
 })
 
 
+// ICU در نسخه‌های مختلف Node جای Markهای جهت (LRM/RLM) را در اعداد منفی RTL
+// جابه‌جا می‌کند؛ برای Deterministic بودن تست، Markهای نامرئی قبل از مقایسه حذف می‌شوند.
+const stripDirectionMarks = (value) =>
+  value.replace(/[\u200E\u200F\u2066-\u2069]/g, "")
+
 test("درصد و واحد درصد با Precision قراردادی نمایش داده می‌شوند", () => {
   assert.equal(
     formatMetricValue({
@@ -32,14 +37,16 @@ test("درصد و واحد درصد با Precision قراردادی نمایش �
     "۳۹٫۴۹ ٪",
   )
   assert.equal(
-    formatMetricValue({
-      value: -21.01,
-      unit: "percentage-point",
-      labelFa: "افت Conversion",
-      kind: "actual",
-      displayPrecision: 2,
-    }),
-    "‎−۲۱٫۰۱ واحد درصد",
+    stripDirectionMarks(
+      formatMetricValue({
+        value: -21.01,
+        unit: "percentage-point",
+        labelFa: "افت Conversion",
+        kind: "actual",
+        displayPrecision: 2,
+      }),
+    ),
+    "−۲۱٫۰۱ واحد درصد",
   )
 })
 
