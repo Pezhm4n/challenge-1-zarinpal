@@ -2,11 +2,13 @@ import {
   AlertCircleIcon,
   ShieldCheckIcon,
   TargetIcon,
+  TrendingDownIcon,
+  TrendingUpIcon,
   UsersRoundIcon,
 } from "lucide-react"
 
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
-import { Badge } from "./ui/badge"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -14,7 +16,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card"
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -22,7 +24,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table"
+} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
 import {
@@ -73,20 +75,23 @@ function statusVariant(status: InsightSummary["status"]) {
   return "outline" as const
 }
 
+/** Sequential primary scale: stronger retention = deeper tint. 0% stays
+ * neutral (a passed month without return), never red — red is reserved for
+ * destructive meaning. */
 function cohortTone(value: number) {
   if (value === 0) {
-    return "bg-destructive/10 text-destructive font-semibold"
+    return "bg-muted/60 text-muted-foreground font-semibold"
   }
-  if (value >= 60) {
-    return "bg-primary text-primary-foreground font-bold"
+  if (value >= 4) {
+    return "bg-primary/60 text-primary-foreground font-bold"
   }
-  if (value >= 30) {
-    return "bg-primary/60 text-primary-foreground font-semibold"
+  if (value >= 2) {
+    return "bg-primary/40 text-foreground font-semibold"
   }
-  if (value > 0) {
-    return "bg-primary/15 text-primary font-semibold"
+  if (value >= 1) {
+    return "bg-primary/25 text-foreground font-semibold"
   }
-  return "bg-muted text-muted-foreground"
+  return "bg-primary/10 text-foreground font-semibold"
 }
 
 function periodLabel(periodIndex: number) {
@@ -158,19 +163,20 @@ function CohortSection({
               </TableRow>
             </TableHeader>
             <TableBody>
-              {cohortNames.map((cohort) => (
+              {cohortNames.map((cohort, cohortIndex) => (
                 <TableRow key={cohort}>
                   <TableCell className="font-semibold text-foreground">{formatPersianMonth(cohort)}</TableCell>
-                  {periods.map((period) => {
+                  {periods.map((period, periodIndex) => {
                     const cell = cohortMap.get(`${cohort}:${period}`)
                     return (
                       <TableCell key={period} className="text-center">
                         {cell ? (
                           <span
                             className={cn(
-                              "inline-flex min-w-16 justify-center rounded-full px-2.5 py-1 text-xs tabular-nums",
+                              "inline-flex min-w-16 animate-pop-in justify-center rounded-full px-2.5 py-1 text-xs tabular-nums",
                               cohortTone(cell.retentionPct),
                             )}
+                            style={{ animationDelay: `${cohortIndex * 80 + periodIndex * 40}ms` }}
                           >
                             {faPercent.format(cell.retentionPct)}٪
                           </span>
@@ -187,8 +193,12 @@ function CohortSection({
         </div>
 
         <div className="flex flex-col gap-3 md:hidden">
-          {latestCohorts.map((cohort) => (
-            <div className="rounded-xl border border-border/50 bg-muted/30 p-4" key={cohort}>
+          {latestCohorts.map((cohort, cohortIndex) => (
+            <div
+              className="animate-rise-in rounded-xl border border-border/50 bg-muted/30 p-4"
+              style={{ animationDelay: `${cohortIndex * 90}ms` }}
+              key={cohort}
+            >
               <p className="font-bold text-foreground">
                 {formatPersianMonth(cohort)}
               </p>
@@ -202,8 +212,8 @@ function CohortSection({
                       </dt>
                       <dd
                         className={cn(
-                          "mt-1 font-bold tabular-nums text-foreground",
-                          cell?.retentionPct === 0 && "text-destructive",
+                          "mt-1 font-bold tabular-nums",
+                          cell?.retentionPct === 0 ? "text-muted-foreground" : "text-foreground",
                         )}
                       >
                         {cell ? `${faPercent.format(cell.retentionPct)}٪` : "—"}
@@ -271,9 +281,9 @@ export function CustomerGrowthPage({
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
-        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
+      <header className="relative grid gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 sm:p-7 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-40 rounded-full bg-primary/[0.06] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -286,20 +296,20 @@ export function CustomerGrowthPage({
               <HelpTooltip term="Card" icon="info" />
             </Badge>
           </div>
-          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
+          <h1 className="mt-3 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
               رشد و وفاداری مشتریان
             </span>{" "}
             برای فروشگاه شما
           </h1>
-          <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             تحلیل رفتار خرید و تکرار مراجعه مشتریان بر اساس کارت‌های بانکی ناشناس؛ کاملاً امن و بدون افشای هویت خریداران.
           </p>
-          <p className="mt-3 text-xs font-medium text-muted-foreground">
+          <p className="mt-2.5 text-xs font-medium text-muted-foreground">
             دوره: {formatPersianPeriod(payload.selection.period)}
           </p>
         </div>
-        <div className="border-t border-border/50 pt-4">
+        <div className="border-t border-border/50 pt-3.5">
           <MerchantSelector
             merchantKey={payload.selection.merchantKey}
             merchantKeys={merchantKeys}
@@ -364,7 +374,7 @@ export function CustomerGrowthPage({
           </h2>
         </div>
         <div className="grid gap-4 md:grid-cols-3">
-          <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card size="sm" className="animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
                 <h3>کل خریداران فعال</h3>
@@ -377,7 +387,7 @@ export function CustomerGrowthPage({
               </p>
             </CardContent>
           </Card>
-          <Card size="sm" className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card size="sm" className="animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs" style={{ animationDelay: "80ms" }}>
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
                 <h3>خریداران جدید</h3>
@@ -393,11 +403,9 @@ export function CustomerGrowthPage({
           <Card
             size="sm"
             className={cn(
-              "rounded-2xl border bg-card p-5 shadow-xs transition-colors",
-              returningImproved && "border-success/40",
-              returningDropped && "border-destructive/40",
-              !hasReturningBaseline && "border-border/70",
+              "animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs",
             )}
+            style={{ animationDelay: "160ms" }}
           >
             <CardHeader className="p-0 gap-1">
               <CardTitle className="text-base font-bold text-foreground">
@@ -421,7 +429,24 @@ export function CustomerGrowthPage({
                   ? "—"
                   : `${faPercent.format(payload.returningSharePct)}٪`}
               </p>
-              <p className="mt-1 text-xs text-muted-foreground">
+              {hasReturningBaseline ? (
+                <span
+                  className={cn(
+                    "mt-2 inline-flex max-w-full flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-full px-2.5 py-0.5 text-xs font-semibold",
+                    returningDropped && "bg-destructive/10 text-destructive",
+                    returningImproved && "bg-success/10 text-success-foreground",
+                    !returningDropped && !returningImproved && "bg-muted text-muted-foreground",
+                  )}
+                >
+                  {returningImproved ? (
+                    <TrendingUpIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                  ) : returningDropped ? (
+                    <TrendingDownIcon aria-hidden="true" className="size-3.5 shrink-0" />
+                  ) : null}
+                  {faPercent.format(Math.abs((payload.returningSharePct as number) - (comparisonShare as number)))} واحد درصد {returningImproved ? "بیشتر" : returningDropped ? "کمتر" : ""} از دوره قبل
+                </span>
+              ) : null}
+              <p className="mt-1.5 text-xs text-muted-foreground">
                 {faInteger.format(payload.returningCards)} خریدار از {faInteger.format(payload.activeCards)} خریدار فعال
               </p>
             </CardContent>
@@ -489,27 +514,55 @@ export function CustomerGrowthPage({
         </CardHeader>
         <CardContent className="flex flex-col gap-4">
           {payload.concentration.length > 0 ? (
-            payload.concentration.map((bucket) => (
-              <div className="flex flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3.5" key={bucket.bucket}>
-                <div className="flex items-center justify-between gap-3 text-sm">
-                  <span className="font-semibold text-foreground">{bucketLabels[bucket.bucket] ?? bucket.bucket}</span>
-                  <span className="tabular-nums font-bold text-foreground">
-                    {faPercent.format(bucket.revenueSharePct)}٪ مبلغ
-                  </span>
+            payload.concentration.map((bucket, bucketIndex) => (
+              <div
+                className="flex animate-rise-in flex-col gap-2 rounded-xl border border-border/40 bg-muted/20 p-3.5"
+                style={{ animationDelay: `${bucketIndex * 80}ms` }}
+                key={bucket.bucket}
+              >
+                <div className="text-sm font-semibold text-foreground">
+                  {bucketLabels[bucket.bucket] ?? bucket.bucket}
                 </div>
-                <div
-                  aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.revenueSharePct)} درصد مبلغ`}
-                  className="h-2.5 overflow-hidden rounded-full bg-muted"
-                  role="img"
-                >
+                <div className="grid gap-1.5">
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-muted-foreground">سهم از مبلغ فروش</span>
+                    <span className="tabular-nums font-bold text-foreground">
+                      {faPercent.format(bucket.revenueSharePct)}٪
+                    </span>
+                  </div>
                   <div
-                    className="h-full rounded-full bg-primary transition-all duration-500"
-                    style={{ width: `${Math.min(bucket.revenueSharePct, 100)}%` }}
-                  />
+                    aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.revenueSharePct)} درصد از مبلغ فروش`}
+                    className="h-2.5 overflow-hidden rounded-full bg-muted"
+                    role="img"
+                  >
+                    <div
+                      className="h-full origin-inline-start animate-bar-grow-x rounded-full bg-primary"
+                      style={{
+                        width: `${Math.min(bucket.revenueSharePct, 100)}%`,
+                        animationDelay: `${150 + bucketIndex * 80}ms`,
+                      }}
+                    />
+                  </div>
+                  <div className="flex items-center justify-between gap-3 text-xs">
+                    <span className="text-muted-foreground">سهم از خریداران فعال</span>
+                    <span className="tabular-nums font-semibold text-foreground">
+                      {faPercent.format(bucket.customerSharePct)}٪
+                    </span>
+                  </div>
+                  <div
+                    aria-label={`${bucketLabels[bucket.bucket] ?? bucket.bucket}: ${faPercent.format(bucket.customerSharePct)} درصد از خریداران فعال`}
+                    className="h-2.5 overflow-hidden rounded-full bg-muted"
+                    role="img"
+                  >
+                    <div
+                      className="h-full origin-inline-start animate-bar-grow-x rounded-full bg-chart-4"
+                      style={{
+                        width: `${Math.min(bucket.customerSharePct, 100)}%`,
+                        animationDelay: `${230 + bucketIndex * 80}ms`,
+                      }}
+                    />
+                  </div>
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  {faPercent.format(bucket.customerSharePct)}٪ از کل خریداران فعال
-                </p>
               </div>
             ))
           ) : (

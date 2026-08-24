@@ -9,17 +9,17 @@ const iranYekan = localFont({
   src: [
     {
       path: "../../public/fonts/iranyekanwebregular.woff2",
-      weight: "100 900",
+      weight: "400",
       style: "normal",
     },
     {
       path: "../../public/fonts/iranyekanwebregular.woff",
-      weight: "100 900",
+      weight: "400",
       style: "normal",
     },
     {
       path: "../../public/fonts/iranyekanwebregular.ttf",
-      weight: "100 900",
+      weight: "400",
       style: "normal",
     },
   ],
@@ -30,6 +30,12 @@ const iranYekan = localFont({
 export const metadata: Metadata = {
   title: "نبض زرین | Zarin Pulse",
   description: "مرکز اقدام هوشمند برای پذیرندگان زرین‌پال",
+};
+
+export const viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  viewportFit: 'cover',
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

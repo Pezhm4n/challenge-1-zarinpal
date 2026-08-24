@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader } from "@/features/customer-growth/ui/card"
-import { Skeleton } from "@/features/customer-growth/ui/skeleton"
+import { Card, CardContent, CardHeader } from "@/components/ui/card"
+import { Skeleton } from "@/components/ui/skeleton"
 
 export default function CustomersLoading() {
   return (
@@ -8,7 +8,7 @@ export default function CustomersLoading() {
       aria-label="در حال بارگذاری گزارش مشتریان"
       className="grid min-w-0 gap-8 lg:gap-10"
     >
-      <div className="grid min-w-0 gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">
+      <div className="grid min-w-0 gap-3 rounded-2xl border border-border/70 bg-card p-6 sm:p-8">
         <Skeleton className="h-5 w-24 max-w-full rounded-full" />
         <Skeleton className="h-9 w-full max-w-md rounded-xl" />
         <Skeleton className="h-5 w-full max-w-lg rounded-lg" />

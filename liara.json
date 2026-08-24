@@ -1,4 +1,5 @@
 {
+  "app": "nabz-zarinpal",
   "platform": "next",
   "port": 3000
 }

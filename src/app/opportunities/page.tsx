@@ -9,8 +9,18 @@ export const metadata: Metadata = {
   description: "تفکیک عوامل رشد، مقایسه هم‌صنف و فرصت‌های زمانی فروشگاه",
 };
 
-export default async function OpportunitiesRoute() {
-  const result = await loadPeerOpportunities("M275");
+type OpportunitiesRouteProps = {
+  searchParams: Promise<{ merchant?: string | string[] }>;
+};
+
+export default async function OpportunitiesRoute({
+  searchParams,
+}: OpportunitiesRouteProps) {
+  const params = await searchParams;
+  const requestedMerchant = Array.isArray(params.merchant)
+    ? params.merchant[0]
+    : params.merchant;
+  const result = await loadPeerOpportunities(requestedMerchant ?? "M275");
   if (result.status === "error") {
     return <FeatureState error={result.error} />;
   }

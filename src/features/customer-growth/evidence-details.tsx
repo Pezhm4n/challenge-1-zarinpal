@@ -1,4 +1,4 @@
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {
   Table,
   TableBody,
@@ -6,7 +6,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table"
+} from "@/components/ui/table"
 import { CalendarDays, Play, Scale } from "lucide-react"
 import {
   formatPersianDateTime,

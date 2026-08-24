@@ -28,7 +28,7 @@ function SheetOverlay({ className, ...props }: SheetPrimitive.Backdrop.Props) {
     <SheetPrimitive.Backdrop
       data-slot="sheet-overlay"
       className={cn(
-        "fixed inset-0 z-50 bg-black/40 backdrop-blur-xs transition-opacity duration-200 data-ending-style:opacity-0 data-starting-style:opacity-0",
+        "fixed inset-0 z-50 bg-black/40 backdrop-blur-xs data-open:animate-in data-open:fade-in-0 data-open:duration-300 data-closed:animate-out data-closed:fade-out-0 data-closed:duration-250",
         className,
       )}
       {...props}
@@ -53,7 +53,7 @@ function SheetContent({
         data-slot="sheet-content"
         data-side={side}
         className={cn(
-          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-2xl transition duration-300 ease-out data-ending-style:opacity-0 data-starting-style:opacity-0 data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:rounded-t-3xl data-[side=bottom]:border-t data-[side=bottom]:data-ending-style:translate-y-full data-[side=bottom]:data-starting-style:translate-y-full data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-full data-[side=left]:border-e data-[side=left]:data-ending-style:translate-x-[-100%] data-[side=left]:data-starting-style:translate-x-[-100%] data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-full data-[side=right]:border-s data-[side=right]:data-ending-style:translate-x-[100%] data-[side=right]:data-starting-style:translate-x-[100%] data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:rounded-b-3xl data-[side=top]:border-b data-[side=top]:data-ending-style:translate-y-[-100%] data-[side=top]:data-starting-style:translate-y-[-100%] data-[side=left]:sm:max-w-lg data-[side=left]:md:max-w-xl data-[side=left]:lg:max-w-2xl data-[side=right]:sm:max-w-lg data-[side=right]:md:max-w-xl data-[side=right]:lg:max-w-2xl",
+          "fixed z-50 flex flex-col gap-4 bg-popover bg-clip-padding text-sm text-popover-foreground shadow-2xl data-[side=bottom]:inset-x-0 data-[side=bottom]:bottom-0 data-[side=bottom]:h-auto data-[side=bottom]:rounded-t-2xl data-[side=bottom]:border-t data-[side=left]:inset-y-0 data-[side=left]:left-0 data-[side=left]:h-full data-[side=left]:w-full data-[side=left]:border-e data-[side=right]:inset-y-0 data-[side=right]:right-0 data-[side=right]:h-full data-[side=right]:w-full data-[side=right]:border-s data-[side=top]:inset-x-0 data-[side=top]:top-0 data-[side=top]:h-auto data-[side=top]:rounded-b-2xl data-[side=top]:border-b data-[side=left]:sm:max-w-lg data-[side=left]:md:max-w-xl data-[side=left]:lg:max-w-2xl data-[side=right]:sm:max-w-lg data-[side=right]:md:max-w-xl data-[side=right]:lg:max-w-2xl data-open:animate-in data-open:fade-in-0 data-open:ease-smooth data-open:duration-[420ms] data-closed:animate-out data-closed:fade-out-0 data-closed:ease-in data-closed:duration-[260ms] data-[side=bottom]:slide-in-from-bottom data-[side=bottom]:slide-out-to-bottom data-[side=top]:slide-in-from-top data-[side=top]:slide-out-to-top data-[side=left]:slide-in-from-left data-[side=left]:slide-out-to-left data-[side=right]:slide-in-from-right data-[side=right]:slide-out-to-right",
           className,
         )}
         {...props}
@@ -65,7 +65,7 @@ function SheetContent({
             render={
               <Button
                 variant="ghost"
-                className="absolute top-3 end-3 min-h-9 min-w-9 rounded-full"
+                className="absolute top-3 end-3 min-h-11 min-w-11 rounded-full"
                 size="icon-sm"
               />
             }

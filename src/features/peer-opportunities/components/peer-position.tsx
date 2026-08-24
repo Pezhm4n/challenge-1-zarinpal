@@ -77,7 +77,7 @@ export function PeerPosition({
       </header>
 
       <div className="grid gap-4 lg:grid-cols-3">
-        {benchmarks.map((benchmark) => {
+        {benchmarks.map((benchmark, benchmarkIndex) => {
           const evidenceId = evidenceByScope[`peer:${benchmark.metric}`];
           const label = labels[benchmark.metric] ?? {
             title: benchmark.metric,
@@ -87,7 +87,8 @@ export function PeerPosition({
             return (
               <article
                 key={benchmark.metric}
-                className="grid gap-3 rounded-2xl border border-border/70 bg-card p-5 shadow-xs"
+                className="grid animate-rise-in gap-3 rounded-2xl border border-border/70 bg-card p-5 shadow-xs"
+                style={{ animationDelay: `${benchmarkIndex * 90}ms` }}
               >
                 <div className="flex size-9 items-center justify-center rounded-xl bg-muted text-muted-foreground">
                   <CircleAlert aria-hidden="true" className="size-5" />
@@ -99,17 +100,17 @@ export function PeerPosition({
               </article>
             );
           }
-          const aboveMedian = benchmark.merchantValue > benchmark.peerMedian;
-          const belowMedian = benchmark.merchantValue < benchmark.peerMedian;
+          const medianDelta =
+            benchmark.peerMedian !== 0
+              ? ((benchmark.merchantValue - benchmark.peerMedian) /
+                  Math.abs(benchmark.peerMedian)) *
+                100
+              : null;
           return (
             <article
               key={benchmark.metric}
-              className={cn(
-                "grid gap-5 rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
-                aboveMedian && "border-success/35 hover:border-success/55",
-                belowMedian && "border-destructive/40 hover:border-destructive/60",
-                !aboveMedian && !belowMedian && "border-border/70 hover:border-border",
-              )}
+              className="grid animate-rise-in gap-5 rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:border-border hover:shadow-sm"
+              style={{ animationDelay: `${benchmarkIndex * 90}ms` }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="grid gap-1">
@@ -176,14 +177,17 @@ export function PeerPosition({
                     {/* Position Pin Indicator on Axis */}
                     <div
                       aria-hidden="true"
-                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center justify-center transition-all duration-300 pointer-events-none"
-                      style={{ left: `${Math.max(4, Math.min(96, benchmark.percentile))}%` }}
+                      className="absolute top-1/2 -translate-x-1/2 -translate-y-1/2 flex animate-pop-in items-center justify-center pointer-events-none"
+                      style={{
+                        left: `${Math.max(4, Math.min(96, benchmark.percentile))}%`,
+                        animationDelay: `${350 + benchmarkIndex * 90}ms`,
+                      }}
                     >
                       <span className="size-4 rounded-full border-2 border-card bg-primary shadow-md ring-3 ring-primary/25" />
                     </div>
                   </div>
 
-                  <div className="flex flex-wrap justify-between gap-x-3 gap-y-0.5 text-[11px] font-medium text-muted-foreground px-1" dir="ltr">
+                  <div className="flex flex-wrap justify-between gap-x-3 gap-y-0.5 px-1 text-xs font-medium text-muted-foreground" dir="ltr">
                     <span className="text-muted-foreground">۰٪ (کمترین)</span>
                     <span className="font-semibold text-foreground/75">میانه صنف (۵۰٪)</span>
                     <span className="text-muted-foreground">۱۰۰٪ (بیشترین)</span>
@@ -203,6 +207,20 @@ export function PeerPosition({
                     </dd>
                   </div>
                 </dl>
+                {medianDelta !== null ? (
+                  <p
+                    className={cn(
+                      "inline-flex w-fit flex-wrap items-center gap-x-1.5 gap-y-0.5 rounded-full px-2.5 py-1 text-xs font-semibold",
+                      medianDelta > 0 && "bg-success/10 text-success-foreground",
+                      medianDelta < 0 && "bg-destructive/10 text-destructive",
+                      medianDelta === 0 && "bg-muted text-muted-foreground",
+                    )}
+                  >
+                    {medianDelta === 0
+                      ? "هم‌تراز میانهٔ هم‌صنفان"
+                      : `${numberFormatter.format(Math.abs(medianDelta))}٪ ${medianDelta > 0 ? "بالاتر" : "پایین‌تر"} از میانهٔ هم‌صنفان`}
+                  </p>
+                ) : null}
               </div>
             </article>
           );
