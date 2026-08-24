@@ -31,6 +31,7 @@ import {
 } from "@/entities/evidence/model"
 import { InsightCard } from "@/entities/insight/insight-card"
 import { formatMetricValue } from "@/entities/insight/metric-value"
+import { AnimatedMetricValue } from "@/entities/insight/animated-metric-value"
 import { MerchantSelector } from "@/entities/merchant/merchant-selector"
 import { cn } from "@/lib/utils"
 
@@ -71,9 +72,11 @@ function friendlyKpiTitle(labelFa: string): string {
 
 function HeadlineMetric({
   metric,
+  entranceDelayMs = 0,
   onEvidenceRequest,
 }: {
   metric: ActionCenterPayload["headlineMetrics"][number]
+  entranceDelayMs?: number
   onEvidenceRequest: (evidenceId: string) => void
 }) {
   const change = metric.change
@@ -84,8 +87,9 @@ function HeadlineMetric({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm hover:border-border",
+        "flex min-w-0 animate-rise-in flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:-translate-y-0.5 hover:shadow-sm hover:border-border",
       )}
+      style={{ animationDelay: `${entranceDelayMs}ms` }}
     >
       <div className="flex items-center justify-center gap-1.5 sm:justify-start">
         <p className="text-xs font-medium text-muted-foreground">{localizePersianText(friendlyKpiTitle(metric.value.labelFa))}</p>
@@ -94,7 +98,7 @@ function HeadlineMetric({
         ) : null}
       </div>
       <p className="mt-2.5 break-words text-center text-xl font-extrabold tabular-nums tracking-tight text-foreground sm:text-3xl sm:text-start">
-        {formatMetricValue(metric.value)}
+        <AnimatedMetricValue metric={metric.value} delayMs={entranceDelayMs + 120} />
       </p>
       {change ? (
         <div
@@ -258,7 +262,7 @@ function ResolvedActionCenter({
     <div className="grid gap-8 lg:gap-10">
       <section
         aria-labelledby="action-center-title"
-        className="relative grid gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 sm:p-7 shadow-xs"
+        className="relative grid animate-rise-in gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 sm:p-7 shadow-xs"
       >
         <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-primary/[0.08] to-transparent" />
         <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-40 rounded-full bg-primary/[0.06] blur-3xl" />
@@ -320,10 +324,11 @@ function ResolvedActionCenter({
         </div>
         {payload.headlineMetrics.length > 0 ? (
           <div className="grid gap-3 sm:grid-cols-3">
-            {payload.headlineMetrics.map((metric) => (
+            {payload.headlineMetrics.map((metric, index) => (
               <HeadlineMetric
                 key={metric.id}
                 metric={metric}
+                entranceDelayMs={120 + index * 80}
                 onEvidenceRequest={handleEvidenceRequest}
               />
             ))}
@@ -342,7 +347,7 @@ function ResolvedActionCenter({
               تجزیه تغییر فروش این دوره به سه عامل ترافیک، نرخ پرداخت موفق و میانگین مبلغ خرید؛ عدد هر ستون سهم ریالی همان عامل از تغییر کل است.
             </p>
           </div>
-          <Card className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+          <Card className="animate-rise-in rounded-2xl border border-border/70 bg-card p-5 shadow-xs" style={{ animationDelay: "160ms" }}>
             <CardContent className="p-0">
               <GrowthWaterfall
                 model={waterfallModel}
@@ -364,24 +369,31 @@ function ResolvedActionCenter({
 
         {insights.length === 0 ? <ActionCenterEmptyState /> : null}
         {insights[0] ? (
-          <InsightCard
-            insight={insights[0]}
-            rank={1}
-            featured
-            contextQuery={`merchant=${merchantKey}`}
-            onEvidenceRequest={handleEvidenceRequest}
-          />
+          <div className="animate-rise-in" style={{ animationDelay: "80ms" }}>
+            <InsightCard
+              insight={insights[0]}
+              rank={1}
+              featured
+              contextQuery={`merchant=${merchantKey}`}
+              onEvidenceRequest={handleEvidenceRequest}
+            />
+          </div>
         ) : null}
         {insights.length > 1 ? (
           <div className="grid gap-5 lg:grid-cols-2">
             {insights.slice(1).map((insight, index) => (
-              <InsightCard
+              <div
                 key={insight.id}
-                insight={insight}
-                rank={index + 2}
-                contextQuery={`merchant=${merchantKey}`}
-                onEvidenceRequest={handleEvidenceRequest}
-              />
+                className="animate-rise-in"
+                style={{ animationDelay: `${160 + index * 90}ms` }}
+              >
+                <InsightCard
+                  insight={insight}
+                  rank={index + 2}
+                  contextQuery={`merchant=${merchantKey}`}
+                  onEvidenceRequest={handleEvidenceRequest}
+                />
+              </div>
             ))}
           </div>
         ) : null}

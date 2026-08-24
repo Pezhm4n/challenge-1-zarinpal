@@ -23,7 +23,9 @@ import {
 import type { InsightSummary } from "@/contracts"
 import { cn } from "@/lib/utils"
 
-import { formatMetricValue, metricKindLabels } from "./metric-value"
+import { AnimatedMetricValue } from "./animated-metric-value"
+
+import { metricKindLabels } from "./metric-value"
 import { localizePersianText } from "@/lib/persian-date"
 
 const confidenceLabels: Record<InsightSummary["confidence"], string> = {
@@ -95,7 +97,7 @@ export function InsightCard({
         "h-full gap-5 transition-all duration-200",
         featured
           ? "border-primary/40 bg-gradient-to-b from-card via-card to-primary/[0.02] shadow-sm ring-1 ring-primary/25"
-          : "border-border/70 hover:border-border hover:shadow-sm",
+          : "border-border/70 hover:-translate-y-0.5 hover:border-border hover:shadow-sm",
       )}
     >
       <CardHeader className="gap-3.5">
@@ -146,7 +148,7 @@ export function InsightCard({
                 ) : insight.impact.value > 0 ? (
                   <TrendingUp aria-hidden="true" className="size-5 shrink-0 sm:size-6" />
                 ) : null}
-                {formatMetricValue(insight.impact)}
+                <AnimatedMetricValue metric={insight.impact} delayMs={260} />
               </span>
             </p>
           </div>
