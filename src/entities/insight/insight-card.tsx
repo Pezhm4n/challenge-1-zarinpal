@@ -58,19 +58,36 @@ const statusPresentation: Record<
   },
 }
 
+/** Contextual call-to-action per feature: label + optional in-page anchor. */
+const ctaByFeature: Record<
+  InsightSummary["feature"],
+  { labelFa: string; anchor?: string }
+> = {
+  recovery: { labelFa: "بررسی قیف پرداخت", anchor: "funnel" },
+  growth: { labelFa: "مشاهده تفکیک رشد" },
+  customers: { labelFa: "مشاهده وضعیت مشتریان" },
+  peers: { labelFa: "مشاهده مقایسه هم‌صنف" },
+  timing: { labelFa: "مشاهده فرصت‌های زمانی" },
+}
+
 export function InsightCard({
   insight,
   featured = false,
   rank,
+  contextQuery,
   onEvidenceRequest,
 }: {
   insight: InsightSummary
   featured?: boolean
   rank: number
+  /** Optional query string (e.g. "merchant=M275") kept when navigating. */
+  contextQuery?: string
   onEvidenceRequest: (evidenceId: string) => void
 }) {
   const status = statusPresentation[insight.status]
   const StatusIcon = status.icon
+  const cta = ctaByFeature[insight.feature]
+  const ctaHref = `${insight.destination}${contextQuery ? `?${contextQuery}` : ""}${cta.anchor ? `#${cta.anchor}` : ""}`
 
   return (
     <Card
@@ -149,20 +166,28 @@ export function InsightCard({
           </div>
         </div>
 
-        <div className="mt-auto flex items-start gap-2.5 border-t border-border/60 pt-4 text-xs leading-relaxed text-muted-foreground">
-          <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
-          <p>
-            <span className="font-semibold text-foreground">
-              {confidenceLabels[insight.confidence]}:
-            </span>{" "}
-            {localizePersianText(insight.confidenceReasonFa)}
-          </p>
+        <div className="mt-auto grid gap-1.5 border-t border-border/60 pt-4 text-xs leading-relaxed text-muted-foreground">
+          <div className="flex items-start gap-2.5">
+            <ShieldCheck aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <p>
+              <span className="font-semibold text-foreground">
+                {confidenceLabels[insight.confidence]}:
+              </span>{" "}
+              {localizePersianText(insight.confidenceReasonFa)}
+            </p>
+          </div>
+          <div className="flex items-start gap-2.5">
+            <CircleMinus aria-hidden="true" className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
+            <p>
+              سنجش اثر: نتیجه این پیشنهاد در دوره بعد با همین فرمول دوباره محاسبه می‌شود.
+            </p>
+          </div>
         </div>
 
         <div className="grid gap-2 sm:flex sm:flex-wrap">
           <Button
             size="default"
-            className="min-h-10 w-full sm:w-fit font-medium"
+            className="min-h-11 w-full sm:w-fit font-medium"
             aria-label={`چطور ${insight.titleFa} محاسبه شد؟`}
             onClick={() => onEvidenceRequest(insight.evidenceId)}
           >
@@ -172,11 +197,11 @@ export function InsightCard({
           <Button
             variant="outline"
             size="default"
-            className="min-h-10 w-full sm:w-fit"
+            className="min-h-11 w-full sm:w-fit"
             nativeButton={false}
-            render={<Link href={insight.destination} />}
+            render={<Link href={ctaHref} />}
           >
-            بررسی جزئیات
+            {cta.labelFa}
             <ArrowUpLeft aria-hidden="true" data-icon="inline-end" />
           </Button>
         </div>

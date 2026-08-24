@@ -41,6 +41,11 @@ import {
   ActionCenterErrorState,
   InsufficientDataNotice,
 } from "./action-center-state"
+import { GrowthWaterfall } from "./growth-waterfall"
+import {
+  buildWaterfallModel,
+  type GrowthDecompositionSource,
+} from "./growth-waterfall-model"
 import { prioritizeInsights } from "./model"
 import { PeriodSelector } from "./period-selector"
 
@@ -131,9 +136,11 @@ function noMerchantError(): ArtifactError {
 function ResolvedActionCenter({
   artifact,
   showDevelopmentFixture,
+  growthDecomposition,
 }: {
   artifact: AnalysisArtifact<ActionCenterPayload>
   showDevelopmentFixture: boolean
+  growthDecomposition?: GrowthDecompositionSource
 }) {
   const merchantKeys = Object.keys(artifact.merchants)
   const [merchantKey, setMerchantKey] = useState(merchantKeys[0] ?? "")
@@ -176,6 +183,22 @@ function ResolvedActionCenter({
       payload
         ? prioritizeInsights(payload.prioritizedInsights, payload.evidenceIndex)
         : [],
+    [payload],
+  )
+  const waterfallModel = useMemo(
+    () =>
+      growthDecomposition && growthDecomposition.merchantKey === merchantKey
+        ? buildWaterfallModel(growthDecomposition)
+        : null,
+    [growthDecomposition, merchantKey],
+  )
+  const waterfallEvidenceId = useMemo(
+    () =>
+      payload
+        ? (Object.keys(payload.evidenceIndex).find((key) =>
+            key.startsWith("peer-growth-decomposition"),
+          ) ?? null)
+        : null,
     [payload],
   )
   const headlineInsight =
@@ -308,6 +331,29 @@ function ResolvedActionCenter({
         ) : null}
       </section>
 
+      {waterfallModel ? (
+        <section aria-labelledby="waterfall-title" className="grid gap-4">
+          <div>
+            <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">تفکیک رشد</span>
+            <h2 id="waterfall-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
+              چه چیزی فروش شما را تغییر داد؟
+            </h2>
+            <p className="mt-1.5 max-w-3xl text-sm leading-relaxed text-muted-foreground">
+              تجزیه تغییر فروش این دوره به سه عامل ترافیک، نرخ پرداخت موفق و میانگین مبلغ خرید؛ عدد هر ستون سهم ریالی همان عامل از تغییر کل است.
+            </p>
+          </div>
+          <Card className="rounded-2xl border border-border/70 bg-card p-5 shadow-xs">
+            <CardContent className="p-0">
+              <GrowthWaterfall
+                model={waterfallModel}
+                evidenceId={waterfallEvidenceId}
+                onEvidenceRequest={handleEvidenceRequest}
+              />
+            </CardContent>
+          </Card>
+        </section>
+      ) : null}
+
       <section aria-labelledby="insights-title" className="grid gap-5">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">برنامه اقدام پیشنهادی</span>
@@ -322,6 +368,7 @@ function ResolvedActionCenter({
             insight={insights[0]}
             rank={1}
             featured
+            contextQuery={`merchant=${merchantKey}`}
             onEvidenceRequest={handleEvidenceRequest}
           />
         ) : null}
@@ -332,6 +379,7 @@ function ResolvedActionCenter({
                 key={insight.id}
                 insight={insight}
                 rank={index + 2}
+                contextQuery={`merchant=${merchantKey}`}
                 onEvidenceRequest={handleEvidenceRequest}
               />
             ))}
@@ -361,9 +409,11 @@ function ResolvedActionCenter({
 export function ActionCenter({
   artifact,
   showDevelopmentFixture = false,
+  growthDecomposition,
 }: {
   artifact: unknown
   showDevelopmentFixture?: boolean
+  growthDecomposition?: GrowthDecompositionSource
 }) {
   const parsedArtifact = parseActionCenterArtifact(artifact)
 
@@ -379,6 +429,7 @@ export function ActionCenter({
     <ResolvedActionCenter
       artifact={parsedArtifact.data}
       showDevelopmentFixture={showDevelopmentFixture}
+      growthDecomposition={growthDecomposition}
     />
   )
 }
