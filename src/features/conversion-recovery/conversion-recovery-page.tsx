@@ -30,7 +30,7 @@ import {
 } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
-import { RecoveryEvidenceSheet } from "./recovery-evidence-sheet"
+import { EvidenceSheet } from "@/entities/evidence/evidence-sheet"
 import { RecoveryMerchantSelector } from "./recovery-merchant-selector"
 import {
   formatPersianDate,
@@ -676,8 +676,9 @@ export function ConversionRecoveryPage({
         </span>
       </footer>
 
-      <RecoveryEvidenceSheet
+      <EvidenceSheet
         evidence={selectedEvidence}
+        error={null}
         open={selectedEvidenceId !== null}
         onOpenChange={handleEvidenceOpenChange}
       />

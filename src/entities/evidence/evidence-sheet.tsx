@@ -1,7 +1,7 @@
 "use client"
 
 import { CalendarDays, CircleAlert, CircleHelp, Database, Scale } from "lucide-react"
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Badge } from "@/components/ui/badge"
@@ -265,6 +265,22 @@ const columnLabels: Record<string, string> = {
   metric: "معیار مقایسه",
 }
 
+/** Bottom sheet on mobile (thumb-friendly), side sheet from sm and up.
+ * Initial state matches the server render to avoid hydration mismatches. */
+function useResponsiveSheetSide(): "bottom" | "left" {
+  const [side, setSide] = useState<"bottom" | "left">("left")
+
+  useEffect(() => {
+    const query = window.matchMedia("(min-width: 640px)")
+    const update = () => setSide(query.matches ? "left" : "bottom")
+    update()
+    query.addEventListener("change", update)
+    return () => query.removeEventListener("change", update)
+  }, [])
+
+  return side
+}
+
 export function EvidenceSheet({
   evidence,
   error,
@@ -279,14 +295,15 @@ export function EvidenceSheet({
   const operands = evidence ? inspectEvidenceOperands(evidence) : null
   const contentRef = useSheetScrollTop(open, evidence?.id)
   const headerRef = useRef<HTMLDivElement | null>(null)
+  const side = useResponsiveSheetSide()
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
       <SheetContent
         ref={contentRef}
         initialFocus={headerRef}
-        side="left"
-        className="data-[side=left]:w-full data-[side=left]:max-w-none data-[side=left]:sm:max-w-2xl gap-0 overflow-y-auto"
+        side={side}
+        className="gap-0 overflow-y-auto data-[side=bottom]:max-h-[85dvh] data-[side=bottom]:pb-[env(safe-area-inset-bottom)]"
         aria-label="مدرک و روش محاسبه"
         aria-modal="true"
       >
