@@ -4,24 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
-@font-face {
-  font-family: "IRANYekanXVF";
-  src: url("/fonts/iranyekanwebregular.woff2") format("woff2"),
-       url("/fonts/iranyekanwebregular.woff") format("woff"),
-       url("/fonts/iranyekanwebregular.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
-}
+/*
+ * Z-layer contract (do not reorder without updating every layer):
+ *   z-30  sticky app header
+ *   z-40  floating mobile tab bar (must stay BELOW sheet/modal overlays)
+ *   z-50  sheet overlay + sheet content
+ *   z-60  select/tooltip popovers (above sheets for in-sheet popovers)
+ *   z-80  skip link (topmost when focused)
+ */
 
-@font-face {
-  font-family: "IRANYekan";
-  src: url("/fonts/iranyekanwebregular.woff2") format("woff2"),
-       url("/fonts/iranyekanwebregular.woff") format("woff"),
-       url("/fonts/iranyekanwebregular.ttf") format("truetype");
-  font-weight: 100 900;
-  font-style: normal;
-  font-display: swap;
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 @theme inline {

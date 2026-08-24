@@ -5,8 +5,8 @@ import {
   UsersRoundIcon,
 } from "lucide-react"
 
-import { Alert, AlertDescription, AlertTitle } from "./ui/alert"
-import { Badge } from "./ui/badge"
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
+import { Badge } from "@/components/ui/badge"
 import {
   Card,
   CardContent,
@@ -14,7 +14,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./ui/card"
+} from "@/components/ui/card"
 import {
   Table,
   TableBody,
@@ -22,7 +22,7 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "./ui/table"
+} from "@/components/ui/table"
 import { cn } from "@/lib/utils"
 
 import {

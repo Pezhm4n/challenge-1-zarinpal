@@ -251,7 +251,7 @@ function FunnelOverview({
                       </span>
                     ) : null}
                     {isPrimaryStep ? (
-                      <Badge variant="destructive" className="px-2 py-0 text-[10px] font-bold">
+                      <Badge variant="destructive" className="px-2 py-0 text-xs font-bold">
                         بیشترین ریزش
                       </Badge>
                     ) : null}

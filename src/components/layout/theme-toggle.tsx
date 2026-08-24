@@ -13,7 +13,7 @@ export function ThemeToggle() {
       type="button"
       variant="outline"
       size="icon"
-      className="size-10 shrink-0 rounded-full"
+      className="size-11 shrink-0 rounded-full"
       aria-label="تغییر تم روشن/تیره"
       title="تغییر تم"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}

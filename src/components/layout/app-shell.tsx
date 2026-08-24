@@ -9,11 +9,11 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
     <div className="min-h-screen bg-background text-foreground">
       <a
         href="#main-content"
-        className="sr-only z-50 rounded-full bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:inline-flex focus:items-center focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+        className="sr-only z-80 rounded-full bg-primary px-4 py-2.5 text-xs font-semibold text-primary-foreground focus:not-sr-only focus:fixed focus:start-4 focus:top-4 focus:inline-flex focus:items-center focus:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
       >
         رفتن به محتوای اصلی
       </a>
-      <header className="sticky top-0 z-40 border-b border-border/70 bg-card/90 backdrop-blur-md">
+      <header className="sticky top-0 z-30 border-b border-border/70 bg-card/90 backdrop-blur-md">
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div className="flex items-center justify-between gap-3">
             <Link
@@ -27,7 +27,7 @@ export function AppShell({ children }: Readonly<{ children: React.ReactNode }>) 
               <span>
                 <span className="flex items-center gap-2">
                   <span className="text-base font-bold tracking-tight text-foreground">نبض زرین</span>
-                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-semibold text-primary">
+                  <span className="rounded-full bg-primary/10 px-2 py-0.5 text-sm font-semibold text-primary">
                     دستیار رشد فروش
                   </span>
                 </span>

@@ -39,11 +39,11 @@ function TooltipContent({
   Pick<TooltipPrimitive.Positioner.Props, "side" | "sideOffset">) {
   return (
     <TooltipPrimitive.Portal>
-      <TooltipPrimitive.Positioner side={side} sideOffset={sideOffset} className="isolate z-50">
+      <TooltipPrimitive.Positioner side={side} sideOffset={sideOffset} className="isolate z-60">
         <TooltipPrimitive.Popup
           data-slot="tooltip-content"
           className={cn(
-            "z-50 max-w-xs rounded-xl border border-border/80 bg-popover px-3 py-2 text-xs leading-relaxed text-popover-foreground shadow-md transition-all duration-150 data-[side=bottom]:slide-in-from-top-1.5 data-[side=top]:slide-in-from-bottom-1.5 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
+            "z-60 max-w-xs rounded-xl border border-border/80 bg-popover px-3 py-2 text-xs leading-relaxed text-popover-foreground shadow-md transition-all duration-150 data-[side=bottom]:slide-in-from-top-1.5 data-[side=top]:slide-in-from-bottom-1.5 data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95",
             className
           )}
           {...props}
