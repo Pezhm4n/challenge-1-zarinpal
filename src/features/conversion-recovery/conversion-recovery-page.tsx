@@ -431,9 +431,9 @@ export function ConversionRecoveryPage({
 
   return (
     <div className="grid gap-8 lg:gap-10">
-      <header className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs">
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
-        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
+      <header className="relative grid gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 sm:p-7 shadow-xs">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-40 rounded-full bg-primary/[0.06] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -445,20 +445,20 @@ export function ConversionRecoveryPage({
               داده قطعی سفارش‌ها
             </Badge>
           </div>
-          <h1 className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
+          <h1 className="mt-3 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
               نجات فروش و رفع موانع پرداخت
             </span>{" "}
             برای فروشگاه شما
           </h1>
-          <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             رهگیری مرحله‌به‌مرحله فرآیند خرید، کشف دلایل انصراف مشتریان و پتانسیل افزایش درآمد با برطرف کردن موانع پرداخت.
           </p>
-          <p className="mt-3 text-xs font-medium text-muted-foreground">
+          <p className="mt-2.5 text-xs font-medium text-muted-foreground">
             دوره {formatPersianPeriod(payload.selection.period)}؛ مقایسه با {payload.selection.comparison ? formatPersianPeriod(payload.selection.comparison) : "بدون دوره مبنا"}
           </p>
         </div>
-        <div className="border-t border-border/50 pt-4">
+        <div className="border-t border-border/50 pt-3.5">
           <RecoveryMerchantSelector
             merchantKey={payload.selection.merchantKey}
             merchantKeys={merchantKeys}
@@ -538,7 +538,7 @@ export function ConversionRecoveryPage({
         </Alert>
       )}
 
-      <section aria-labelledby="payment-rail-title" className="grid gap-5">
+      <section id="funnel" aria-labelledby="payment-rail-title" className="grid gap-5 scroll-mt-24">
         <div>
           <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">قیف ۴ مرحله‌ای پرداخت</span>
           <h2 id="payment-rail-title" className="mt-2 text-lg font-bold tracking-tight text-foreground sm:text-2xl">
@@ -658,7 +658,7 @@ export function ConversionRecoveryPage({
         </AlertDescription>
       </Alert>
 
-      <section aria-labelledby="psp-title" className="grid gap-5">
+      <section id="psp" aria-labelledby="psp-title" className="grid gap-5 scroll-mt-24">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <span className="inline-flex items-center rounded-full bg-primary/10 px-3 py-0.5 text-xs font-bold text-primary">مقایسه منصفانه</span>

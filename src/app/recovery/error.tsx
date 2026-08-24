@@ -13,7 +13,7 @@ export default function RecoveryError({ reset }: { reset: () => void }) {
       aria-labelledby="recovery-unexpected-error-title"
       className="mx-auto flex min-h-[50vh] w-full max-w-3xl items-center py-8"
     >
-      <Card className="w-full rounded-3xl p-6 shadow-sm sm:p-8">
+      <Card className="w-full rounded-2xl p-6 shadow-sm sm:p-8">
         <CardHeader className="p-0">
           <CardTitle>
             <h1 id="recovery-unexpected-error-title" className="text-xl font-bold tracking-tight text-foreground">

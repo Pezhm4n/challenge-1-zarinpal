@@ -7,7 +7,7 @@ import type { ArtifactError } from "@/contracts"
 export function ActionCenterErrorState({ error }: { error: ArtifactError }) {
   return (
     <section aria-labelledby="action-center-error-title">
-      <Card className="mx-auto max-w-2xl rounded-3xl p-6 shadow-sm sm:p-8">
+      <Card className="mx-auto max-w-2xl rounded-2xl p-6 shadow-sm sm:p-8">
         <CardHeader className="gap-3 p-0">
           <div className="flex size-12 items-center justify-center rounded-2xl bg-destructive/10 text-destructive">
             <FileQuestion aria-hidden="true" className="size-6" />
@@ -32,7 +32,7 @@ export function ActionCenterErrorState({ error }: { error: ArtifactError }) {
 
 export function ActionCenterEmptyState() {
   return (
-    <Card className="rounded-3xl border-dashed border-border/80 bg-muted/20">
+    <Card className="rounded-2xl border-dashed border-border/80 bg-muted/20">
       <CardContent className="grid justify-items-center gap-3 py-12 text-center">
         <div className="flex size-14 items-center justify-center rounded-2xl bg-muted text-muted-foreground shadow-2xs">
           <DatabaseZap aria-hidden="true" className="size-7" />

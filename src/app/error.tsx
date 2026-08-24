@@ -9,7 +9,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 export default function ErrorPage({ reset }: { reset: () => void }) {
   return (
     <section aria-labelledby="unexpected-error-title" className="py-12">
-      <Card className="mx-auto max-w-2xl rounded-3xl p-6 shadow-sm sm:p-8">
+      <Card className="mx-auto max-w-2xl rounded-2xl p-6 shadow-sm sm:p-8">
         <CardHeader className="p-0">
           <CardTitle>
             <h1 id="unexpected-error-title" className="text-xl font-bold tracking-tight text-foreground">

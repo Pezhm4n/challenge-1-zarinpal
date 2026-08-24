@@ -7,13 +7,13 @@ export default function OpportunitiesLoading() {
       aria-label="در حال بارگذاری گزارش فرصت‌ها"
       className="grid min-w-0 gap-8 lg:gap-10"
     >
-      <div className="grid min-w-0 gap-3 rounded-3xl border border-border/70 bg-card p-6 sm:p-8">
+      <div className="grid min-w-0 gap-3 rounded-2xl border border-border/70 bg-card p-6 sm:p-8">
         <Skeleton className="h-5 w-full max-w-36 rounded-full" />
         <Skeleton className="h-9 w-full max-w-sm rounded-xl" />
         <Skeleton className="h-5 w-full max-w-2xl rounded-lg" />
         <Skeleton className="h-4 w-full max-w-48 rounded-lg" />
       </div>
-      <div className="grid min-w-0 gap-4 rounded-2xl border border-primary/40 p-6 sm:p-7">
+      <div className="grid min-w-0 gap-4 rounded-2xl border border-border/70 p-6 sm:p-7">
         <Skeleton className="h-5 w-full max-w-28 rounded-full" />
         <Skeleton className="h-7 w-full max-w-md rounded-lg" />
         <Skeleton className="h-5 w-full max-w-2xl rounded-lg" />

@@ -79,10 +79,7 @@ function HeadlineMetric({
   return (
     <div
       className={cn(
-        "flex min-w-0 flex-col rounded-2xl border bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm",
-        isPositive && "border-success/40 hover:border-success/60",
-        isNegative && "border-destructive/40 hover:border-destructive/60",
-        !isPositive && !isNegative && "border-border/70 hover:border-border",
+        "flex min-w-0 flex-col rounded-2xl border border-border/70 bg-card p-5 shadow-xs transition-all duration-200 hover:shadow-sm hover:border-border",
       )}
     >
       <div className="flex items-center justify-center gap-1.5 sm:justify-start">
@@ -112,7 +109,7 @@ function HeadlineMetric({
       <Button
         variant="ghost"
         size="sm"
-        className="mt-4 min-h-9 w-full justify-center text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary sm:justify-start"
+        className="mt-4 min-h-10 w-full justify-center text-xs font-semibold text-primary hover:bg-primary/10 hover:text-primary sm:justify-start"
         aria-label={`چطور ${localizePersianText(friendlyKpiTitle(metric.value.labelFa))} محاسبه شد؟`}
         onClick={() => onEvidenceRequest(metric.evidenceId)}
       >
@@ -238,10 +235,10 @@ function ResolvedActionCenter({
     <div className="grid gap-8 lg:gap-10">
       <section
         aria-labelledby="action-center-title"
-        className="relative grid gap-5 overflow-hidden rounded-3xl border border-border/70 bg-card p-6 sm:p-8 shadow-xs"
+        className="relative grid gap-4 overflow-hidden rounded-2xl border border-border/70 bg-card p-5 sm:p-7 shadow-xs"
       >
-        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-primary/[0.08] to-transparent" />
-        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-48 rounded-full bg-primary/[0.07] blur-3xl" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-primary/[0.08] to-transparent" />
+        <div aria-hidden="true" className="pointer-events-none absolute -top-24 end-0 size-40 rounded-full bg-primary/[0.06] blur-3xl" />
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="secondary" className="gap-1.5 font-semibold">
@@ -259,18 +256,18 @@ function ResolvedActionCenter({
               </Badge>
             ) : null}
           </div>
-          <h1 id="action-center-title" className="mt-4 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
+          <h1 id="action-center-title" className="mt-3 text-xl font-bold tracking-tight text-foreground sm:text-3xl sm:font-extrabold lg:text-4xl">
             <span className="text-primary underline decoration-primary/40 decoration-[3px] underline-offset-[6px]">
               ۳ اقدام کلیدی
             </span>{" "}
             برای افزایش فروش فروشگاه شما
           </h1>
-          <p className="mt-2.5 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
+          <p className="mt-2 max-w-3xl text-sm leading-relaxed text-muted-foreground sm:text-base">
             مهم‌ترین فرصت‌های رشد و جلوگیری از ریزش مالی کسب‌وکار شما؛ همراه با اثر ریالی شفاف، گام عملی بعدی و مدرک دقیق محاسبه.
           </p>
         </div>
 
-        <div className="flex flex-col gap-3.5 border-t border-border/50 pt-4 sm:flex-row sm:items-end">
+        <div className="flex flex-col gap-3 border-t border-border/50 pt-3.5 sm:flex-row sm:items-end">
           <MerchantSelector
             value={merchantKey}
             options={merchantOptions}
