@@ -13,6 +13,7 @@ import {
   SheetTitle,
 } from "@/components/ui/sheet"
 import type { ArtifactError, EvidenceRecord, EvidenceSampleRow } from "@/contracts"
+import { cn } from "@/lib/utils"
 import { formatMetricValue, metricKindLabels } from "@/entities/insight/metric-value"
 import { BaselineComparison } from "./baseline-comparison"
 import { CalculationEquation, inferCalculationMode } from "./calculation-equation"
@@ -47,12 +48,16 @@ function formatPeriod(period: EvidenceRecord["period"]): string {
 function EvidenceSection({
   title,
   children,
+  className,
+  style,
 }: {
   title: string
   children: React.ReactNode
+  className?: string
+  style?: React.CSSProperties
 }) {
   return (
-    <section className="grid gap-3 border-t pt-5">
+    <section className={cn("grid gap-3 border-t pt-5", className)} style={style}>
       <h3 className="text-sm font-bold text-foreground">{title}</h3>
       {children}
     </section>
@@ -322,7 +327,7 @@ export function EvidenceSheet({
             <SheetHeader
               ref={headerRef}
               tabIndex={-1}
-              className="gap-2.5 border-b border-border/70 p-5 pe-14 text-start outline-none sm:p-6"
+              className="gap-2.5 animate-rise-in border-b border-border/70 p-5 pe-14 text-start outline-none sm:p-6"
             >
               <div className="flex flex-wrap items-center gap-2">
                 <Badge
@@ -343,7 +348,8 @@ export function EvidenceSheet({
             <div className="grid gap-5 p-5 sm:p-6">
               <section
                 aria-label="نتیجه و روش محاسبه"
-                className="rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5"
+                className="animate-rise-in rounded-2xl border border-border/60 bg-muted/50 p-4 sm:p-5"
+                style={{ animationDelay: "90ms" }}
               >
                 <p className="text-xs font-semibold text-muted-foreground">
                   نتیجه نهایی محاسبه
@@ -392,10 +398,12 @@ export function EvidenceSheet({
                 </div>
               </section>
 
-              {evidence.dataQuality.map((note) => (
+              {evidence.dataQuality.map((note, noteIndex) => (
                 <Alert
                   key={note.code}
                   variant={note.severity === "warning" ? "destructive" : "default"}
+                  className="animate-rise-in"
+                  style={{ animationDelay: `${150 + noteIndex * 60}ms` }}
                 >
                   {note.severity === "warning" ? (
                     <CircleAlert aria-hidden="true" />
@@ -409,7 +417,11 @@ export function EvidenceSheet({
                 </Alert>
               ))}
 
-              <EvidenceSection title="این عدد در مقایسه با مبنایش">
+              <EvidenceSection
+                title="این عدد در مقایسه با مبنایش"
+                className="animate-rise-in"
+                style={{ animationDelay: "210ms" }}
+              >
                 {evidence.baseline &&
                 evidence.formulaId === "growth.revenue_decomposition.v1" &&
                 evidence.result?.unit === "rial" ? (
@@ -449,15 +461,36 @@ export function EvidenceSheet({
                 )}
               </EvidenceSection>
 
-              <EvidenceSection title="قبل از تصمیم، این نکات را بدانید">
+              <EvidenceSection
+                title="قبل از تصمیم، این نکات را بدانید"
+                className="animate-rise-in"
+                style={{ animationDelay: "260ms" }}
+              >
                 <div className="rounded-2xl border border-border/60 bg-card p-4">
                   <EvidenceList items={evidence.limitations} emptyLabel="محدودیت خاصی ثبت نشده است." />
                 </div>
               </EvidenceSection>
 
-              <details className="group rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all">
-                <summary className="flex min-h-12 cursor-pointer list-none flex-col items-center justify-center gap-2 p-4 text-center font-semibold text-foreground hover:bg-muted/40 marker:content-none sm:flex-row sm:justify-between sm:text-start [&::-webkit-details-marker]:hidden">
-                  <span className="text-sm font-bold">جزئیات فنی برای راستی‌آزمایی محاسبه</span>
+              <details
+                className="group animate-rise-in rounded-2xl border border-border/60 bg-muted/20 overflow-hidden transition-all"
+                style={{ animationDelay: "310ms" }}
+              >
+                <summary className="flex min-h-12 cursor-pointer list-none flex-col items-center justify-center gap-2 p-4 text-center font-semibold text-foreground transition-colors hover:bg-muted/40 marker:content-none sm:flex-row sm:justify-between sm:text-start [&::-webkit-details-marker]:hidden">
+                  <span className="flex items-center gap-2 text-sm font-bold">
+                    <svg
+                      aria-hidden="true"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="2.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="size-3.5 shrink-0 text-muted-foreground transition-transform duration-300 ease-smooth group-open:rotate-180"
+                    >
+                      <path d="m6 9 6 6 6-6" />
+                    </svg>
+                    جزئیات فنی برای راستی‌آزمایی محاسبه
+                  </span>
                   <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-normal text-muted-foreground group-open:hidden">
                     بررسی بیشتر
                   </span>
