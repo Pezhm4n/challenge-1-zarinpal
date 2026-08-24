@@ -13,13 +13,21 @@ export function ThemeToggle() {
       type="button"
       variant="outline"
       size="icon"
-      className="size-11 shrink-0 rounded-full"
+      className="size-11 shrink-0 rounded-full transition-transform duration-200 active:scale-90"
       aria-label="تغییر تم روشن/تیره"
       title="تغییر تم"
       onClick={() => setTheme(resolvedTheme === "dark" ? "light" : "dark")}
     >
-      <Sun aria-hidden="true" className="hidden size-5 dark:block" />
-      <Moon aria-hidden="true" className="size-5 dark:hidden" />
+      <span className="relative flex size-5 items-center justify-center">
+        <Sun
+          aria-hidden="true"
+          className="absolute size-5 rotate-90 scale-0 text-amber-500 transition-all duration-300 ease-smooth dark:rotate-0 dark:scale-100"
+        />
+        <Moon
+          aria-hidden="true"
+          className="absolute size-5 rotate-0 scale-100 transition-all duration-300 ease-smooth dark:-rotate-90 dark:scale-0"
+        />
+      </span>
     </Button>
   )
 }

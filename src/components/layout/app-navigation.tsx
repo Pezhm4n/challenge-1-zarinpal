@@ -63,13 +63,19 @@ export function AppMobileTabBar() {
                 href={item.href}
                 aria-current={isCurrent ? "page" : undefined}
                 className={cn(
-                  "flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-xs leading-none transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+                  "flex min-h-14 flex-col items-center justify-center gap-1 rounded-2xl px-1 py-2 text-xs leading-none transition-all duration-200 active:scale-[0.93] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
                   isCurrent
                     ? "bg-primary/15 font-semibold text-primary ring-1 ring-primary/20"
                     : "font-medium text-muted-foreground hover:bg-card/80 hover:text-foreground active:scale-[0.97]",
                 )}
               >
-                <Icon aria-hidden="true" className="size-5 shrink-0" />
+                <Icon
+                  aria-hidden="true"
+                  className={cn(
+                    "size-5 shrink-0 transition-transform duration-300 ease-smooth",
+                    isCurrent && "-translate-y-0.5 scale-110",
+                  )}
+                />
                 <span className="whitespace-nowrap">{item.label}</span>
               </Link>
             </li>
